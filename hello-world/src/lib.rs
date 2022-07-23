@@ -1,7 +1,10 @@
 #[cfg(feature = "buddy-alloc")]
 mod alloc;
 mod wasm4;
+pub mod component;
+
 use wasm4::*;
+use component::*;
 
 #[rustfmt::skip]
 const SMILEY: [u8; 8] = [
@@ -15,41 +18,32 @@ const SMILEY: [u8; 8] = [
     0b11000011,
 ];
 
-static mut player_x:i32 = 76;
-static mut player_y:i32 = 76;
-const center:(i32,i32) = (76,76);
+static mut player_x:f32 = 76.0;
+static mut player_y:f32 = 76.0;
+const center:(f32,f32) = (76.0,76.0);
 
 #[no_mangle]
 fn update() {
     unsafe { *DRAW_COLORS = 2 }
-    let hello = camera_conversion(10,10);
+    let hello = camera_conversion(10.0,10.0);
     text("Hello from Rust!", hello.0, hello.1);
 
     let gamepad = unsafe { *GAMEPAD1 };
-    if gamepad & BUTTON_1 != 0 {
-        unsafe { *DRAW_COLORS = 4 }
-    } if gamepad & BUTTON_UP != 0 {
-        unsafe{player_y-=1;}
-    } if gamepad & BUTTON_DOWN != 0 {
-        unsafe{player_y+=1;}
-    } if gamepad & BUTTON_RIGHT != 0 {
-        unsafe{player_x+=1;}
-    } if gamepad & BUTTON_LEFT != 0 {
-        unsafe{player_x-=1;}
-    }
-    
+    let direction = keyboardComponent::handle_controller(gamepad);
+    unsafe{player_x+=direction.0;
+           player_y+=direction.1;}
 
     unsafe {let me = camera_conversion(player_x, player_y);
      blit(&SMILEY, me.0, me.1, 8, 8, BLIT_1BPP); }
 
     unsafe { *DRAW_COLORS = 4 }
-    let other = camera_conversion(80,80);
+    let other = camera_conversion(80.0,80.0);
     blit(&SMILEY, other.0, other.1, 8, 8, BLIT_1BPP); 
 
-    let press = camera_conversion(16,90);
+    let press = camera_conversion(16.0,90.0);
     text("Press X to dash", press.0, press.1);
 }
 
-fn camera_conversion (x:i32, y:i32)->(i32,i32){
-    unsafe{(x-player_x+center.0, y-player_y+center.1)}
+fn camera_conversion (x:f32, y:f32)->(i32,i32){
+    unsafe{((x-player_x+center.0) as i32, (y-player_y+center.1) as i32)}
 }
