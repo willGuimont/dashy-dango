@@ -14,6 +14,7 @@ impl Vec2 {
     }
 
     pub fn cross(self, rhs: Self) -> Self {
+        // TODO adapt to return a f32
         Self::new(self.y * rhs.z - self.z * rhs.y,
                   self.z * rhs.x - self.x * rhs.z,
                   self.x * rhs.y - self.y * rhs.x)
