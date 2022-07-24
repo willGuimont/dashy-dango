@@ -12,6 +12,10 @@ w4 run target/wasm32-unknown-unknown/release/cart.wasm
 w4 watch target/wasm32-unknown-unknown/release/cart.wasm
 ```
 
+## Minify cartridge
+
+See [Rolly Dango's cart.nimble](https://github.com/willGuimont/rolly-dango/blob/main/cart.nimble#L38) for `wasm-opt` options.
+
 ## Useful tools
 
 ### [png2src](https://wasm4.org/docs/reference/cli#png2src)

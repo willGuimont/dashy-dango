@@ -1,5 +1,8 @@
+extern crate proc_macro;
+
 use wasm4::*;
 
+use crate::ecs::{BaseComponent, Registry};
 use crate::utils::keyboard_utils;
 
 #[cfg(feature = "buddy-alloc")]
@@ -28,8 +31,29 @@ static mut PLAYER_X: f32 = 76.0;
 static mut PLAYER_Y: f32 = 76.0;
 const CENTER: (f32, f32) = (76.0, 76.0);
 
+struct PositionComponent {
+    x: i16,
+    y: i16,
+}
+
+impl BaseComponent for PositionComponent {}
+
+struct HealthComponent {
+    hp: i16,
+}
+
+impl BaseComponent for HealthComponent {}
+
 #[no_mangle]
 fn update() {
+    unsafe {
+        let mut registry = Registry::new();
+        let pos = PositionComponent { x: 1, y: 0 };
+        let health = HealthComponent { hp: 10 };
+        registry.add_component(1, pos);
+        registry.add_component(1, health);
+    }
+
     unsafe { *DRAW_COLORS = 2 }
     let hello = camera_conversion(10.0, 10.0);
     text("Hello from Rust!", hello.0, hello.1);
