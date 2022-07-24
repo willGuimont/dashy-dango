@@ -9,6 +9,7 @@ mod math_utils;
 mod ecs;
 mod game;
 mod utils;
+mod events;
 
 #[rustfmt::skip]
 const SMILEY: [u8; 8] = [
