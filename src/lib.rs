@@ -10,6 +10,7 @@ mod ecs;
 mod game;
 mod utils;
 mod events;
+mod assets;
 
 #[rustfmt::skip]
 const SMILEY: [u8; 8] = [
