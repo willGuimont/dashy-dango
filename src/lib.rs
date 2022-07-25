@@ -1,3 +1,4 @@
+#![feature(box_into_inner)]
 extern crate proc_macro;
 
 use wasm4::*;
@@ -50,8 +51,16 @@ fn update() {
         let mut registry = Registry::new();
         let pos = PositionComponent { x: 1, y: 0 };
         let health = HealthComponent { hp: 10 };
-        registry.add_component(1, pos);
-        registry.add_component(1, health);
+        let e = registry.new_entity();
+
+        registry.add_component(e, pos);
+        registry.add_component(e, health);
+
+        if registry.has_component::<PositionComponent>(e) {
+            trace("Yeah boy");
+        }
+        let p = registry.get_component::<PositionComponent>(e).expect("fuck");
+        trace(format!("{}", p.x));
     }
 
     unsafe { *DRAW_COLORS = 2 }
