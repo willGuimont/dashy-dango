@@ -1,12 +1,9 @@
-#![feature(box_into_inner)]
-extern crate proc_macro;
-
 use std::any::Any;
-
 use wasm4::*;
 
 use crate::ecs::{BaseComponent, Registry};
 use crate::utils::keyboard_utils;
+use ecs_macro::Component;
 
 #[cfg(feature = "buddy-alloc")]
 mod alloc;
@@ -34,34 +31,15 @@ static mut PLAYER_X: f32 = 76.0;
 static mut PLAYER_Y: f32 = 76.0;
 const CENTER: (f32, f32) = (76.0, 76.0);
 
-#[derive(Debug)]
+#[derive(Component, Debug)]
 struct PositionComponent {
     x: i16,
     y: i16,
 }
 
-impl BaseComponent for PositionComponent {
-    fn as_any(&self) -> &dyn Any {
-        self
-    }
-
-    fn as_any_mut(&mut self) -> &mut dyn Any {
-        self
-    }
-}
-
+#[derive(Component, Debug)]
 struct HealthComponent {
     hp: i16,
-}
-
-impl BaseComponent for HealthComponent {
-    fn as_any(&self) -> &dyn Any {
-        self
-    }
-
-    fn as_any_mut(&mut self) -> &mut dyn Any {
-        self
-    }
 }
 
 #[no_mangle]

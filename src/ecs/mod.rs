@@ -1,9 +1,6 @@
 use std::any::{Any, TypeId};
-use std::cell::RefCell;
 use std::collections::{HashMap, HashSet};
 use std::collections::hash_set::Iter;
-
-use crate::trace;
 
 pub trait BaseComponent {
     fn as_any(&self) -> &dyn Any;
@@ -98,6 +95,5 @@ impl Registry {
         let cs = self.components.get(&type_id).unwrap();
         let c  = cs.get(&entity).unwrap();
         c.as_any().downcast_ref::<T>()
-        // c.as_any().downcast_ref::<T>()
     }
 }
