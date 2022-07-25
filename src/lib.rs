@@ -4,6 +4,7 @@ use wasm4::*;
 
 use crate::ecs::{BaseComponent, Registry};
 use crate::utils::keyboard_utils;
+use crate::math_utils::*;
 
 #[cfg(feature = "buddy-alloc")]
 mod alloc;
@@ -61,8 +62,8 @@ fn update() {
     let gamepad = unsafe { *GAMEPAD1 };
     let direction = keyboard_utils::gamepad_to_vec(gamepad);
     unsafe {
-        PLAYER_X += direction.0;
-        PLAYER_Y += direction.1;
+        PLAYER_X += direction.x;
+        PLAYER_Y += direction.y;
     }
 
     unsafe {
@@ -76,8 +77,18 @@ fn update() {
 
     let press = camera_conversion(16.0, 90.0);
     text("Press X to dash", press.0, press.1);
+
+    //test_inter();
 }
 
 fn camera_conversion(x: f32, y: f32) -> (i32, i32) {
     unsafe { ((x - PLAYER_X + CENTER.0) as i32, (y - PLAYER_Y + CENTER.1) as i32) }
+}
+
+fn test_inter(){
+    let quad = Quadrilateral::new([Point::new(0.0,0.0),Point::new(1.0,0.0),Point::new(1.0,1.0),Point::new(0.0,1.0)]);
+    let quad2 = Quadrilateral::new([Point::new(0.0,0.0),Point::new(2.0,0.0),Point::new(2.0,2.0),Point::new(0.0,2.0)]);
+    if quad.rect_inter(quad2){
+        trace("true");
+    }
 }
