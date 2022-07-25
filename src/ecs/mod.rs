@@ -1,34 +1,25 @@
 use std::any::{Any, TypeId};
+use std::cell::RefCell;
 use std::collections::{HashMap, HashSet};
 use std::collections::hash_set::Iter;
 
-pub trait BaseComponent {}
+use crate::trace;
+
+pub trait BaseComponent {
+    fn as_any(&self) -> &dyn Any;
+    fn as_any_mut(&mut self) -> &mut dyn Any;
+}
 
 pub type Entity = u16;
-type Store<T> = HashMap<Entity, Box<T>>;
-pub type ComponentStore = Store<dyn BaseComponent>;
-pub type ComponentHash = TypeId;
-
-trait ComponentStorage {
-    fn as_any(&self) -> &dyn std::any::Any;
-    fn as_any_mut(&mut self) -> &mut dyn std::any::Any;
-}
-
-impl<T: 'static> ComponentStorage for HashMap<Entity, T> {
-    fn as_any(&self) -> &dyn Any {
-        self
-    }
-
-    fn as_any_mut(&mut self) -> &mut dyn Any {
-        self
-    }
-}
+type ComponentStore = HashMap<Entity, Box<dyn BaseComponent>>;
+type ComponentHash = TypeId;
+type ComponentsMap = HashMap<ComponentHash, ComponentStore>;
 
 pub struct Registry {
     last_entity_id: Entity,
     valid_entities: HashSet<Entity>,
     to_destroy_entity: HashSet<Entity>,
-    components: HashMap<ComponentHash, ComponentStore>,
+    components: ComponentsMap,
 }
 
 impl Registry {
@@ -95,7 +86,7 @@ impl Registry {
         self.components.get(&type_id).map(|cs| cs.contains_key(&entity)).unwrap_or_default()
     }
 
-    pub fn get_component<T: BaseComponent + 'static>(&self, entity: Entity) -> Option<&Box<T>> {
+    pub fn get_component<T: BaseComponent + 'static>(&self, entity: Entity) -> Option<&T> {
         let type_id = TypeId::of::<T>();
         if !self.components.contains_key(&type_id) {
             return None;
@@ -105,8 +96,8 @@ impl Registry {
             return None;
         }
         let cs = self.components.get(&type_id).unwrap();
-        let cs = cs.as_any().downcast_ref::<Store<T>>().unwrap();
-        crate::wasm4::trace("here3");
-        cs.get(&entity)
+        let c  = cs.get(&entity).unwrap();
+        c.as_any().downcast_ref::<T>()
+        // c.as_any().downcast_ref::<T>()
     }
 }

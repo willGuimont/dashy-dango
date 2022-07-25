@@ -1,6 +1,8 @@
 #![feature(box_into_inner)]
 extern crate proc_macro;
 
+use std::any::Any;
+
 use wasm4::*;
 
 use crate::ecs::{BaseComponent, Registry};
@@ -32,36 +34,48 @@ static mut PLAYER_X: f32 = 76.0;
 static mut PLAYER_Y: f32 = 76.0;
 const CENTER: (f32, f32) = (76.0, 76.0);
 
+#[derive(Debug)]
 struct PositionComponent {
     x: i16,
     y: i16,
 }
 
-impl BaseComponent for PositionComponent {}
+impl BaseComponent for PositionComponent {
+    fn as_any(&self) -> &dyn Any {
+        self
+    }
+
+    fn as_any_mut(&mut self) -> &mut dyn Any {
+        self
+    }
+}
 
 struct HealthComponent {
     hp: i16,
 }
 
-impl BaseComponent for HealthComponent {}
+impl BaseComponent for HealthComponent {
+    fn as_any(&self) -> &dyn Any {
+        self
+    }
+
+    fn as_any_mut(&mut self) -> &mut dyn Any {
+        self
+    }
+}
 
 #[no_mangle]
 fn update() {
-    unsafe {
-        let mut registry = Registry::new();
-        let pos = PositionComponent { x: 1, y: 0 };
-        let health = HealthComponent { hp: 10 };
-        let e = registry.new_entity();
+    let mut registry = Registry::new();
+    let pos = PositionComponent { x: 1, y: 0 };
+    let health = HealthComponent { hp: 10 };
+    let e = registry.new_entity();
 
-        registry.add_component(e, pos);
-        registry.add_component(e, health);
+    registry.add_component(e, pos);
+    registry.add_component(e, health);
 
-        if registry.has_component::<PositionComponent>(e) {
-            trace("Yeah boy");
-        }
-        let p = registry.get_component::<PositionComponent>(e).expect("fuck");
-        trace(format!("{}", p.x));
-    }
+    let p = registry.get_component::<PositionComponent>(e);
+    trace(format!("{:?}", p));
 
     unsafe { *DRAW_COLORS = 2 }
     let hello = camera_conversion(10.0, 10.0);
