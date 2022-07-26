@@ -16,6 +16,11 @@ w4 watch target/wasm32-unknown-unknown/release/cart.wasm
 
 See [Rolly Dango's cart.nimble](https://github.com/willGuimont/rolly-dango/blob/main/cart.nimble#L38) for `wasm-opt` options.
 
+## Deploy to GitHub-Pages
+```bash
+./deploy.sh
+```
+
 ## Useful tools
 
 ### [png2src](https://wasm4.org/docs/reference/cli#png2src)
