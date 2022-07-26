@@ -46,7 +46,7 @@ impl ops::Add<&Vec2> for Vec2 {
     type Output = Vec2;
 
     fn add(self, rhs: &Vec2) -> Self::Output {
-        self + rhs.clone()
+        self + *rhs
     }
 }
 
@@ -54,7 +54,7 @@ impl ops::Add<Vec2> for &Vec2 {
     type Output = Vec2;
 
     fn add(self, rhs: Vec2) -> Self::Output {
-        self.clone() + rhs
+        *self + rhs
     }
 }
 
@@ -87,7 +87,7 @@ impl ops::Sub<&Vec2> for Vec2 {
     type Output = Vec2;
 
     fn sub(self, rhs: &Vec2) -> Self::Output {
-        self - rhs.clone()
+        self - *rhs
     }
 }
 
@@ -95,7 +95,7 @@ impl ops::Sub<Vec2> for &Vec2 {
     type Output = Vec2;
 
     fn sub(self, rhs: Vec2) -> Self::Output {
-        self.clone() - rhs
+        *self - rhs
     }
 }
 
@@ -111,7 +111,7 @@ impl ops::Mul<&Vec2> for f32 {
     type Output = Vec2;
 
     fn mul(self, rhs: &Vec2) -> Self::Output {
-        self * rhs.clone()
+        self * *rhs
     }
 }
 

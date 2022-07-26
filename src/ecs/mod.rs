@@ -73,17 +73,15 @@ impl Registry {
 
     pub fn destroy_marked_entities(&mut self) {
         let to_delete = self.to_destroy_entity.clone();
-        to_delete.iter().for_each(|e| self.destroy_entity(e.clone()));
+        to_delete.iter().for_each(|e| self.destroy_entity(*e));
     }
 
     pub fn add_component<T: BaseComponent + 'static>(&mut self, entity: Entity, component: T) -> Result<()> {
         let type_id = TypeId::of::<T>();
-        if !self.components.contains_key(&type_id) {
-            self.components.insert(type_id, ComponentStore::new());
-        }
+        self.components.entry(type_id).or_insert_with(ComponentStore::new);
         self.components.get_mut(&type_id)
             .map(|c| c.insert(entity, Box::new(component)))
-            .ok_or(EntityNotFound(entity).into())
+            .ok_or_else(|| EntityNotFound(entity).into())
             .map(|_| ())
     }
 
