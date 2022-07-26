@@ -1,7 +1,6 @@
 use std::any::{Any, TypeId};
 use std::collections::{HashMap, HashSet};
 use std::collections::hash_set::Iter;
-use std::error;
 use std::error::Error;
 use std::fmt::{Display, Formatter};
 
@@ -15,7 +14,7 @@ type ComponentStore = HashMap<Entity, Box<dyn BaseComponent>>;
 type ComponentHash = TypeId;
 type ComponentsMap = HashMap<ComponentHash, ComponentStore>;
 
-type Result<T> = std::result::Result<T, Box<dyn error::Error>>;
+type Result<T> = std::result::Result<T, Box<dyn Error>>;
 
 #[derive(Debug, Clone)]
 struct EntityNotFound(Entity);
@@ -26,7 +25,7 @@ impl Display for EntityNotFound {
     }
 }
 
-impl error::Error for EntityNotFound {}
+impl Error for EntityNotFound {}
 
 pub struct Registry {
     last_entity_id: Entity,

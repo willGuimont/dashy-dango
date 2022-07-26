@@ -55,9 +55,9 @@ fn update() {
 
     for i in 0..10 {
         let e = registry.new_entity();
-        registry.add_component(e, PositionComponent { x: i, y: i });
+        registry.add_component(e, PositionComponent { x: i, y: i }).unwrap();
         if i % 2 == 0 {
-            registry.add_component(e, HealthComponent { hp: i });
+            registry.add_component(e, HealthComponent { hp: i }).unwrap();
         }
     }
 
