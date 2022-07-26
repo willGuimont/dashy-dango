@@ -1,4 +1,6 @@
-extern crate proc_macro;
+use std::any::Any;
+
+use ecs_macro::Component;
 
 use wasm4::*;
 
@@ -32,27 +34,37 @@ static mut PLAYER_X: f32 = 76.0;
 static mut PLAYER_Y: f32 = 76.0;
 const CENTER: (f32, f32) = (76.0, 76.0);
 
+#[derive(Component, Debug)]
 struct PositionComponent {
     x: i16,
     y: i16,
 }
 
-impl BaseComponent for PositionComponent {}
-
+#[derive(Component, Debug)]
 struct HealthComponent {
     hp: i16,
 }
 
-impl BaseComponent for HealthComponent {}
+#[derive(Component, Debug)]
+struct SpeedComponent {
+    speed: i16,
+}
 
 #[no_mangle]
 fn update() {
-    unsafe {
-        let mut registry = Registry::new();
-        let pos = PositionComponent { x: 1, y: 0 };
-        let health = HealthComponent { hp: 10 };
-        registry.add_component(1, pos);
-        registry.add_component(1, health);
+    let mut registry = Registry::new();
+
+    for i in 0..10 {
+        let e = registry.new_entity();
+        registry.add_component(e, PositionComponent { x: i, y: i }).unwrap();
+        if i % 2 == 0 {
+            registry.add_component(e, HealthComponent { hp: i }).unwrap();
+        }
+    }
+
+    trace("Listing entities with components");
+    for (pos, health) in entities_with_components!(registry, PositionComponent, HealthComponent) {
+        trace(format!("{:?}, {:?}", pos, health));
     }
 
     unsafe { *DRAW_COLORS = 2 }
