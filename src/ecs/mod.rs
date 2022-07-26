@@ -1,6 +1,9 @@
 use std::any::{Any, TypeId};
 use std::collections::{HashMap, HashSet};
 use std::collections::hash_set::Iter;
+use std::error;
+use std::error::Error;
+use std::fmt::{Display, Formatter};
 
 pub trait BaseComponent {
     fn as_any(&self) -> &dyn Any;
@@ -11,6 +14,19 @@ pub type Entity = u16;
 type ComponentStore = HashMap<Entity, Box<dyn BaseComponent>>;
 type ComponentHash = TypeId;
 type ComponentsMap = HashMap<ComponentHash, ComponentStore>;
+
+type Result<T> = std::result::Result<T, Box<dyn error::Error>>;
+
+#[derive(Debug, Clone)]
+struct EntityNotFound(Entity);
+
+impl Display for EntityNotFound {
+    fn fmt(&self, f: &mut Formatter<'_>) -> std::fmt::Result {
+        write!(f, "entity {} not found", self.0)
+    }
+}
+
+impl error::Error for EntityNotFound {}
 
 pub struct Registry {
     last_entity_id: Entity,
@@ -61,17 +77,17 @@ impl Registry {
         to_delete.iter().for_each(|e| self.destroy_entity(e.clone()));
     }
 
-    // TODO error on adding component to non-valid entity?
-    pub fn add_component<T: BaseComponent + 'static>(&mut self, entity: Entity, component: T) {
+    pub fn add_component<T: BaseComponent + 'static>(&mut self, entity: Entity, component: T) -> Result<()> {
         let type_id = TypeId::of::<T>();
         if !self.components.contains_key(&type_id) {
             self.components.insert(type_id, ComponentStore::new());
         }
         self.components.get_mut(&type_id)
-            .map(|c| c.insert(entity, Box::new(component)));
+            .map(|c| c.insert(entity, Box::new(component)))
+            .ok_or(EntityNotFound(entity).into())
+            .map(|_| ())
     }
 
-    // TODO error on removing component to non-valid entity?
     pub fn remove_component<T: BaseComponent + 'static>(&mut self, entity: Entity) {
         let type_id = TypeId::of::<T>();
         self.components.get_mut(&type_id)
