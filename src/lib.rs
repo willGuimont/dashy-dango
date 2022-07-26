@@ -1,9 +1,11 @@
 use std::any::Any;
+
+use ecs_macro::Component;
+
 use wasm4::*;
 
 use crate::ecs::{BaseComponent, Registry};
 use crate::utils::keyboard_utils;
-use ecs_macro::Component;
 
 #[cfg(feature = "buddy-alloc")]
 mod alloc;
@@ -42,18 +44,27 @@ struct HealthComponent {
     hp: i16,
 }
 
+#[derive(Component, Debug)]
+struct SpeedComponent {
+    speed: i16,
+}
+
 #[no_mangle]
 fn update() {
     let mut registry = Registry::new();
-    let pos = PositionComponent { x: 1, y: 0 };
-    let health = HealthComponent { hp: 10 };
-    let e = registry.new_entity();
 
-    registry.add_component(e, pos);
-    registry.add_component(e, health);
+    for i in 0..10 {
+        let e = registry.new_entity();
+        registry.add_component(e, PositionComponent { x: i, y: i });
+        if i % 2 == 0 {
+            registry.add_component(e, HealthComponent { hp: i });
+        }
+    }
 
-    let p = registry.get_component::<PositionComponent>(e);
-    trace(format!("{:?}", p));
+    trace("Listing entities with components");
+    for (pos, health) in entities_with_components!(registry, PositionComponent, HealthComponent) {
+        trace(format!("{:?}, {:?}", pos, health));
+    }
 
     unsafe { *DRAW_COLORS = 2 }
     let hello = camera_conversion(10.0, 10.0);

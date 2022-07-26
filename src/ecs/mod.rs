@@ -78,6 +78,7 @@ impl Registry {
             .map(|c| c.remove(&entity));
     }
 
+    // TODO handle is valid
     pub fn has_component<T: BaseComponent + 'static>(&self, entity: Entity) -> bool {
         let type_id = TypeId::of::<T>();
         self.components.get(&type_id).map(|cs| cs.contains_key(&entity)).unwrap_or_default()
@@ -85,15 +86,65 @@ impl Registry {
 
     pub fn get_component<T: BaseComponent + 'static>(&self, entity: Entity) -> Option<&T> {
         let type_id = TypeId::of::<T>();
-        if !self.components.contains_key(&type_id) {
-            return None;
-        } else if !self.is_valid(entity) {
-            return None;
-        } else if !self.has_component::<T>(entity) {
+        if !self.has_component::<T>(entity) {
             return None;
         }
-        let cs = self.components.get(&type_id).unwrap();
-        let c  = cs.get(&entity).unwrap();
-        c.as_any().downcast_ref::<T>()
+        self.components
+            .get(&type_id)
+            .unwrap()
+            .get(&entity)
+            .unwrap()
+            .as_any()
+            .downcast_ref::<T>()
     }
+}
+
+#[macro_export]
+macro_rules! has_all_components {
+    ($self:expr, $entity:expr) => (true);
+    ($self:expr, $entity:expr, $($component:path),*) => ({
+        let result = true;
+        $(
+            let result = result && $self.has_component::<$component>($entity);
+        )*
+        result
+    });
+}
+
+#[macro_export]
+macro_rules! get_components {
+    ($self:expr, $entity:expr) => (());
+    ($self:expr, $entity:expr, $($component:path),*) => (
+        (
+            $($self.get_component::<$component>($entity),)*
+        )
+    );
+}
+
+#[macro_export]
+macro_rules! get_components_unwrap {
+    ($self:expr, $entity:expr) => (());
+    ($self:expr, $entity:expr, $($component:path),*) => (
+        (
+            $($self.get_component::<$component>($entity).unwrap(),)*
+        )
+    );
+}
+
+#[macro_export]
+macro_rules! entities_with {
+    ($self:expr, $($component:path),*) => ({
+        ($self.all_entities().filter(|e| has_all_components!($self, **e, $($component),*)))
+    })
+}
+
+#[macro_export]
+macro_rules! entities_with_components {
+    ($self:expr) => (());
+    ($self:expr, $($component:path),*) => ({
+        entities_with!($self, $($component),*)
+            .map(|e| {
+                get_components_unwrap!($self, *e, $($component),*)
+            })
+    });
 }
