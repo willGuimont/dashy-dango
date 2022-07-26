@@ -1,7 +1,9 @@
 use std::cmp::{max, min};
 use std::collections::LinkedList;
 use std::f32::NEG_INFINITY;
+use std::ops::Deref;
 use crate::math_utils::Vec2;
+use crate::trace;
 
 // TODO rect-rect intersection, and other various intersection algorithms
 #[derive(Copy, Clone)]
@@ -13,9 +15,7 @@ pub struct Point {
 impl Point {
     pub fn new(x:f32,y:f32)-> Self{Point{x,y}}
 
-    pub fn to_vector(self, other:Self) -> Vec2{
-        Vec2::new(self.x-other.x, self.y-other.y)
-    }
+    pub fn to_vector(self, other:Self) -> Vec2{ Vec2::new(other.x - self.x, other.y-self.y) }
 }
 
 pub struct Quadrilateral {
@@ -31,12 +31,12 @@ impl Quadrilateral {
 
     fn verify_projection(&self, other: &Quadrilateral) ->bool{
         for i in 0..1 {
-            let slice = &other.points[i..i + 1];
+            let slice = &other.points[i..i + 2];
             let vec_b = slice[0].to_vector(slice[1]);
             let mut smallest = f32::INFINITY;
             let mut greatest = f32::NEG_INFINITY;
             for point in self.points.iter().enumerate() {
-                let vec_a = point.1.to_vector(slice[0]);
+                let vec_a = slice[0].to_vector(*point.1);
                 let projection = vec_a.scalar_proj(vec_b);
                 smallest = smallest.min(projection);
                 greatest = greatest.max(projection);

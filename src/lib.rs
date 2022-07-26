@@ -78,7 +78,7 @@ fn update() {
     let press = camera_conversion(16.0, 90.0);
     text("Press X to dash", press.0, press.1);
 
-    //test_inter();
+    test_inter();
 }
 
 fn camera_conversion(x: f32, y: f32) -> (i32, i32) {
@@ -87,8 +87,12 @@ fn camera_conversion(x: f32, y: f32) -> (i32, i32) {
 
 fn test_inter(){
     let quad = Quadrilateral::new([Point::new(0.0,0.0),Point::new(1.0,0.0),Point::new(1.0,1.0),Point::new(0.0,1.0)]);
-    let quad2 = Quadrilateral::new([Point::new(0.0,0.0),Point::new(2.0,0.0),Point::new(2.0,2.0),Point::new(0.0,2.0)]);
+    let quad2 = Quadrilateral::new([Point::new(-1.0,-1.0),Point::new(0.5,-1.0),Point::new(0.5,1.5),Point::new(-1.0,1.5)]);
     if quad.rect_inter(quad2){
-        trace("true");
+         trace("true");
     }
+    else {
+         trace("false");
+    }
+
 }
