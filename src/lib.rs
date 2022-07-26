@@ -78,7 +78,7 @@ fn update() {
     let press = camera_conversion(16.0, 90.0);
     text("Press X to dash", press.0, press.1);
 
-    test_inter();
+    //test_inter();
 }
 
 fn camera_conversion(x: f32, y: f32) -> (i32, i32) {
