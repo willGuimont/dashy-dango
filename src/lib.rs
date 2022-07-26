@@ -4,6 +4,7 @@ use ecs_macro::Component;
 
 use wasm4::*;
 
+use crate::abort::{Abort, unwrap_abort_result};
 use crate::ecs::{BaseComponent, Registry};
 use crate::utils::keyboard_utils;
 
@@ -16,6 +17,7 @@ mod game;
 mod utils;
 mod events;
 mod assets;
+mod abort;
 
 #[rustfmt::skip]
 const SMILEY: [u8; 8] = [
@@ -55,15 +57,14 @@ fn update() {
 
     for i in 0..10 {
         let e = registry.new_entity();
-        registry.add_component(e, PositionComponent { x: i, y: i }).unwrap();
+        registry.add_component(e, PositionComponent { x: i, y: i }).abort();
         if i % 2 == 0 {
-            registry.add_component(e, HealthComponent { hp: i }).unwrap();
+            registry.add_component(e, HealthComponent { hp: i }).abort();
         }
     }
 
-    trace("Listing entities with components");
     for (pos, health) in entities_with_components!(registry, PositionComponent, HealthComponent) {
-        trace(format!("{:?}, {:?}", pos, health));
+        // TODO remove this
     }
 
     unsafe { *DRAW_COLORS = 2 }

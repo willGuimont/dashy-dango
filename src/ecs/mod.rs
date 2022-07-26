@@ -3,6 +3,7 @@ use std::collections::{HashMap, HashSet};
 use std::collections::hash_set::Iter;
 use std::error::Error;
 use std::fmt::{Display, Formatter};
+use crate::abort::Abort;
 
 pub trait BaseComponent {
     fn as_any(&self) -> &dyn Any;
@@ -109,9 +110,9 @@ impl Registry {
         }
         self.components
             .get(&type_id)
-            .unwrap()
+            .abort()
             .get(&entity)
-            .unwrap()
+            .abort()
             .as_any()
             .downcast_ref::<T>()
     }
@@ -144,7 +145,7 @@ macro_rules! get_components_unwrap {
     ($self:expr, $entity:expr) => (());
     ($self:expr, $entity:expr, $($component:path),*) => (
         (
-            $($self.get_component::<$component>($entity).unwrap(),)*
+            $($self.get_component::<$component>($entity).abort(),)*
         )
     );
 }
