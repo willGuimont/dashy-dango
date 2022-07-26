@@ -78,10 +78,15 @@ impl Registry {
             .map(|c| c.remove(&entity));
     }
 
-    // TODO handle is valid
     pub fn has_component<T: BaseComponent + 'static>(&self, entity: Entity) -> bool {
         let type_id = TypeId::of::<T>();
-        self.components.get(&type_id).map(|cs| cs.contains_key(&entity)).unwrap_or_default()
+        if !self.is_valid(entity) {
+            return false;
+        }
+        self.components
+            .get(&type_id)
+            .map(|cs| cs.contains_key(&entity))
+            .unwrap_or_default()
     }
 
     pub fn get_component<T: BaseComponent + 'static>(&self, entity: Entity) -> Option<&T> {
