@@ -5,7 +5,7 @@ use ecs_macro::Component;
 use wasm4::*;
 
 use crate::abort::Abort;
-use crate::ecs::{BaseComponent, Registry};
+use crate::ecs::{BaseComponent, Entity, Registry};
 use crate::events::{Subscriber, Topic};
 use crate::utils::keyboard_utils;
 
@@ -36,18 +36,18 @@ static mut PLAYER_X: f32 = 76.0;
 static mut PLAYER_Y: f32 = 76.0;
 const CENTER: (f32, f32) = (76.0, 76.0);
 
-#[derive(Component)]
+#[derive(Component, Clone)]
 struct PositionComponent {
     x: i16,
     y: i16,
 }
 
-#[derive(Component)]
+#[derive(Component, Clone)]
 struct HealthComponent {
     hp: i16,
 }
 
-#[derive(Component)]
+#[derive(Component, Clone)]
 struct SpeedComponent {
     speed: i16,
 }
@@ -56,16 +56,27 @@ struct SpeedComponent {
 fn update() {
     let mut registry = Registry::new();
 
-    for i in 0..10 {
-        let e = registry.new_entity();
-        registry.add_component(e, PositionComponent { x: i, y: i }).abort();
-        if i % 2 == 0 {
-            registry.add_component(e, HealthComponent { hp: i }).abort();
-        }
+    let e = registry.new_entity();
+    registry.add_component(e, PositionComponent { x: 0, y: 0 }).abort();
+    registry.add_component(e, HealthComponent { hp: 1 }).abort();
+
+    trace("----------");
+    for (_, (pos, health)) in entities_with_components!(registry, PositionComponent, HealthComponent) {
+        trace(format!("Initial pos: {}", pos.x));
+        trace(format!("Initial health: {}", health.hp));
     }
 
-    for (e, (pos, health)) in entities_with_components!(registry, PositionComponent, HealthComponent) {
-        // TODO remove this
+    // mut
+    for e in entities_with!(registry, PositionComponent, HealthComponent) {
+        let (mut pos, mut health) = get_components_clone_unwrap!(registry, e, PositionComponent, HealthComponent);
+        pos.x += 1;
+        health.hp = 100;
+        add_components!(&mut registry, e, pos, health);
+    }
+
+    for (_, (pos, health)) in entities_with_components!(registry, PositionComponent, HealthComponent) {
+        trace(format!("Final pos: {}", pos.x));
+        trace(format!("Final health: {}", health.hp));
     }
 
     let mut topic: Topic<i32> = Topic::new();
