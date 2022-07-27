@@ -2,10 +2,10 @@
 #![feature(once_cell)]
 
 use std::any::Any;
-use std::lazy::Lazy;
 use std::sync::{Arc, Mutex};
 
 use ecs_macro::Component;
+use once_cell::sync::Lazy;
 
 use wasm4::*;
 
