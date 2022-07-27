@@ -11,9 +11,11 @@ use crate::math_utils::*;
 use crate::game::components::position_component::PositionComponent;
 use crate::game::dash_component::DashComponent;
 use crate::game::direction_component::DirectionComponent;
+use crate::game::draw_system::draw_entity;
 use crate::game::gamepad_component::GamepadComponent;
 use crate::game::health_component::HealthComponent;
 use crate::game::move_component::MoveComponent;
+use crate::game::move_system::process_player_movement;
 
 #[cfg(feature = "buddy-alloc")]
 mod alloc;
@@ -36,9 +38,6 @@ const SMILEY: [u8; 8] = [
     0b10011001,
     0b11000011,
 ];
-
-static mut PLAYER_X: f32 = 76.0;
-static mut PLAYER_Y: f32 = 76.0;
 const PLAYER_BASE_SPEED: i16 = 2;
 const PLAYER_BASE_DASH: i16 = 5;
 
@@ -60,45 +59,14 @@ fn update() {
     }
 
     unsafe { *DRAW_COLORS = 2 }
-    let hello = camera_conversion(10.0, 10.0);
-    text("Hello from Rust!", hello.0, hello.1);
 
     let gamepad = unsafe { *GAMEPAD1 };
     create_player(&mut registry, gamepad);
-
-    let direction = keyboard_utils::gamepad_to_vec(gamepad);
-    unsafe {
-        PLAYER_X += direction.x;
-        PLAYER_Y += direction.y;
-    }
-
-    unsafe {
-        let me = camera_conversion(PLAYER_X, PLAYER_Y);
-        blit(&SMILEY, me.0, me.1, 8, 8, BLIT_1BPP);
-    }
-
-    unsafe { *DRAW_COLORS = 4 }
-    let other = camera_conversion(80.0, 80.0);
-    blit(&SMILEY, other.0, other.1, 8, 8, BLIT_1BPP);
-
-    let press = camera_conversion(16.0, 90.0);
-    text("Press X to dash", press.0, press.1);
-
-    //test_inter();
-}
-
-
-fn test_inter(){
-    let quad = Quadrilateral::new([Point::new(0.0,0.0),Point::new(1.0,0.0),Point::new(1.0,1.0),Point::new(0.0,1.0)]);
-    let quad2 = Quadrilateral::new([Point::new(-1.0,-1.0),Point::new(0.5,-1.0),Point::new(0.5,1.5),Point::new(-1.0,1.5)]);
-    if quad.rect_inter(quad2){
-         trace("true");
-    }
-    else {
-         trace("false");
-    }
+    process_player_movement(&registry);
+    draw_entity(&registry);
 
 }
+
 
 fn create_player(registry: &mut Registry, gamepad:u8){
     let player = registry.new_entity();

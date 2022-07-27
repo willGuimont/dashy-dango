@@ -5,13 +5,13 @@ use crate::keyboard_utils::gamepad_to_vec;
 use crate::utils::is_dashing;
 
 
-pub fn process_player_movement(registry:Registry){
+pub fn process_player_movement(registry:&Registry){
     for (gamepad, dash, moveC ,pos) in  entities_with_components!(registry, GamepadComponent, DashComponent, MoveComponent, PositionComponent) {
         let direction = gamepad_to_vec(gamepad.gamepad);
         if is_dashing(gamepad.gamepad) && dash.timeout == 0{
             //Process dash
         }else{
-            move_player(direction, moveC, pos);
+            //move_player(direction, moveC, pos);
         }
 
     }
