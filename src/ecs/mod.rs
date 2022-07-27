@@ -164,7 +164,7 @@ macro_rules! entities_with_components {
     ($self:expr, $($component:path),*) => ({
         entities_with!($self, $($component),*)
             .map(|e| {
-                get_components_unwrap!($self, *e, $($component),*)
+                (e, get_components_unwrap!($self, *e, $($component),*))
             })
     });
 }

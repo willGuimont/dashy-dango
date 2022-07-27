@@ -64,7 +64,7 @@ fn update() {
         }
     }
 
-    for (pos, health) in entities_with_components!(registry, PositionComponent, HealthComponent) {
+    for (e, (pos, health)) in entities_with_components!(registry, PositionComponent, HealthComponent) {
         // TODO remove this
     }
 
