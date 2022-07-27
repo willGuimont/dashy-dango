@@ -4,8 +4,10 @@ use ecs_macro::Component;
 
 use wasm4::*;
 
+use crate::abort::Abort;
 use crate::ecs::{BaseComponent, Registry};
 use crate::game::camera_component::CameraComponent;
+use crate::events::{Subscriber, Topic};
 use crate::utils::keyboard_utils;
 use crate::math_utils::*;
 use crate::game::components::position_component::PositionComponent;
@@ -26,6 +28,7 @@ mod game;
 mod utils;
 mod events;
 mod assets;
+mod abort;
 
 #[rustfmt::skip]
 const SMILEY: [u8; 8] = [
@@ -48,21 +51,31 @@ fn update() {
     for i in 0..10 {
         let e = registry.new_entity();
         registry.add_component(e, PositionComponent { x: i as f32, y: i as f32 }).unwrap();
+
         if i % 2 == 0 {
-            registry.add_component(e, HealthComponent { hp: i }).unwrap();
+            registry.add_component(e, HealthComponent { hp: i }).abort();
         }
     }
 
-    trace("Listing entities with components");
-    for (pos, health) in entities_with_components!(registry, PositionComponent, HealthComponent) {
-        trace(format!("{:?}, {:?}", pos, health));
+    for (e, (pos, health)) in entities_with_components!(registry, PositionComponent, HealthComponent) {
+        // TODO remove this
     }
+
+    let mut topic: Topic<i32> = Topic::new();
+    let mut sub_1 = Subscriber::new();
+    let mut sub_2 = Subscriber::new();
+    sub_1.follow(&mut topic);
+    sub_2.follow(&mut topic);
+
+    topic.send_message(123);
+    topic.send_message(456);
+    sub_1.pop_message().abort();
 
     unsafe { *DRAW_COLORS = 2 }
 
     let gamepad = unsafe { *GAMEPAD1 };
     create_player(&mut registry, gamepad);
-    process_player_movement(&registry);
+    process_player_movement(&mut registry);
     draw_entity(&registry);
 
 }

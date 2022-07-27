@@ -18,10 +18,10 @@ const SMILEY: [u8; 8] = [
 ];
 
 pub fn draw_entity(registry:&Registry){
-    for (cam, camPos) in entities_with_components!(registry,CameraComponent, PositionComponent){
-        for (pos) in entities_with_components!(registry, PositionComponent){
-            let newPos = camera_conversion(pos, camPos);
-            blit(&SMILEY, newPos.x, newPos.y, 8, 8, BLIT_1BPP);
+    for (e,(cam, camPos)) in entities_with_components!(registry,CameraComponent, PositionComponent){
+        for (e,(pos,)) in entities_with_components!(registry, PositionComponent){
+            let new_pos = camera_conversion(pos, camPos);
+            blit(&SMILEY, new_pos.0, new_pos.1, 8, 8, BLIT_1BPP);
         }
     }
 }
