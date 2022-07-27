@@ -72,12 +72,7 @@ fn start() {
 fn update() {
     let mut registry = unsafe { REG.lock().abort() };
 
-
-    trace("----------");
-    for (_, (pos, health)) in entities_with_components!(registry, PositionComponent, HealthComponent) {
-        trace(format!("Initial pos: {}", pos.x));
-        trace(format!("Initial health: {}", health.hp));
-    }
+    for (_, (pos, health)) in entities_with_components!(registry, PositionComponent, HealthComponent) {}
 
     // mut
     for e in entities_with!(registry, PositionComponent, HealthComponent) {
@@ -87,10 +82,7 @@ fn update() {
         add_components!(&mut registry, e, pos, health);
     }
 
-    for (_, (pos, health)) in entities_with_components!(registry, PositionComponent, HealthComponent) {
-        trace(format!("Final pos: {}", pos.x));
-        trace(format!("Final health: {}", health.hp));
-    }
+    for (_, (pos, health)) in entities_with_components!(registry, PositionComponent, HealthComponent) {}
 
     let mut topic: Topic<i32> = Topic::new();
     let mut sub_1 = Subscriber::new();
@@ -104,7 +96,8 @@ fn update() {
 
     unsafe { *DRAW_COLORS = 2 }
     let hello = camera_conversion(10.0, 10.0);
-    text("Hello from Rust!", hello.0, hello.1);
+    let score = 10;
+    text(format!("Hello from Rust! {}", score), hello.0, hello.1);
 
     let gamepad = unsafe { *GAMEPAD1 };
     let direction = keyboard_utils::gamepad_to_vec(gamepad);
