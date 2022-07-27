@@ -6,6 +6,7 @@ use wasm4::*;
 
 use crate::abort::{Abort, unwrap_abort_result};
 use crate::ecs::{BaseComponent, Registry};
+use crate::events::{Subscriber, Topic};
 use crate::utils::keyboard_utils;
 
 #[cfg(feature = "buddy-alloc")]
@@ -66,6 +67,15 @@ fn update() {
     for (pos, health) in entities_with_components!(registry, PositionComponent, HealthComponent) {
         // TODO remove this
     }
+
+    let mut topic: Topic<i32> = Topic::new();
+    let mut sub_1 = Subscriber::new();
+    let mut sub_2 = Subscriber::new();
+    sub_1.follow(&mut topic);
+    sub_2.follow(&mut topic);
+
+    topic.send_message(123);
+    topic.send_message(456);
 
     unsafe { *DRAW_COLORS = 2 }
     let hello = camera_conversion(10.0, 10.0);
