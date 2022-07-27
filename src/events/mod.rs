@@ -3,6 +3,7 @@ use std::sync::mpsc::{Receiver, Sender};
 
 use crate::Abort;
 
+// TODO reimplement without mpsc
 pub struct Subscriber<T: Clone> {
     queue: Receiver<T>,
     sender: Sender<T>,
