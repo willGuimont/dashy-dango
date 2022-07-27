@@ -119,17 +119,7 @@ impl Registry {
     }
 
     pub fn get_component_clone<T: BaseComponent + 'static + Clone>(&self, entity: Entity) -> Option<T> {
-        let type_id = TypeId::of::<T>();
-        if !self.has_component::<T>(entity) {
-            return None;
-        }
-        self.components
-            .get(&type_id)
-            .abort()
-            .get(&entity)
-            .abort()
-            .as_any()
-            .downcast_ref::<T>()
+        self.get_component::<T>(entity)
             .cloned()
     }
 }
