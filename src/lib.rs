@@ -3,7 +3,6 @@
 
 use std::any::Any;
 use std::lazy::Lazy;
-use std::mem::transmute;
 use std::sync::{Arc, Mutex};
 
 use ecs_macro::Component;
@@ -79,7 +78,7 @@ fn update() {
         let (mut pos, mut health) = get_components_clone_unwrap!(registry, e, PositionComponent, HealthComponent);
         pos.x += 1;
         health.hp = 100;
-        add_components!(&mut registry, e, pos, health);
+        add_components!(registry, e, pos, health);
     }
 
     for (_, (pos, health)) in entities_with_components!(registry, PositionComponent, HealthComponent) {}
