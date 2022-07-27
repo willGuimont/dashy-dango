@@ -5,7 +5,7 @@ use ecs_macro::Component;
 use wasm4::*;
 
 use crate::abort::Abort;
-use crate::ecs::{BaseComponent, Registry};
+use crate::ecs::{BaseComponent, Entity, Registry};
 use crate::events::{Subscriber, Topic};
 use crate::utils::keyboard_utils;
 
@@ -56,16 +56,24 @@ struct SpeedComponent {
 fn update() {
     let mut registry = Registry::new();
 
-    for i in 0..10 {
-        let e = registry.new_entity();
-        registry.add_component(e, PositionComponent { x: i, y: i }).abort();
-        if i % 2 == 0 {
-            registry.add_component(e, HealthComponent { hp: i }).abort();
-        }
+    let e = registry.new_entity();
+    registry.add_component(e, PositionComponent { x: 0, y: 0 }).abort();
+    registry.add_component(e, HealthComponent { hp: 1 }).abort();
+
+    trace("A");
+    for (e, (pos, )) in entities_with_components!(registry, PositionComponent) {
+        trace(format!("{}", pos.x));
     }
 
-    for (e, (pos, health)) in entities_with_components!(registry, PositionComponent, HealthComponent) {
-        // TODO remove this
+    // mut
+    for e in entities_with!(registry, PositionComponent, HealthComponent) {
+        let (pos,) = get_components_mut_unwrap!(&mut registry, e, PositionComponent);
+        pos.x += 1;
+    }
+
+    trace("B");
+    for (e, (pos, )) in entities_with_components!(registry, PositionComponent) {
+        trace(format!("{}", pos.x));
     }
 
     let mut topic: Topic<i32> = Topic::new();

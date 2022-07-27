@@ -1,6 +1,5 @@
 use std::collections::LinkedList;
 use std::sync::{Arc, Mutex};
-use std::sync::mpsc::{Receiver, Sender};
 
 use crate::Abort;
 

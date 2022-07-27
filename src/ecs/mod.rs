@@ -117,6 +117,20 @@ impl Registry {
             .as_any()
             .downcast_ref::<T>()
     }
+
+    pub fn get_component_mut<T: BaseComponent + 'static>(&mut self, entity: Entity) -> Option<&mut T> {
+        let type_id = TypeId::of::<T>();
+        if !self.has_component::<T>(entity) {
+            return None;
+        }
+        self.components
+            .get_mut(&type_id)
+            .abort()
+            .get_mut(&entity)
+            .abort()
+            .as_any_mut()
+            .downcast_mut::<T>()
+    }
 }
 
 #[macro_export]
@@ -142,6 +156,16 @@ macro_rules! get_components {
 }
 
 #[macro_export]
+macro_rules! get_components_mut {
+    ($self:expr, $entity:expr) => (());
+    ($self:expr, $entity:expr, $($component:path),*) => (
+        (
+            $($self.get_component_mut::<$component>($entity),)*
+        )
+    );
+}
+
+#[macro_export]
 macro_rules! get_components_unwrap {
     ($self:expr, $entity:expr) => (());
     ($self:expr, $entity:expr, $($component:path),*) => (
@@ -152,9 +176,20 @@ macro_rules! get_components_unwrap {
 }
 
 #[macro_export]
+macro_rules! get_components_mut_unwrap {
+    ($self:expr, $entity:expr) => (());
+    ($self:expr, $entity:expr, $($component:path),*) => (
+        (
+            $($self.get_component_mut::<$component>($entity).abort(),)*
+        )
+    );
+}
+
+#[macro_export]
 macro_rules! entities_with {
     ($self:expr, $($component:path),*) => ({
-        ($self.all_entities().filter(|e| has_all_components!($self, **e, $($component),*)))
+        let entities: Vec<Entity> = ($self.all_entities().filter(|e| has_all_components!($self, **e, $($component),*)).cloned().collect());
+        entities
     })
 }
 
@@ -163,6 +198,7 @@ macro_rules! entities_with_components {
     ($self:expr) => (());
     ($self:expr, $($component:path),*) => ({
         entities_with!($self, $($component),*)
+            .iter()
             .map(|e| {
                 (e, get_components_unwrap!($self, *e, $($component),*))
             })
