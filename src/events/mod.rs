@@ -1,4 +1,3 @@
-use std::collections::LinkedList;
 use std::sync::mpsc;
 use std::sync::mpsc::{Receiver, Sender};
 
