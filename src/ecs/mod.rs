@@ -117,11 +117,6 @@ impl Registry {
             .as_any()
             .downcast_ref::<T>()
     }
-
-    pub fn get_component_clone<T: BaseComponent + 'static + Clone>(&self, entity: Entity) -> Option<T> {
-        self.get_component::<T>(entity)
-            .cloned()
-    }
 }
 
 #[macro_export]
@@ -151,7 +146,7 @@ macro_rules! get_components_clone {
     ($self:expr, $entity:expr) => (());
     ($self:expr, $entity:expr, $($component:path),*) => (
         (
-            $($self.get_component_clone::<$component>($entity),)*
+            $($self.get_component::<$component>($entity).cloned(),)*
         )
     );
 }
@@ -171,7 +166,7 @@ macro_rules! get_components_clone_unwrap {
     ($self:expr, $entity:expr) => (());
     ($self:expr, $entity:expr, $($component:path),*) => (
         (
-            $($self.get_component_clone::<$component>($entity).abort(),)*
+            $($self.get_component::<$component>($entity).cloned().abort(),)*
         )
     );
 }
