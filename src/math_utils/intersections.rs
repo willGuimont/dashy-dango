@@ -1,6 +1,5 @@
 use std::cmp::{max, min};
 use std::collections::LinkedList;
-use std::f32::NEG_INFINITY;
 use std::ops::Deref;
 use crate::math_utils::Vec2;
 use crate::trace;

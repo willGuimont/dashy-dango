@@ -1,6 +1,7 @@
 use ecs_macro::Component;
 use crate::*;
 use crate::{blit, BLIT_1BPP, CameraComponent, entities_with_components,has_all_components,entities_with,get_components_unwrap, PositionComponent, Registry};
+use crate::ecs::Entity;
 
 const SCREEN_CENTER: (f32, f32) = (76.0, 76.0);
 

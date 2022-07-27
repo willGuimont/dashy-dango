@@ -2,7 +2,7 @@ use std::any::Any;
 use crate::BaseComponent;
 use ecs_macro::Component;
 
-#[derive(Component, Debug)]
+#[derive(Component, Debug, Clone)]
 pub struct DashComponent {
     pub dash:i16,
     pub timeout:i16

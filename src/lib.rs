@@ -5,7 +5,7 @@ use ecs_macro::Component;
 use wasm4::*;
 
 use crate::abort::Abort;
-use crate::ecs::{BaseComponent, Registry};
+use crate::ecs::{BaseComponent, Registry, Entity};
 use crate::game::camera_component::CameraComponent;
 use crate::events::{Subscriber, Topic};
 use crate::utils::keyboard_utils;
@@ -41,47 +41,61 @@ const SMILEY: [u8; 8] = [
     0b10011001,
     0b11000011,
 ];
+
 const PLAYER_BASE_SPEED: i16 = 2;
 const PLAYER_BASE_DASH: i16 = 5;
 
+
+
+#[no_mangle]
+fn start() {
+    let mut registry = Registry::new();
+    create_player(&mut registry);
+}
+
 #[no_mangle]
 fn update() {
-    let mut registry = Registry::new();
-
     for i in 0..10 {
         let e = registry.new_entity();
         registry.add_component(e, PositionComponent { x: i as f32, y: i as f32 }).unwrap();
-
-        if i % 2 == 0 {
-            registry.add_component(e, HealthComponent { hp: i }).abort();
+        registry.add_component(e, HealthComponent { hp: i }).abort();
+    }
+        for (_, (pos, health)) in entities_with_components!(registry, PositionComponent, HealthComponent) {
         }
+
+        // mut
+        for e in entities_with!(registry, PositionComponent, HealthComponent) {
+            let (mut pos, mut health) = get_components_clone_unwrap!(registry, e, PositionComponent, HealthComponent);
+            pos.x += 1 as f32;
+            health.hp = 100;
+            add_components!(&mut registry, e, pos, health);
+        }
+
+        for (_, (pos, health)) in entities_with_components!(registry, PositionComponent, HealthComponent) {
+        }
+
+        let mut topic: Topic<i32> = Topic::new();
+        let mut sub_1 = Subscriber::new();
+        let mut sub_2 = Subscriber::new();
+        sub_1.follow(&mut topic);
+        sub_2.follow(&mut topic);
+
+        topic.send_message(123);
+        topic.send_message(456);
+        sub_1.pop_message().abort();
+
+        unsafe { *DRAW_COLORS = 2 }
+
+
+
+        process_player_movement(&mut registry);
+        draw_entity(&registry);
     }
 
-    for (e, (pos, health)) in entities_with_components!(registry, PositionComponent, HealthComponent) {
-        // TODO remove this
-    }
 
-    let mut topic: Topic<i32> = Topic::new();
-    let mut sub_1 = Subscriber::new();
-    let mut sub_2 = Subscriber::new();
-    sub_1.follow(&mut topic);
-    sub_2.follow(&mut topic);
 
-    topic.send_message(123);
-    topic.send_message(456);
-    sub_1.pop_message().abort();
-
-    unsafe { *DRAW_COLORS = 2 }
-
+fn create_player(registry: &mut Registry){
     let gamepad = unsafe { *GAMEPAD1 };
-    create_player(&mut registry, gamepad);
-    process_player_movement(&mut registry);
-    draw_entity(&registry);
-
-}
-
-
-fn create_player(registry: &mut Registry, gamepad:u8){
     let player = registry.new_entity();
     registry.add_component(player, PositionComponent { x: 0.0, y: 0.0 }).unwrap();
     registry.add_component(player, GamepadComponent { gamepad }).unwrap();
