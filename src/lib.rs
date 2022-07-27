@@ -5,8 +5,15 @@ use ecs_macro::Component;
 use wasm4::*;
 
 use crate::ecs::{BaseComponent, Registry};
+use crate::game::camera_component::CameraComponent;
 use crate::utils::keyboard_utils;
 use crate::math_utils::*;
+use crate::game::components::position_component::PositionComponent;
+use crate::game::dash_component::DashComponent;
+use crate::game::direction_component::DirectionComponent;
+use crate::game::gamepad_component::GamepadComponent;
+use crate::game::health_component::HealthComponent;
+use crate::game::move_component::MoveComponent;
 
 #[cfg(feature = "buddy-alloc")]
 mod alloc;
@@ -32,23 +39,8 @@ const SMILEY: [u8; 8] = [
 
 static mut PLAYER_X: f32 = 76.0;
 static mut PLAYER_Y: f32 = 76.0;
-const CENTER: (f32, f32) = (76.0, 76.0);
-
-#[derive(Component, Debug)]
-struct PositionComponent {
-    x: i16,
-    y: i16,
-}
-
-#[derive(Component, Debug)]
-struct HealthComponent {
-    hp: i16,
-}
-
-#[derive(Component, Debug)]
-struct SpeedComponent {
-    speed: i16,
-}
+const PLAYER_BASE_SPEED: i16 = 2;
+const PLAYER_BASE_DASH: i16 = 5;
 
 #[no_mangle]
 fn update() {
@@ -56,7 +48,7 @@ fn update() {
 
     for i in 0..10 {
         let e = registry.new_entity();
-        registry.add_component(e, PositionComponent { x: i, y: i }).unwrap();
+        registry.add_component(e, PositionComponent { x: i as f32, y: i as f32 }).unwrap();
         if i % 2 == 0 {
             registry.add_component(e, HealthComponent { hp: i }).unwrap();
         }
@@ -72,6 +64,8 @@ fn update() {
     text("Hello from Rust!", hello.0, hello.1);
 
     let gamepad = unsafe { *GAMEPAD1 };
+    create_player(&mut registry, gamepad);
+
     let direction = keyboard_utils::gamepad_to_vec(gamepad);
     unsafe {
         PLAYER_X += direction.x;
@@ -93,9 +87,6 @@ fn update() {
     //test_inter();
 }
 
-fn camera_conversion(x: f32, y: f32) -> (i32, i32) {
-    unsafe { ((x - PLAYER_X + CENTER.0) as i32, (y - PLAYER_Y + CENTER.1) as i32) }
-}
 
 fn test_inter(){
     let quad = Quadrilateral::new([Point::new(0.0,0.0),Point::new(1.0,0.0),Point::new(1.0,1.0),Point::new(0.0,1.0)]);
@@ -107,4 +98,14 @@ fn test_inter(){
          trace("false");
     }
 
+}
+
+fn create_player(registry: &mut Registry, gamepad:u8){
+    let player = registry.new_entity();
+    registry.add_component(player, PositionComponent { x: 0.0, y: 0.0 }).unwrap();
+    registry.add_component(player, GamepadComponent { gamepad }).unwrap();
+    registry.add_component(player, MoveComponent {speed: PLAYER_BASE_SPEED}).unwrap();
+    registry.add_component(player, DashComponent {dash: PLAYER_BASE_DASH, timeout: 1 }).unwrap();
+    registry.add_component(player, DirectionComponent {direction: Vec2::new(0.0, 0.0)}).unwrap();
+    registry.add_component(player, CameraComponent {}).unwrap();
 }
