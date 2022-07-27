@@ -1,4 +1,9 @@
+#![feature(box_syntax)]
+#![feature(once_cell)]
+
 use std::any::Any;
+use std::lazy::Lazy;
+use std::sync::{Arc, Mutex};
 
 use ecs_macro::Component;
 
@@ -35,6 +40,7 @@ const SMILEY: [u8; 8] = [
 static mut PLAYER_X: f32 = 76.0;
 static mut PLAYER_Y: f32 = 76.0;
 const CENTER: (f32, f32) = (76.0, 76.0);
+static mut REG: Lazy<Arc<Mutex<Registry>>> = Lazy::new(|| Arc::new(Mutex::new(Registry::new())));
 
 #[derive(Component, Clone)]
 struct PositionComponent {
@@ -53,31 +59,29 @@ struct SpeedComponent {
 }
 
 #[no_mangle]
-fn update() {
-    let mut registry = Registry::new();
+fn start() {
+    let mut registry = unsafe { REG.lock().abort() };
 
     let e = registry.new_entity();
     registry.add_component(e, PositionComponent { x: 0, y: 0 }).abort();
     registry.add_component(e, HealthComponent { hp: 1 }).abort();
+}
 
-    trace("----------");
-    for (_, (pos, health)) in entities_with_components!(registry, PositionComponent, HealthComponent) {
-        trace(format!("Initial pos: {}", pos.x));
-        trace(format!("Initial health: {}", health.hp));
-    }
+#[no_mangle]
+fn update() {
+    let mut registry = unsafe { REG.lock().abort() };
+
+    for (_, (pos, health)) in entities_with_components!(registry, PositionComponent, HealthComponent) {}
 
     // mut
     for e in entities_with!(registry, PositionComponent, HealthComponent) {
         let (mut pos, mut health) = get_components_clone_unwrap!(registry, e, PositionComponent, HealthComponent);
         pos.x += 1;
         health.hp = 100;
-        add_components!(&mut registry, e, pos, health);
+        add_components!(registry, e, pos, health);
     }
 
-    for (_, (pos, health)) in entities_with_components!(registry, PositionComponent, HealthComponent) {
-        trace(format!("Final pos: {}", pos.x));
-        trace(format!("Final health: {}", health.hp));
-    }
+    for (_, (pos, health)) in entities_with_components!(registry, PositionComponent, HealthComponent) {}
 
     let mut topic: Topic<i32> = Topic::new();
     let mut sub_1 = Subscriber::new();
@@ -91,7 +95,8 @@ fn update() {
 
     unsafe { *DRAW_COLORS = 2 }
     let hello = camera_conversion(10.0, 10.0);
-    text("Hello from Rust!", hello.0, hello.1);
+    let score = 10;
+    text(format!("Hello from Rust! {}", score), hello.0, hello.1);
 
     let gamepad = unsafe { *GAMEPAD1 };
     let direction = keyboard_utils::gamepad_to_vec(gamepad);
