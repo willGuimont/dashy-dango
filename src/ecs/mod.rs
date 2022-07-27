@@ -78,7 +78,7 @@ impl Registry {
         to_delete.iter().for_each(|e| self.destroy_entity(*e));
     }
 
-    pub fn add_component<T: BaseComponent + 'static>(&mut self, entity: Entity, component: T) -> Result<()> {
+    pub fn add_component<T: BaseComponent + 'static + Clone>(&mut self, entity: Entity, component: T) -> Result<()> {
         let type_id = TypeId::of::<T>();
         self.components.entry(type_id).or_insert_with(ComponentStore::new);
         self.components.get_mut(&type_id)
@@ -87,13 +87,13 @@ impl Registry {
             .map(|_| ())
     }
 
-    pub fn remove_component<T: BaseComponent + 'static>(&mut self, entity: Entity) {
+    pub fn remove_component<T: BaseComponent + 'static + Clone>(&mut self, entity: Entity) {
         let type_id = TypeId::of::<T>();
         self.components.get_mut(&type_id)
             .map(|c| c.remove(&entity));
     }
 
-    pub fn has_component<T: BaseComponent + 'static>(&self, entity: Entity) -> bool {
+    pub fn has_component<T: BaseComponent + 'static + Clone>(&self, entity: Entity) -> bool {
         let type_id = TypeId::of::<T>();
         if !self.is_valid(entity) {
             return false;
@@ -104,7 +104,7 @@ impl Registry {
             .unwrap_or_default()
     }
 
-    pub fn get_component<T: BaseComponent + 'static>(&self, entity: Entity) -> Option<&T> {
+    pub fn get_component<T: BaseComponent + 'static + Clone>(&self, entity: Entity) -> Option<&T> {
         let type_id = TypeId::of::<T>();
         if !self.has_component::<T>(entity) {
             return None;
@@ -118,18 +118,19 @@ impl Registry {
             .downcast_ref::<T>()
     }
 
-    pub fn get_component_mut<T: BaseComponent + 'static>(&mut self, entity: Entity) -> Option<&mut T> {
+    pub fn get_component_clone<T: BaseComponent + 'static + Clone>(&self, entity: Entity) -> Option<T> {
         let type_id = TypeId::of::<T>();
         if !self.has_component::<T>(entity) {
             return None;
         }
         self.components
-            .get_mut(&type_id)
+            .get(&type_id)
             .abort()
-            .get_mut(&entity)
+            .get(&entity)
             .abort()
-            .as_any_mut()
-            .downcast_mut::<T>()
+            .as_any()
+            .downcast_ref::<T>()
+            .cloned()
     }
 }
 
@@ -156,11 +157,11 @@ macro_rules! get_components {
 }
 
 #[macro_export]
-macro_rules! get_components_mut {
+macro_rules! get_components_clone {
     ($self:expr, $entity:expr) => (());
     ($self:expr, $entity:expr, $($component:path),*) => (
         (
-            $($self.get_component_mut::<$component>($entity),)*
+            $($self.get_component_clone::<$component>($entity),)*
         )
     );
 }
@@ -176,11 +177,11 @@ macro_rules! get_components_unwrap {
 }
 
 #[macro_export]
-macro_rules! get_components_mut_unwrap {
+macro_rules! get_components_clone_unwrap {
     ($self:expr, $entity:expr) => (());
     ($self:expr, $entity:expr, $($component:path),*) => (
         (
-            $($self.get_component_mut::<$component>($entity).abort(),)*
+            $($self.get_component_clone::<$component>($entity).abort(),)*
         )
     );
 }
@@ -202,5 +203,17 @@ macro_rules! entities_with_components {
             .map(|e| {
                 (e, get_components_unwrap!($self, *e, $($component),*))
             })
+    });
+}
+
+#[macro_export]
+macro_rules! add_components {
+    ($self:expr, $entity:expr) => ();
+    ($self:expr, $entity:expr, $($component:path),*) => ({
+        let result = true;
+        $(
+            $self.add_component($entity, $component).abort();
+        )*
+        result
     });
 }

@@ -36,18 +36,18 @@ static mut PLAYER_X: f32 = 76.0;
 static mut PLAYER_Y: f32 = 76.0;
 const CENTER: (f32, f32) = (76.0, 76.0);
 
-#[derive(Component)]
+#[derive(Component, Clone)]
 struct PositionComponent {
     x: i16,
     y: i16,
 }
 
-#[derive(Component)]
+#[derive(Component, Clone)]
 struct HealthComponent {
     hp: i16,
 }
 
-#[derive(Component)]
+#[derive(Component, Clone)]
 struct SpeedComponent {
     speed: i16,
 }
@@ -60,20 +60,23 @@ fn update() {
     registry.add_component(e, PositionComponent { x: 0, y: 0 }).abort();
     registry.add_component(e, HealthComponent { hp: 1 }).abort();
 
-    trace("A");
-    for (e, (pos, )) in entities_with_components!(registry, PositionComponent) {
-        trace(format!("{}", pos.x));
+    trace("----------");
+    for (_, (pos, health)) in entities_with_components!(registry, PositionComponent, HealthComponent) {
+        trace(format!("Initial pos: {}", pos.x));
+        trace(format!("Initial health: {}", health.hp));
     }
 
     // mut
     for e in entities_with!(registry, PositionComponent, HealthComponent) {
-        let (pos,) = get_components_mut_unwrap!(&mut registry, e, PositionComponent);
+        let (mut pos, mut health) = get_components_clone_unwrap!(registry, e, PositionComponent, HealthComponent);
         pos.x += 1;
+        health.hp = 100;
+        add_components!(&mut registry, e, pos, health);
     }
 
-    trace("B");
-    for (e, (pos, )) in entities_with_components!(registry, PositionComponent) {
-        trace(format!("{}", pos.x));
+    for (_, (pos, health)) in entities_with_components!(registry, PositionComponent, HealthComponent) {
+        trace(format!("Final pos: {}", pos.x));
+        trace(format!("Final health: {}", health.hp));
     }
 
     let mut topic: Topic<i32> = Topic::new();
