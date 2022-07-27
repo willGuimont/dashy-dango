@@ -8,7 +8,7 @@ pub struct Vec2 {
 
 impl Vec2 {
     pub fn new(x: f32, y: f32) -> Self {
-        Vec2 { x, y}
+        Vec2 { x, y }
     }
 
     pub fn dot(self, rhs: Self) -> f32 {
@@ -20,14 +20,14 @@ impl Vec2 {
     }
 
     pub fn normalized(self) -> Self {
-        if self.norm() == 0.0{
+        if self.norm() == 0.0 {
             self
-        }else{
+        } else {
             self / self.norm()
         }
     }
 
-    pub fn scalar_proj(self, rhs:Self) -> f32{
+    pub fn scalar_proj(self, rhs: Self) -> f32 {
         self.dot(rhs) / rhs.norm()
     }
 }

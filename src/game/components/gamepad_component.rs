@@ -1,8 +1,16 @@
 use std::any::Any;
+
 use ecs_macro::Component;
+
 use crate::ecs::BaseComponent;
 
 #[derive(Component, Debug, Clone)]
-pub struct GamepadComponent{
-    pub gamepad: u8,
+pub struct GamepadComponent {
+    pub gamepad: *const u8,
+}
+
+impl GamepadComponent {
+    pub fn get_gamepad(&self) -> u8 {
+        unsafe { *self.gamepad }
+    }
 }
