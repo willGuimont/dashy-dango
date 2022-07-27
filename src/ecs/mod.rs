@@ -78,7 +78,7 @@ impl Registry {
         to_delete.iter().for_each(|e| self.destroy_entity(*e));
     }
 
-    pub fn add_component<T: BaseComponent + 'static>(&mut self, entity: Entity, component: T) -> Result<()> {
+    pub fn add_component<T: BaseComponent + 'static + Clone>(&mut self, entity: Entity, component: T) -> Result<()> {
         let type_id = TypeId::of::<T>();
         self.components.entry(type_id).or_insert_with(ComponentStore::new);
         self.components.get_mut(&type_id)
@@ -87,13 +87,13 @@ impl Registry {
             .map(|_| ())
     }
 
-    pub fn remove_component<T: BaseComponent + 'static>(&mut self, entity: Entity) {
+    pub fn remove_component<T: BaseComponent + 'static + Clone>(&mut self, entity: Entity) {
         let type_id = TypeId::of::<T>();
         self.components.get_mut(&type_id)
             .map(|c| c.remove(&entity));
     }
 
-    pub fn has_component<T: BaseComponent + 'static>(&self, entity: Entity) -> bool {
+    pub fn has_component<T: BaseComponent + 'static + Clone>(&self, entity: Entity) -> bool {
         let type_id = TypeId::of::<T>();
         if !self.is_valid(entity) {
             return false;
@@ -104,7 +104,7 @@ impl Registry {
             .unwrap_or_default()
     }
 
-    pub fn get_component<T: BaseComponent + 'static>(&self, entity: Entity) -> Option<&T> {
+    pub fn get_component<T: BaseComponent + 'static + Clone>(&self, entity: Entity) -> Option<&T> {
         let type_id = TypeId::of::<T>();
         if !self.has_component::<T>(entity) {
             return None;
@@ -142,6 +142,16 @@ macro_rules! get_components {
 }
 
 #[macro_export]
+macro_rules! get_components_clone {
+    ($self:expr, $entity:expr) => (());
+    ($self:expr, $entity:expr, $($component:path),*) => (
+        (
+            $($self.get_component::<$component>($entity).cloned(),)*
+        )
+    );
+}
+
+#[macro_export]
 macro_rules! get_components_unwrap {
     ($self:expr, $entity:expr) => (());
     ($self:expr, $entity:expr, $($component:path),*) => (
@@ -152,9 +162,20 @@ macro_rules! get_components_unwrap {
 }
 
 #[macro_export]
+macro_rules! get_components_clone_unwrap {
+    ($self:expr, $entity:expr) => (());
+    ($self:expr, $entity:expr, $($component:path),*) => (
+        (
+            $($self.get_component::<$component>($entity).cloned().abort(),)*
+        )
+    );
+}
+
+#[macro_export]
 macro_rules! entities_with {
     ($self:expr, $($component:path),*) => ({
-        ($self.all_entities().filter(|e| has_all_components!($self, **e, $($component),*)))
+        let entities: Vec<Entity> = ($self.all_entities().filter(|e| has_all_components!($self, **e, $($component),*)).cloned().collect());
+        entities
     })
 }
 
@@ -163,8 +184,21 @@ macro_rules! entities_with_components {
     ($self:expr) => (());
     ($self:expr, $($component:path),*) => ({
         entities_with!($self, $($component),*)
+            .iter()
             .map(|e| {
                 (e, get_components_unwrap!($self, *e, $($component),*))
             })
+    });
+}
+
+#[macro_export]
+macro_rules! add_components {
+    ($self:expr, $entity:expr) => ();
+    ($self:expr, $entity:expr, $($component:path),*) => ({
+        let result = true;
+        $(
+            $self.add_component($entity, $component).abort();
+        )*
+        result
     });
 }
