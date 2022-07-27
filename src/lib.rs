@@ -85,9 +85,7 @@ fn update() {
         sub_1.pop_message().abort();
 
         unsafe { *DRAW_COLORS = 2 }
-
-
-
+    
         process_player_movement(&mut registry);
         draw_entity(&registry);
     }
