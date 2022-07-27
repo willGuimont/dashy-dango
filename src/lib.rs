@@ -4,8 +4,9 @@ use ecs_macro::Component;
 
 use wasm4::*;
 
-use crate::abort::{Abort, unwrap_abort_result};
+use crate::abort::Abort;
 use crate::ecs::{BaseComponent, Registry};
+use crate::events::{Subscriber, Topic};
 use crate::utils::keyboard_utils;
 
 #[cfg(feature = "buddy-alloc")]
@@ -35,18 +36,18 @@ static mut PLAYER_X: f32 = 76.0;
 static mut PLAYER_Y: f32 = 76.0;
 const CENTER: (f32, f32) = (76.0, 76.0);
 
-#[derive(Component, Debug)]
+#[derive(Component)]
 struct PositionComponent {
     x: i16,
     y: i16,
 }
 
-#[derive(Component, Debug)]
+#[derive(Component)]
 struct HealthComponent {
     hp: i16,
 }
 
-#[derive(Component, Debug)]
+#[derive(Component)]
 struct SpeedComponent {
     speed: i16,
 }
@@ -66,6 +67,16 @@ fn update() {
     for (pos, health) in entities_with_components!(registry, PositionComponent, HealthComponent) {
         // TODO remove this
     }
+
+    let mut topic: Topic<i32> = Topic::new();
+    let mut sub_1 = Subscriber::new();
+    let mut sub_2 = Subscriber::new();
+    sub_1.follow(&mut topic);
+    sub_2.follow(&mut topic);
+
+    topic.send_message(123);
+    topic.send_message(456);
+    sub_1.pop_message().abort();
 
     unsafe { *DRAW_COLORS = 2 }
     let hello = camera_conversion(10.0, 10.0);
