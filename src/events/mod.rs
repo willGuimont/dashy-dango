@@ -1,16 +1,17 @@
-use std::sync::mpsc;
+use std::collections::LinkedList;
+use std::sync::{Arc, Mutex};
 use std::sync::mpsc::{Receiver, Sender};
 
 use crate::Abort;
 
-// TODO reimplement without mpsc
+type Queue<T> = Arc<Mutex<LinkedList<T>>>;
+
 pub struct Subscriber<T: Clone> {
-    queue: Receiver<T>,
-    sender: Sender<T>,
+    queue: Queue<T>,
 }
 
 pub struct Topic<T: Clone> {
-    subscribers: Vec<Sender<T>>,
+    subscribers: Vec<Queue<T>>,
 }
 
 impl<T: Clone> Topic<T> {
@@ -20,22 +21,22 @@ impl<T: Clone> Topic<T> {
 
     pub fn send_message(&self, msg: T) {
         for s in &self.subscribers {
-            s.send(msg.clone()).abort();
+            let mut sub_queue = s.lock().abort();
+            sub_queue.push_back(msg.clone());
         }
     }
 }
 
 impl<T: Clone> Subscriber<T> {
     pub fn new() -> Subscriber<T> {
-        let (tx, rx): (Sender<T>, Receiver<T>) = mpsc::channel();
-        Subscriber { queue: rx, sender: tx }
+        Subscriber { queue: Arc::new(Mutex::new(LinkedList::new())) }
     }
 
     pub fn pop_message(&mut self) -> Option<T> {
-        self.queue.try_recv().ok()
+        self.queue.lock().abort().pop_front()
     }
 
     pub fn follow(&mut self, topic: &mut Topic<T>) {
-        topic.subscribers.push(self.sender.clone())
+        topic.subscribers.push(self.queue.clone());
     }
 }
