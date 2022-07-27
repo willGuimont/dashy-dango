@@ -1,4 +1,10 @@
+#![feature(box_syntax)]
+#![feature(once_cell)]
+
 use std::any::Any;
+use std::lazy::Lazy;
+use std::mem::transmute;
+use std::sync::{Arc, Mutex};
 
 use ecs_macro::Component;
 
@@ -35,6 +41,7 @@ const SMILEY: [u8; 8] = [
 static mut PLAYER_X: f32 = 76.0;
 static mut PLAYER_Y: f32 = 76.0;
 const CENTER: (f32, f32) = (76.0, 76.0);
+static mut REG: Lazy<Arc<Mutex<Registry>>> = Lazy::new(|| Arc::new(Mutex::new(Registry::new())));
 
 #[derive(Component, Clone)]
 struct PositionComponent {
@@ -53,12 +60,18 @@ struct SpeedComponent {
 }
 
 #[no_mangle]
-fn update() {
-    let mut registry = Registry::new();
+fn start() {
+    let mut registry = unsafe { REG.lock().abort() };
 
     let e = registry.new_entity();
     registry.add_component(e, PositionComponent { x: 0, y: 0 }).abort();
     registry.add_component(e, HealthComponent { hp: 1 }).abort();
+}
+
+#[no_mangle]
+fn update() {
+    let mut registry = unsafe { REG.lock().abort() };
+
 
     trace("----------");
     for (_, (pos, health)) in entities_with_components!(registry, PositionComponent, HealthComponent) {
