@@ -1,27 +1,18 @@
 use std::ops;
 
-// FIXME remove z component and adapt cross product
-#[derive(Clone, Copy)]
+#[derive(Clone, Copy, Debug)]
 pub struct Vec2 {
     pub x: f32,
     pub y: f32,
-    pub z: f32,
 }
 
 impl Vec2 {
-    pub fn new(x: f32, y: f32, z: f32) -> Vec2 {
-        Vec2 { x, y, z }
-    }
-
-    pub fn cross(self, rhs: Self) -> Self {
-        // TODO adapt to return a f32
-        Self::new(self.y * rhs.z - self.z * rhs.y,
-                  self.z * rhs.x - self.x * rhs.z,
-                  self.x * rhs.y - self.y * rhs.x)
+    pub fn new(x: f32, y: f32) -> Self {
+        Vec2 { x, y }
     }
 
     pub fn dot(self, rhs: Self) -> f32 {
-        self.x * rhs.x + self.y * rhs.y + self.z * rhs.z
+        self.x * rhs.x + self.y * rhs.y
     }
 
     pub fn norm(self) -> f32 {
@@ -29,7 +20,15 @@ impl Vec2 {
     }
 
     pub fn normalized(self) -> Self {
-        self / self.norm()
+        if self.norm() == 0.0 {
+            self
+        } else {
+            self / self.norm()
+        }
+    }
+
+    pub fn scalar_proj(self, rhs: Self) -> f32 {
+        self.dot(rhs) / rhs.norm()
     }
 }
 
@@ -37,7 +36,7 @@ impl ops::Add<Vec2> for Vec2 {
     type Output = Self;
 
     fn add(self, rhs: Self) -> Self::Output {
-        Self::new(self.x + rhs.x, self.y + rhs.y, self.z + rhs.z)
+        Self::new(self.x + rhs.x, self.y + rhs.y)
     }
 }
 
@@ -62,7 +61,7 @@ impl ops::Add<f32> for Vec2 {
     type Output = Self;
 
     fn add(self, rhs: f32) -> Self::Output {
-        Vec2::new(self.x + rhs, self.y + rhs, self.z + rhs)
+        Vec2::new(self.x + rhs, self.y + rhs)
     }
 }
 
@@ -70,7 +69,7 @@ impl ops::Neg for Vec2 {
     type Output = Self;
 
     fn neg(self) -> Self::Output {
-        Vec2::new(-self.x, -self.y, -self.z)
+        Vec2::new(-self.x, -self.y)
     }
 }
 
@@ -103,7 +102,7 @@ impl ops::Mul<f32> for Vec2 {
     type Output = Self;
 
     fn mul(self, rhs: f32) -> Self::Output {
-        Vec2::new(rhs * self.x, rhs * self.y, rhs * self.z)
+        Vec2::new(rhs * self.x, rhs * self.y)
     }
 }
 
