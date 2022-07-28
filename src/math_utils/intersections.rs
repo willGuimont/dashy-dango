@@ -6,15 +6,10 @@ use crate::math_utils::Vec2;
 use crate::trace;
 
 #[derive(Copy, Clone)]
-pub struct Point {
-    x: f32,
-    y: f32,
-}
+pub struct Point(Vec2);
 
 impl Point {
-    pub fn new(x: f32, y: f32) -> Self { Point { x, y } }
-
-    pub fn to_vector(self, other: Self) -> Vec2 { Vec2::new(other.x - self.x, other.y - self.y) }
+    pub fn to_vector(self, other: Self) -> Vec2 { other.0 - self.0 }
 }
 
 pub struct Quadrilateral {
