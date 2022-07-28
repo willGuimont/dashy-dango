@@ -3,10 +3,11 @@ use ecs_macro::Component;
 use crate::*;
 use crate::{blit, BLIT_1BPP, CameraComponent, entities_with, entities_with_components, get_components_unwrap, has_all_components, PositionComponent, Registry};
 use crate::ecs::Entity;
+use crate::game::system::System;
 
 const SCREEN_CENTER: (f32, f32) = (76.0, 76.0);
 
-//FIXME add spriteComponent
+//TODO add spriteComponent
 #[rustfmt::skip]
 const SMILEY: [u8; 8] = [
     0b11000011,
@@ -18,6 +19,19 @@ const SMILEY: [u8; 8] = [
     0b10011001,
     0b11000011,
 ];
+
+
+pub struct DrawSystem {}
+
+impl System for DrawSystem {
+    fn execute_system(&self, registry: &mut Registry) -> () {
+        draw_entity(registry)
+    }
+}
+
+impl DrawSystem {
+    pub(crate) fn new() -> Self { DrawSystem {} }
+}
 
 pub fn draw_entity(registry: &Registry) {
     for (_, (cam, cam_pos)) in entities_with_components!(registry,CameraComponent, PositionComponent) {

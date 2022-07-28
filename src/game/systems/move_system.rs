@@ -6,6 +6,19 @@ use crate::ecs::Entity;
 use crate::gamepad_utils::gamepad_to_vec;
 use crate::utils::is_dashing;
 
+pub struct MoveSystem {}
+
+impl System for MoveSystem {
+    fn execute_system(&self, registry: &mut Registry) -> () {
+        process_player_movement(registry)
+    }
+}
+
+impl MoveSystem {
+    pub(crate) fn new() -> Self { MoveSystem {} }
+}
+
+
 pub fn process_player_movement(registry: &mut Registry) {
     for (e) in entities_with!(registry, GamepadComponent, DashComponent, MoveComponent, PositionComponent) {
         let (gamepad, dash, move_c, mut pos) = get_components_clone_unwrap!(registry,e,GamepadComponent,DashComponent, MoveComponent,PositionComponent);
