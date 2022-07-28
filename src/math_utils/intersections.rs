@@ -5,7 +5,6 @@ use std::ops::Deref;
 use crate::math_utils::Vec2;
 use crate::trace;
 
-// TODO rect-rect intersection, and other various intersection algorithms
 #[derive(Copy, Clone)]
 pub struct Point {
     x: f32,
@@ -30,7 +29,7 @@ impl Quadrilateral {
     }
 
     fn verify_projection(&self, other: &Quadrilateral) -> bool {
-        for i in 0..1 {
+        for i in 0..2 {
             let slice = &other.points[i..i + 2];
             let vec_b = slice[0].to_vector(slice[1]);
             let mut smallest = f32::INFINITY;

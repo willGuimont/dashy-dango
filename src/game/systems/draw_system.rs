@@ -20,14 +20,14 @@ const SMILEY: [u8; 8] = [
 ];
 
 pub fn draw_entity(registry: &Registry) {
-    for (e, (cam, camPos)) in entities_with_components!(registry,CameraComponent, PositionComponent) {
-        for (e, (pos, )) in entities_with_components!(registry, PositionComponent) {
-            let new_pos = camera_conversion(pos, camPos);
+    for (_, (cam, cam_pos)) in entities_with_components!(registry,CameraComponent, PositionComponent) {
+        for (_, (pos, )) in entities_with_components!(registry, PositionComponent) {
+            let new_pos = camera_conversion(pos, cam_pos);
             blit(&SMILEY, new_pos.0, new_pos.1, 8, 8, BLIT_1BPP);
         }
     }
 }
 
-fn camera_conversion(pos: &PositionComponent, camPos: &PositionComponent) -> (i32, i32) {
-    unsafe { ((pos.x - camPos.x + SCREEN_CENTER.0) as i32, (pos.y - camPos.y + SCREEN_CENTER.1) as i32) }
+fn camera_conversion(pos: &PositionComponent, cam_pos: &PositionComponent) -> (i32, i32) {
+    ((pos.x - cam_pos.x + SCREEN_CENTER.0) as i32, (pos.y - cam_pos.y + SCREEN_CENTER.1) as i32)
 }

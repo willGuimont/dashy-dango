@@ -3,7 +3,7 @@ use ecs_macro::Component;
 use crate::*;
 use crate::{DashComponent, entities_with_components, GamepadComponent, MoveComponent, PositionComponent, Registry, Vec2};
 use crate::ecs::Entity;
-use crate::keyboard_utils::gamepad_to_vec;
+use crate::gamepad_utils::gamepad_to_vec;
 use crate::utils::is_dashing;
 
 pub fn process_player_movement(registry: &mut Registry) {
@@ -19,10 +19,9 @@ pub fn process_player_movement(registry: &mut Registry) {
     }
 }
 
-fn move_player(direction: Vec2, moveC: MoveComponent, mut pos: PositionComponent, registry: &mut Registry, e: Entity) {
-    let movement = direction * moveC.speed as f32;
+fn move_player(direction: Vec2, move_c: MoveComponent, mut pos: PositionComponent, registry: &mut Registry, e: Entity) {
+    let movement = direction * move_c.speed as f32;
     pos.x += movement.x;
     pos.y += movement.y;
     add_components!(registry, e, pos);
 }
-

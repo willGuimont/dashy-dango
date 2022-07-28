@@ -4,7 +4,7 @@ use ecs_macro::Component;
 
 use crate::ecs::BaseComponent;
 
-#[derive(Component, Debug, Clone)]
+#[derive(Component, Clone, Debug)]
 pub struct MoveComponent {
     pub speed: i16,
 }

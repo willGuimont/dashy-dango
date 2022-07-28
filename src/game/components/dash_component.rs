@@ -4,8 +4,9 @@ use ecs_macro::Component;
 
 use crate::BaseComponent;
 
-#[derive(Component, Debug, Clone)]
+#[derive(Component, Clone, Debug)]
 pub struct DashComponent {
     pub dash: i16,
     pub timeout: i16,
 }
+ 
