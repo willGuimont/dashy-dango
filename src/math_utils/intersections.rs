@@ -40,6 +40,6 @@ impl Quadrilateral {
                 return false;
             }
         }
-        return true;
+        true
     }
 }

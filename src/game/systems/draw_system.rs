@@ -3,10 +3,11 @@ use ecs_macro::Component;
 use crate::*;
 use crate::{blit, BLIT_1BPP, CameraComponent, entities_with, entities_with_components, get_components_unwrap, has_all_components, PositionComponent, Registry};
 use crate::ecs::Entity;
+use crate::game::system::System;
 
 const SCREEN_CENTER: (f32, f32) = (76.0, 76.0);
 
-//FIXME add spriteComponent
+//TODO add spriteComponent
 #[rustfmt::skip]
 const SMILEY: [u8; 8] = [
     0b11000011,
@@ -19,13 +20,22 @@ const SMILEY: [u8; 8] = [
     0b11000011,
 ];
 
-pub fn draw_entity(registry: &Registry) {
-    for (_, (cam, cam_pos)) in entities_with_components!(registry,CameraComponent, PositionComponent) {
-        for (_, (pos, )) in entities_with_components!(registry, PositionComponent) {
-            let new_pos = camera_conversion(pos, cam_pos);
-            blit(&SMILEY, new_pos.0, new_pos.1, 8, 8, BLIT_1BPP);
+
+pub struct DrawSystem {}
+
+impl System for DrawSystem {
+    fn execute_system(&self, registry: &mut Registry) -> () {
+        for (_, (cam, cam_pos)) in entities_with_components!(registry,CameraComponent, PositionComponent) {
+            for (_, (pos, )) in entities_with_components!(registry, PositionComponent) {
+                let new_pos = camera_conversion(pos, cam_pos);
+                blit(&SMILEY, new_pos.0, new_pos.1, 8, 8, BLIT_1BPP);
+            }
         }
     }
+}
+
+impl DrawSystem {
+    pub fn new() -> Self { DrawSystem {} }
 }
 
 fn camera_conversion(pos: &PositionComponent, cam_pos: &PositionComponent) -> (i32, i32) {
