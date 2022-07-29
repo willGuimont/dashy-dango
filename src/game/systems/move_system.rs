@@ -1,6 +1,7 @@
 use crate::*;
-use crate::{DashComponent, GamepadComponent, MoveComponent, PositionComponent, Registry, Vec2};
 use crate::ecs::Entity;
+use crate::game::components::{DashComponent, GamepadComponent, MoveComponent, PositionComponent};
+use crate::game::systems::system::System;
 use crate::gamepad_utils::gamepad_to_vec;
 use crate::utils::is_dashing;
 

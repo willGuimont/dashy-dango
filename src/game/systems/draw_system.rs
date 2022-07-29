@@ -1,7 +1,7 @@
 use crate::*;
-use crate::{blit, BLIT_1BPP, CameraComponent, entities_with, entities_with_components, get_components_unwrap, has_all_components, PositionComponent, Registry};
 use crate::ecs::Entity;
-use crate::game::system::System;
+use crate::game::components::{CameraComponent, PositionComponent};
+use crate::game::systems::System;
 
 const SCREEN_CENTER: (f32, f32) = (76.0, 76.0);
 
