@@ -1,7 +1,8 @@
 use std::collections::LinkedList;
 
-use crate::{Abort, CameraComponent, DashComponent, DrawSystem, GamepadComponent, HealthComponent, MoveComponent, PositionComponent, Registry, System};
-use crate::game::move_system::MoveSystem;
+use crate::{Abort, Registry};
+use crate::game::components::{CameraComponent, DashComponent, GamepadComponent, HealthComponent, MoveComponent, PositionComponent};
+use crate::game::systems::{DrawSystem, MoveSystem, System};
 
 const PLAYER_BASE_SPEED: i16 = 2;
 const PLAYER_BASE_DASH: i16 = 5;
