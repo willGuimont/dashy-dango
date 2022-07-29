@@ -7,6 +7,10 @@ use crate::utils::is_dashing;
 
 pub struct MoveSystem {}
 
+impl MoveSystem {
+    pub fn new() -> Self { MoveSystem {} }
+}
+
 impl System for MoveSystem {
     fn execute_system(&self, registry: &mut Registry) -> () {
         for e in entities_with!(registry, GamepadComponent, DashComponent, MoveComponent, PositionComponent) {
@@ -20,10 +24,6 @@ impl System for MoveSystem {
             }
         }
     }
-}
-
-impl MoveSystem {
-    pub fn new() -> Self { MoveSystem {} }
 }
 
 fn move_player(direction: Vec2, move_c: MoveComponent, mut pos: PositionComponent, registry: &mut Registry, e: Entity) {
