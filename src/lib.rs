@@ -1,17 +1,14 @@
 #![feature(box_syntax)]
 #![feature(once_cell)]
 
-use std::any::Any;
-use std::collections::LinkedList;
 use std::sync::{Arc, Mutex};
 
-use ecs_macro::Component;
 use once_cell::sync::Lazy;
 
 use wasm4::*;
 
 use crate::abort::Abort;
-use crate::ecs::{BaseComponent, Entity, Registry};
+use crate::ecs::{BaseComponent, Registry};
 use crate::events::{Subscriber, Topic};
 use crate::game::camera_component::CameraComponent;
 use crate::game::components::position_component::PositionComponent;
@@ -43,7 +40,7 @@ static mut WORLD: Lazy<Arc<Mutex<World>>> = Lazy::new(|| Arc::new(Mutex::new(Wor
 fn start() {
     unsafe { *DRAW_COLORS = 2 }
 
-    let mut world = &mut unsafe { WORLD.lock().abort() };
+    let world = &mut unsafe { WORLD.lock().abort() };
 
     world.create_player(GAMEPAD1);
     world.create_systems();
@@ -52,7 +49,7 @@ fn start() {
 
 #[no_mangle]
 fn update() {
-    let mut world = &mut unsafe { WORLD.lock().abort() };
+    let mut world = unsafe { WORLD.lock().abort() };
     world.execute_systems();
 
     let mut topic: Topic<i32> = Topic::new();

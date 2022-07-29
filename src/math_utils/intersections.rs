@@ -1,9 +1,4 @@
-use std::cmp::{max, min};
-use std::collections::LinkedList;
-use std::ops::Deref;
-
 use crate::math_utils::Vec2;
-use crate::trace;
 
 #[derive(Copy, Clone)]
 pub struct Point(Vec2);
