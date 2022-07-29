@@ -10,26 +10,21 @@ pub struct MoveSystem {}
 
 impl System for MoveSystem {
     fn execute_system(&self, registry: &mut Registry) -> () {
-        process_player_movement(registry)
+        for (e) in entities_with!(registry, GamepadComponent, DashComponent, MoveComponent, PositionComponent) {
+            let (gamepad, dash, move_c, mut pos) = get_components_clone_unwrap!(registry,e,GamepadComponent,DashComponent, MoveComponent,PositionComponent);
+
+            let direction = gamepad_to_vec(gamepad.get_gamepad());
+            if is_dashing(gamepad.get_gamepad()) && dash.timeout == 0 {
+                //Process dash
+            } else {
+                move_player(direction, move_c, pos, registry, e);
+            }
+        }
     }
 }
 
 impl MoveSystem {
-    pub(crate) fn new() -> Self { MoveSystem {} }
-}
-
-
-pub fn process_player_movement(registry: &mut Registry) {
-    for (e) in entities_with!(registry, GamepadComponent, DashComponent, MoveComponent, PositionComponent) {
-        let (gamepad, dash, move_c, mut pos) = get_components_clone_unwrap!(registry,e,GamepadComponent,DashComponent, MoveComponent,PositionComponent);
-
-        let direction = gamepad_to_vec(gamepad.get_gamepad());
-        if is_dashing(gamepad.get_gamepad()) && dash.timeout == 0 {
-            //Process dash
-        } else {
-            move_player(direction, move_c, pos, registry, e);
-        }
-    }
+    pub fn new() -> Self { MoveSystem {} }
 }
 
 fn move_player(direction: Vec2, move_c: MoveComponent, mut pos: PositionComponent, registry: &mut Registry, e: Entity) {
