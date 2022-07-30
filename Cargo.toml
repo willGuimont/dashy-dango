@@ -16,7 +16,8 @@ wee_alloc = "0.4.5"
 [profile.release]
 opt-level = "z"
 lto = true
-codegen-units = 1
+#codegen-units = 1
+overflow-checks = false
 panic = "abort"
 
 [features]
