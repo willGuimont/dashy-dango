@@ -3,7 +3,6 @@ use std::f32::consts::TAU;
 use crate::{Abort, entities_with, has_all_components, REFRESH_RATE, Registry};
 use crate::ecs::Entity;
 use crate::game::components::{EnemyComponent, PositionComponent};
-use crate::game::systems::System;
 
 pub struct EnemyWavesSystem {
     delay_between_waves: i32,
@@ -33,11 +32,9 @@ impl EnemyWavesSystem {
     }
 }
 
-impl System for EnemyWavesSystem {
-    fn execute_system(&mut self, registry: &mut Registry) {
-        let num_enemies = entities_with!(registry, EnemyComponent).iter().count();
-        if self.timeout <= 0 || num_enemies == 0 {
-            self.spawn_new_wave(registry);
-        }
+pub fn enemy_waves_system(waves: &mut EnemyWavesSystem, registry: &mut Registry) {
+    let num_enemies = entities_with!(registry, EnemyComponent).iter().count();
+    if waves.timeout <= 0 || num_enemies == 0 {
+        waves.spawn_new_wave(registry);
     }
 }

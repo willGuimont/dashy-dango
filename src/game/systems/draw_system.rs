@@ -1,7 +1,6 @@
 use crate::*;
 use crate::ecs::Entity;
 use crate::game::components::{CameraComponent, PositionComponent};
-use crate::game::systems::System;
 
 const SCREEN_CENTER: (f32, f32) = (76.0, 76.0);
 
@@ -19,19 +18,11 @@ const SMILEY: [u8; 8] = [
 ];
 
 
-pub struct DrawSystem {}
-
-impl DrawSystem {
-    pub fn new() -> Self { DrawSystem {} }
-}
-
-impl System for DrawSystem {
-    fn execute_system(&mut self, registry: &mut Registry) -> () {
-        for (_, (_, cam_pos)) in entities_with_components!(registry, CameraComponent, PositionComponent) {
-            for (_, (pos, )) in entities_with_components!(registry, PositionComponent) {
-                let new_pos = camera_conversion(pos, cam_pos);
-                blit(&SMILEY, new_pos.0, new_pos.1, 8, 8, BLIT_1BPP);
-            }
+pub fn draw_system(registry: &mut Registry) {
+    for (_, (_, cam_pos)) in entities_with_components!(registry, CameraComponent, PositionComponent) {
+        for (_, (pos, )) in entities_with_components!(registry, PositionComponent) {
+            let new_pos = camera_conversion(pos, cam_pos);
+            blit(&SMILEY, new_pos.0, new_pos.1, 8, 8, BLIT_1BPP);
         }
     }
 }

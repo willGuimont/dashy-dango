@@ -10,7 +10,8 @@ use wasm4::*;
 use crate::abort::Abort;
 use crate::ecs::{BaseComponent, Registry};
 use crate::events::{Subscriber, Topic};
-use crate::game::world::World;
+use crate::game::components::{CameraComponent, DashComponent, GamepadComponent, HealthComponent, MoveComponent, PositionComponent};
+use crate::game::systems::{draw_system, enemy_system, enemy_waves_system, EnemyWavesSystem, move_system};
 use crate::math_utils::*;
 use crate::utils::gamepad_utils;
 
@@ -25,24 +26,42 @@ mod events;
 mod assets;
 mod abort;
 
-
-static mut WORLD: Lazy<Arc<Mutex<World>>> = Lazy::new(|| Arc::new(Mutex::new(World::new())));
+static mut REGISTRY: Lazy<Arc<Mutex<Registry>>> = Lazy::new(|| Arc::new(Mutex::new(Registry::new())));
+// TODO move to a component on a game manager entity
+static mut WAVES: Lazy<Arc<Mutex<EnemyWavesSystem>>> = Lazy::new(|| Arc::new(Mutex::new(EnemyWavesSystem::new(250))));
 
 #[no_mangle]
 fn start() {
     unsafe { *DRAW_COLORS = 2 }
 
-    let world = &mut unsafe { WORLD.lock().abort() };
+    let registry = &mut unsafe { REGISTRY.lock().abort() };
 
-    world.create_player(GAMEPAD1);
-    world.create_systems();
-    world.create_entity();
+    let player = registry.new_entity();
+    const PLAYER_BASE_SPEED: i16 = 2;
+    const PLAYER_BASE_DASH: i16 = 5;
+    registry.add_component(player, PositionComponent { x: 0.0, y: 0.0 }).abort();
+    registry.add_component(player, GamepadComponent { gamepad: GAMEPAD1 }).abort();
+    registry.add_component(player, MoveComponent { speed: PLAYER_BASE_SPEED }).abort();
+    registry.add_component(player, DashComponent { dash: PLAYER_BASE_DASH, timeout: 1 }).abort();
+    registry.add_component(player, CameraComponent {}).abort();
+
+    for i in 0..10 {
+        let e = registry.new_entity();
+        registry.add_component(e, PositionComponent { x: (i * 8) as f32, y: (i * 8) as f32 }).unwrap();
+        registry.add_component(e, HealthComponent { hp: i }).abort();
+    }
 }
 
 #[no_mangle]
 fn update() {
-    let mut world = unsafe { WORLD.lock().abort() };
-    world.execute_systems();
+    let mut registry = unsafe { REGISTRY.lock().abort() };
+    let mut waves = unsafe { WAVES.lock().abort() };
+
+    move_system(&mut registry);
+    draw_system(&mut registry);
+    enemy_system(&mut registry);
+    enemy_waves_system(&mut waves, &mut registry);
+    registry.destroy_marked_entities();
 
     let mut topic: Topic<i32> = Topic::new();
     let mut sub_1 = Subscriber::new();

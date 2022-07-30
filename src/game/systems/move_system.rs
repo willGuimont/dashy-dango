@@ -1,27 +1,18 @@
 use crate::*;
 use crate::ecs::Entity;
 use crate::game::components::{DashComponent, GamepadComponent, MoveComponent, PositionComponent};
-use crate::game::systems::system::System;
 use crate::gamepad_utils::gamepad_to_vec;
 use crate::utils::is_dashing;
 
-pub struct MoveSystem {}
+pub fn move_system(registry: &mut Registry) -> () {
+    for e in entities_with!(registry, GamepadComponent, DashComponent, MoveComponent, PositionComponent) {
+        let (gamepad, dash, move_c, pos) = get_components_clone_unwrap!(registry,e,GamepadComponent,DashComponent, MoveComponent,PositionComponent);
 
-impl MoveSystem {
-    pub fn new() -> Self { MoveSystem {} }
-}
-
-impl System for MoveSystem {
-    fn execute_system(&mut self, registry: &mut Registry) -> () {
-        for e in entities_with!(registry, GamepadComponent, DashComponent, MoveComponent, PositionComponent) {
-            let (gamepad, dash, move_c, pos) = get_components_clone_unwrap!(registry,e,GamepadComponent,DashComponent, MoveComponent,PositionComponent);
-
-            let direction = gamepad_to_vec(gamepad.get_gamepad());
-            if is_dashing(gamepad.get_gamepad()) && dash.timeout == 0 {
-                //Process dash
-            } else {
-                move_player(direction, move_c, pos, registry, e);
-            }
+        let direction = gamepad_to_vec(gamepad.get_gamepad());
+        if is_dashing(gamepad.get_gamepad()) && dash.timeout == 0 {
+            //Process dash
+        } else {
+            move_player(direction, move_c, pos, registry, e);
         }
     }
 }
