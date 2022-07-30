@@ -43,6 +43,8 @@ pub const MOUSE_MIDDLE: u8 = 4;
 pub const SYSTEM_PRESERVE_FRAMEBUFFER: u8 = 1;
 pub const SYSTEM_HIDE_GAMEPAD_OVERLAY: u8 = 2;
 
+pub const REFRESH_RATE: i32 = 60;
+
 // ┌───────────────────────────────────────────────────────────────────────────┐
 // │                                                                           │
 // │ Drawing Functions                                                         │

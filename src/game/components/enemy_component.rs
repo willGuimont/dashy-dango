@@ -6,5 +6,5 @@ use crate::ecs::BaseComponent;
 
 #[derive(Component, Clone, Debug)]
 pub struct EnemyComponent {
-    time_to_live: f32,
+    pub time_to_live: i32,
 }
