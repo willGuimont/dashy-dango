@@ -2,7 +2,7 @@ use std::collections::LinkedList;
 
 use crate::{Abort, REFRESH_RATE, Registry};
 use crate::game::components::{CameraComponent, DashComponent, GamepadComponent, HealthComponent, MoveComponent, PositionComponent};
-use crate::game::systems::{DrawSystem, EnemySystem, EnemyWavesSystem, GarbageSystem, MoveSystem, System};
+use crate::game::systems::{DrawSystem, EnemySystem, EnemyWavesSystem, MoveSystem, System};
 
 const PLAYER_BASE_SPEED: i16 = 2;
 const PLAYER_BASE_DASH: i16 = 5;
@@ -31,7 +31,6 @@ impl World {
         self.systems.push_back(Box::new(DrawSystem::new()));
         self.systems.push_back(Box::new(EnemySystem::new()));
         self.systems.push_back(Box::new(EnemyWavesSystem::new(10 * (REFRESH_RATE as i32))));
-        self.systems.push_back(Box::new(GarbageSystem::new()));
     }
 
     pub fn create_entity(&mut self) {

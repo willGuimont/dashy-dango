@@ -27,7 +27,7 @@ impl EnemyWavesSystem {
             let e = registry.new_entity();
             registry.add_component(e, PositionComponent { x: c, y: s }).abort();
 
-            let ttl: i32 = i * REFRESH_RATE;
+            let ttl = i * REFRESH_RATE;
             registry.add_component(e, EnemyComponent { time_to_live: ttl }).abort();
         }
     }
