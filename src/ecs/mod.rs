@@ -4,6 +4,8 @@ use std::collections::hash_set::Iter;
 use std::error::Error;
 use std::fmt::{Display, Formatter};
 
+use momo::momo;
+
 use crate::abort::Abort;
 
 pub trait BaseComponent {
@@ -15,19 +17,6 @@ pub type Entity = u16;
 type ComponentStore = HashMap<Entity, Box<dyn BaseComponent>>;
 type ComponentHash = TypeId;
 type ComponentsMap = HashMap<ComponentHash, ComponentStore>;
-
-type Result<T> = std::result::Result<T, Box<dyn Error>>;
-
-#[derive(Debug, Clone)]
-struct EntityNotFound(Entity);
-
-impl Display for EntityNotFound {
-    fn fmt(&self, f: &mut Formatter<'_>) -> std::fmt::Result {
-        write!(f, "entity {} not found", self.0)
-    }
-}
-
-impl Error for EntityNotFound {}
 
 pub struct Registry {
     last_entity_id: Entity,
@@ -78,12 +67,11 @@ impl Registry {
         to_delete.iter().for_each(|e| self.destroy_entity(*e));
     }
 
-    pub fn add_component<T: BaseComponent + 'static + Clone>(&mut self, entity: Entity, component: T) -> Result<()> {
+    pub fn add_component<T: BaseComponent + 'static + Clone>(&mut self, entity: Entity, component: T) -> Option<()> {
         let type_id = TypeId::of::<T>();
         self.components.entry(type_id).or_insert_with(ComponentStore::new);
         self.components.get_mut(&type_id)
             .map(|c| c.insert(entity, Box::new(component)))
-            .ok_or_else(|| EntityNotFound(entity).into())
             .map(|_| ())
     }
 
