@@ -26,7 +26,7 @@ impl DrawSystem {
 }
 
 impl System for DrawSystem {
-    fn execute_system(&mut self, registry: &mut Registry) -> () {
+    fn execute_system(&mut self, registry: &mut Registry) {
         for (_, (_, cam_pos)) in entities_with_components!(registry, CameraComponent, PositionComponent) {
             for (_, (pos, )) in entities_with_components!(registry, PositionComponent) {
                 let new_pos = camera_conversion(pos, cam_pos);

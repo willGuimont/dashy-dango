@@ -25,7 +25,7 @@ impl System for EnemySystem {
             registry.add_component(e, enemy).abort();
         }
         for e in to_destroy {
-            registry.mark_to_destroy(e);
+            registry.destroy_entity(e);
         }
     }
 }

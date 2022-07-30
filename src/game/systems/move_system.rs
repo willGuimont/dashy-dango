@@ -12,7 +12,7 @@ impl MoveSystem {
 }
 
 impl System for MoveSystem {
-    fn execute_system(&mut self, registry: &mut Registry) -> () {
+    fn execute_system(&mut self, registry: &mut Registry) {
         for e in entities_with!(registry, GamepadComponent, DashComponent, MoveComponent, PositionComponent) {
             let (gamepad, dash, move_c, pos) = get_components_clone_unwrap!(registry,e,GamepadComponent,DashComponent, MoveComponent,PositionComponent);
 

@@ -15,7 +15,6 @@ once_cell = "1.13.0"
 [profile.release]
 opt-level = "z"
 lto = true
-overflow-checks = false
 panic = "abort"
 
 [features]
