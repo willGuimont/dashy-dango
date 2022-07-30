@@ -16,7 +16,6 @@ type ComponentsMap = HashMap<ComponentHash, ComponentStore>;
 pub struct Registry {
     last_entity_id: Entity,
     alive_entities: HashSet<Entity>,
-    // to_destroy_entity: HashSet<Entity>,
     components: ComponentsMap,
 }
 
@@ -53,9 +52,13 @@ impl Registry {
 
     pub fn add_component<T: BaseComponent + 'static + Clone>(&mut self, entity: Entity, component: T) -> Option<()> {
         let type_id = TypeId::of::<T>();
+        self.add_component_helper(entity, type_id, Box::new(component))
+    }
+
+    fn add_component_helper(&mut self, entity: Entity, type_id: TypeId, component: Box<dyn BaseComponent>) -> Option<()> {
         self.components.entry(type_id).or_insert_with(ComponentStore::new);
         self.components.get_mut(&type_id)
-            .map(|c| c.insert(entity, Box::new(component)))
+            .map(|c| c.insert(entity, component))
             .map(|_| ())
     }
 
@@ -67,6 +70,10 @@ impl Registry {
 
     pub fn has_component<T: BaseComponent + 'static + Clone>(&self, entity: Entity) -> bool {
         let type_id = TypeId::of::<T>();
+        self.has_component_helper(entity, type_id)
+    }
+
+    fn has_component_helper(&self, entity: Entity, type_id: TypeId) -> bool {
         self.components
             .get(&type_id)
             .map(|cs| cs.contains_key(&entity))
