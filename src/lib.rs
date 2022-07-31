@@ -1,6 +1,3 @@
-#![feature(box_syntax)]
-#![feature(once_cell)]
-
 use std::sync::{Arc, Mutex};
 
 use once_cell::sync::Lazy;
@@ -24,7 +21,6 @@ mod utils;
 mod events;
 mod assets;
 mod abort;
-
 
 static mut WORLD: Lazy<Arc<Mutex<World>>> = Lazy::new(|| Arc::new(Mutex::new(World::new())));
 

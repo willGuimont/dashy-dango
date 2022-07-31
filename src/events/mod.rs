@@ -10,12 +10,12 @@ pub struct Subscriber<T: Clone> {
 }
 
 pub struct Topic<T: Clone> {
-    subscribers: Vec<Queue<T>>,
+    subscribers: LinkedList<Queue<T>>,
 }
 
 impl<T: Clone> Topic<T> {
     pub fn new() -> Topic<T> {
-        Topic { subscribers: Vec::new() }
+        Topic { subscribers: LinkedList::new() }
     }
 
     pub fn send_message(&self, msg: T) {
@@ -36,6 +36,6 @@ impl<T: Clone> Subscriber<T> {
     }
 
     pub fn follow(&mut self, topic: &mut Topic<T>) {
-        topic.subscribers.push(self.queue.clone());
+        topic.subscribers.push_back(self.queue.clone());
     }
 }

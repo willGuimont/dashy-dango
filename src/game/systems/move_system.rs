@@ -8,9 +8,9 @@ use crate::utils::is_dashing;
 pub struct MoveSystem {}
 
 impl System for MoveSystem {
-    fn execute_system(&self, registry: &mut Registry) -> () {
-        for e in entities_with!(registry, GamepadComponent, DashComponent, MoveComponent, SizeComponent,PositionComponent) {
-            let (gamepad, dash, move_c, size, pos) = get_components_clone_unwrap!(registry,e,GamepadComponent,DashComponent, MoveComponent, SizeComponent, PositionComponent);
+    fn execute_system(&mut self, registry: &mut Registry) {
+        for e in entities_with!(registry, GamepadComponent, DashComponent, MoveComponent, PositionComponent) {
+            let (gamepad, dash, move_c, size, pos) = get_components_clone_unwrap!(registry,e,GamepadComponent,DashComponent, MoveComponent,SizeComponent, PositionComponent);
             let direction = gamepad_to_vec(gamepad.get_gamepad());
 
             if dash.is_dashing > 0 {
@@ -33,7 +33,6 @@ fn move_player(direction: Vec2, mut dash: DashComponent, move_c: MoveComponent, 
     if dash.timeout > 0 {
         dash.timeout -= 1;
     }
-
     let movement = direction * move_c.speed as f32;
     pos.x += movement.x;
     pos.y += movement.y;
@@ -73,13 +72,13 @@ fn dash_damage(direction: Vec2, dash: &DashComponent, size: &SizeComponent, pos:
         if dash_end_hit.rect_inter(&enemy_hit) {
             health.hp -= 5;
             if health.hp < 0 {
-                registry.mark_to_destroy(e);
+                registry.destroy_entity(e);
             }
             add_components!(registry, e, health);
         } else if dash_hit.rect_inter(&enemy_hit) {
             health.hp -= 1;
             if health.hp < 0 {
-                registry.mark_to_destroy(e);
+                registry.destroy_entity(e);
             }
             add_components!(registry, e, health);
         }

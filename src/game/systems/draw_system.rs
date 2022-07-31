@@ -21,8 +21,12 @@ const SMILEY: [u8; 8] = [
 
 pub struct DrawSystem {}
 
+impl DrawSystem {
+    pub fn new() -> Self { DrawSystem {} }
+}
+
 impl System for DrawSystem {
-    fn execute_system(&self, registry: &mut Registry) -> () {
+    fn execute_system(&mut self, registry: &mut Registry) {
         for (_, (_, cam_pos)) in entities_with_components!(registry, CameraComponent, PositionComponent) {
             for (_, (pos, )) in entities_with_components!(registry, PositionComponent) {
                 let new_pos = camera_conversion(pos, cam_pos);
@@ -30,10 +34,6 @@ impl System for DrawSystem {
             }
         }
     }
-}
-
-impl DrawSystem {
-    pub fn new() -> Self { DrawSystem {} }
 }
 
 fn camera_conversion(pos: &PositionComponent, cam_pos: &PositionComponent) -> (i32, i32) {
