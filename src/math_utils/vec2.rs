@@ -30,6 +30,8 @@ impl Vec2 {
     pub fn scalar_proj(self, rhs: Self) -> f32 {
         self.dot(rhs) / rhs.norm()
     }
+
+    pub fn angle(self) -> f32 { self.x.atan2(self.y) }
 }
 
 impl ops::Add<Vec2> for Vec2 {

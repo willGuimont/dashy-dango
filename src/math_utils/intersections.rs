@@ -4,6 +4,8 @@ use crate::math_utils::Vec2;
 pub struct Point(Vec2);
 
 impl Point {
+    pub fn new(x: f32, y: f32) -> Point { Point { 0: Vec2 { x, y } } }
+
     pub fn to_vector(self, other: Self) -> Vec2 { other.0 - self.0 }
 }
 
@@ -14,7 +16,18 @@ pub struct Quadrilateral {
 impl Quadrilateral {
     pub fn new(points: [Point; 4]) -> Self { Quadrilateral { points } }
 
-    pub fn rect_inter(self, other: Quadrilateral) -> bool {
+    pub fn from_direction(direction: Vec2, x: f32, y: f32, width: f32, height: f32) -> Self {
+        let theta = direction.angle();
+        let sin = theta.sin();
+        let cos = theta.cos();
+        let p1 = Point::new(x, y);
+        let p2 = Point::new(x + height * cos, y + height * sin);
+        let p3 = Point::new(x + width * cos + height * cos, y + width * sin + height * sin);
+        let p4 = Point::new(x + width * cos, y + width * sin);
+        Quadrilateral::new([p1, p2, p3, p4])
+    }
+
+    pub fn rect_inter(&self, other: &Quadrilateral) -> bool {
         self.verify_projection(&other) || other.verify_projection(&self)
     }
 
