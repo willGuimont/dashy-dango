@@ -37,7 +37,9 @@ fn move_player(direction: Vec2, mut dash: DashComponent, move_c: MoveComponent, 
     add_components!(registry, e, pos, dash);
 }
 
-fn process_dash(direction: Vec2, mut dash: DashComponent, size: SizeComponent, mut pos: PositionComponent, registry: &mut Registry, e: Entity) {
+fn process_dash(dir: Vec2, mut dash: DashComponent, size: SizeComponent, mut pos: PositionComponent, registry: &mut Registry, e: Entity) {
+    let direction = if dir.norm() == 0.0 { Vec2::new(1.0, 0.0) } else { dir };
+
     dash_damage(&mut dash, &size, &pos, registry, e);
     let segment_size = dash.length as f32 / size.width as f32;
     let segment = direction * segment_size;
