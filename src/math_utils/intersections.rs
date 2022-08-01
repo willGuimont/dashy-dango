@@ -16,17 +16,6 @@ pub struct Quadrilateral {
 impl Quadrilateral {
     pub fn new(points: [Point; 4]) -> Self { Quadrilateral { points } }
 
-    pub fn from_direction(direction: Vec2, x: f32, y: f32, width: f32, height: f32) -> Self {
-        let theta = direction.angle();
-        let sin = theta.sin();
-        let cos = theta.cos();
-        let p1 = Point::new(x, y);
-        let p2 = Point::new(x + height * cos, y + height * sin);
-        let p3 = Point::new(x + width * cos + height * cos, y + width * sin + height * sin);
-        let p4 = Point::new(x + width * cos, y + width * sin);
-        Quadrilateral::new([p1, p2, p3, p4])
-    }
-
     pub fn rect_inter(&self, other: &Quadrilateral) -> bool {
         self.verify_projection(&other) || other.verify_projection(&self)
     }
