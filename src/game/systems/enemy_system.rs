@@ -11,6 +11,7 @@ impl EnemySystem {
     }
 }
 
+
 impl System for EnemySystem {
     fn execute_system(&mut self, registry: &mut Registry) {
         for e in entities_with!(registry, EnemyComponent) {
@@ -18,10 +19,11 @@ impl System for EnemySystem {
 
             if enemy.time_to_live <= 0 {
                 registry.destroy_entity(e);
+                return;
             } else {
                 enemy.time_to_live -= 1;
+                registry.add_component(e, enemy).abort();
             }
-            registry.add_component(e, enemy).abort();
         }
     }
 }

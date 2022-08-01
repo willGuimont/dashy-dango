@@ -56,6 +56,9 @@ impl Registry {
     }
 
     fn add_component_helper(&mut self, entity: Entity, type_id: TypeId, component: Box<dyn BaseComponent>) -> Option<()> {
+        if !self.is_alive(entity) {
+            return None;
+        }
         self.components.entry(type_id).or_insert_with(ComponentStore::new);
         self.components.get_mut(&type_id)
             .map(|c| c.insert(entity, component))
