@@ -4,6 +4,7 @@ pub use enemy_component::*;
 pub use gamepad_component::*;
 pub use health_component::*;
 pub use move_component::*;
+pub use player_component::*;
 pub use position_component::*;
 pub use size_component::*;
 
@@ -15,3 +16,4 @@ pub mod health_component;
 pub mod move_component;
 pub mod position_component;
 pub mod size_component;
+pub mod player_component;

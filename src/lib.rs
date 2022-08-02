@@ -32,7 +32,6 @@ fn start() {
 
     world.create_player(GAMEPAD1);
     world.create_systems();
-    world.create_entity();
 }
 
 #[no_mangle]
