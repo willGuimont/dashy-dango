@@ -1,9 +1,8 @@
+use std::cell::RefCell;
 use std::collections::LinkedList;
-use std::sync::{Arc, Mutex};
+use std::rc::Rc;
 
-use crate::Abort;
-
-type Queue<T> = Arc<Mutex<LinkedList<T>>>;
+type Queue<T> = Rc<RefCell<LinkedList<T>>>;
 
 pub struct Subscriber<T: Clone> {
     queue: Queue<T>,
@@ -18,21 +17,20 @@ impl<T: Clone> Topic<T> {
         Topic { subscribers: LinkedList::new() }
     }
 
-    pub fn send_message(&self, msg: T) {
+    pub fn send_message(&mut self, msg: T) {
         for s in &self.subscribers {
-            let mut sub_queue = s.lock().abort();
-            sub_queue.push_back(msg.clone());
+            s.borrow_mut().push_back(msg.clone());
         }
     }
 }
 
 impl<T: Clone> Subscriber<T> {
     pub fn new() -> Subscriber<T> {
-        Subscriber { queue: Arc::new(Mutex::new(LinkedList::new())) }
+        Subscriber { queue: Rc::new(RefCell::new(LinkedList::new())) }
     }
 
     pub fn pop_message(&mut self) -> Option<T> {
-        self.queue.lock().abort().pop_front()
+        self.queue.borrow_mut().pop_front()
     }
 
     pub fn follow(&mut self, topic: &mut Topic<T>) {
