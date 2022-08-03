@@ -7,14 +7,17 @@ pub struct ChildSystem;
 
 impl System for ChildSystem {
     fn execute_system(&mut self, registry: &mut Registry) {
-        for e in entities_with!(registry, ChildComponent, PositionComponent) {
-            let (child, mut pos) = get_components_clone_unwrap!(registry,e, ChildComponent, PositionComponent);
+        for e in entities_with!(registry, ChildComponent) {
+            let child = registry.get_component::<ChildComponent>(e).abort().clone();
             if !registry.is_alive(child.parent) {
                 registry.destroy_entity(e);
             }
-            if let Some(parent_pos) = registry.get_component::<PositionComponent>(child.parent) {
-                pos.pos = parent_pos.pos + child.relative_pos;
-                registry.add_component(e, pos);
+
+            if let Some(mut pos) = registry.get_component::<PositionComponent>(e).cloned() {
+                if let Some(parent_pos) = registry.get_component::<PositionComponent>(child.parent) {
+                    pos.pos = parent_pos.pos + child.relative_pos;
+                    registry.add_component(e, pos);
+                }
             }
         }
     }
