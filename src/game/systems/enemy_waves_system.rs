@@ -1,6 +1,6 @@
 use std::f32::consts::TAU;
 
-use crate::{Abort, entities_with, has_all_components, Registry};
+use crate::{Abort, entities_with, has_all_components, Registry, Vec2};
 use crate::ecs::Entity;
 use crate::game::components::{EnemyComponent, HealthComponent, PositionComponent, SizeComponent};
 use crate::game::systems::System;
@@ -25,7 +25,8 @@ impl EnemyWavesSystem {
             let c = theta.cos() * spawn_radius;
             let s = theta.sin() * spawn_radius;
             let e = registry.new_entity();
-            registry.add_component(e, PositionComponent { x: c, y: s }).abort();
+            let pos = Vec2::new(c, s);
+            registry.add_component(e, PositionComponent { pos }).abort();
             // TODO do not hardcode hp
             registry.add_component(e, HealthComponent { hp: 1 }).abort();
             // TODO do not hardcode speed

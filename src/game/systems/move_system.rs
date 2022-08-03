@@ -30,8 +30,7 @@ fn move_player(direction: Vec2, mut dash: DashComponent, move_c: MoveComponent, 
         dash.timeout -= 1;
     }
     let movement = direction * move_c.speed as f32;
-    pos.x += movement.x;
-    pos.y += movement.y;
+    pos.pos = pos.pos + movement;
     add_components!(registry, e, pos, dash);
 }
 
@@ -41,8 +40,7 @@ fn process_dash(dir: Vec2, mut dash: DashComponent, size: SizeComponent, mut pos
     dash_damage(&mut dash, &size, &pos, registry);
     let segment_size = dash.length as f32 / size.width as f32;
     let segment = direction * segment_size;
-    pos.x += segment.x;
-    pos.y += segment.y;
+    pos.pos = pos.pos + segment;
     dash.timeout += 10;
     dash.duration = segment_size as i16;
     dash.direction = direction;
@@ -54,8 +52,7 @@ fn continue_dash(direction: Vec2, mut dash: DashComponent, size: SizeComponent, 
     dash_damage(&mut dash, &size, &pos, registry);
     let segment_size = dash.length as f32 / size.width as f32;
     let segment = direction * segment_size;
-    pos.x += segment.x;
-    pos.y += segment.y;
+    pos.pos = pos.pos + segment;
     dash.duration -= 1;
     if dash.duration == 0 {
         kill_entity(&dash, registry);
@@ -65,11 +62,11 @@ fn continue_dash(direction: Vec2, mut dash: DashComponent, size: SizeComponent, 
 }
 
 fn dash_damage(dash: &mut DashComponent, size: &SizeComponent, pos: &PositionComponent, registry: &mut Registry) {
-    let player_hit = create_hit_box(pos.x, pos.y, size.width as f32, size.height as f32);
+    let player_hit = create_hit_box(pos.pos, size.width as f32, size.height as f32);
 
     for e in entities_with!(registry, HealthComponent, SizeComponent, PositionComponent, EnemyComponent) {
         let (e_size, e_pos) = get_components_clone_unwrap!(registry,e, SizeComponent, PositionComponent);
-        let entity_hit = create_hit_box(e_pos.x, e_pos.y, e_size.width as f32, e_size.height as f32);
+        let entity_hit = create_hit_box(e_pos.pos, e_size.width as f32, e_size.height as f32);
 
         if !dash.hit.contains(&e) && player_hit.rect_inter(&entity_hit) {
             dash.hit.insert(e);
@@ -89,7 +86,9 @@ fn kill_entity(dash: &DashComponent, registry: &mut Registry) {
     }
 }
 
-fn create_hit_box(x: f32, y: f32, width: f32, height: f32) -> Quadrilateral {
+fn create_hit_box(pos: Vec2, width: f32, height: f32) -> Quadrilateral {
+    let x = pos.x;
+    let y = pos.y;
     let p1 = Point::new(x, y);
     let p2 = Point::new(x, y + height);
     let p3 = Point::new(x + width, y + height);

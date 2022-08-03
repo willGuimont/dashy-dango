@@ -19,23 +19,20 @@ const SMILEY: [u8; 8] = [
 ];
 
 
-pub struct DrawSystem {}
-
-impl DrawSystem {
-    pub fn new() -> Self { DrawSystem {} }
-}
+pub struct DrawSystem;
 
 impl System for DrawSystem {
     fn execute_system(&mut self, registry: &mut Registry) {
         for (_, (_, cam_pos)) in entities_with_components!(registry, CameraComponent, PositionComponent) {
             for (_, (pos, )) in entities_with_components!(registry, PositionComponent) {
                 let new_pos = camera_conversion(pos, cam_pos);
-                blit(&SMILEY, new_pos.0, new_pos.1, 8, 8, BLIT_1BPP);
+                blit(&SMILEY, new_pos.x as i32, new_pos.y as i32, 8, 8, BLIT_1BPP);
             }
         }
     }
 }
 
-fn camera_conversion(pos: &PositionComponent, cam_pos: &PositionComponent) -> (i32, i32) {
-    ((pos.x - cam_pos.x + SCREEN_CENTER.0) as i32, (pos.y - cam_pos.y + SCREEN_CENTER.1) as i32)
+fn camera_conversion(pos: &PositionComponent, cam_pos: &PositionComponent) -> Vec2 {
+    let center = Vec2::new(SCREEN_CENTER.0, SCREEN_CENTER.1);
+    pos.pos - cam_pos.pos + center
 }
