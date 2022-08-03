@@ -1,6 +1,6 @@
-use std::sync::{Arc, Mutex};
+#![feature(once_cell)]
 
-use once_cell::sync::Lazy;
+use std::cell::OnceCell;
 
 use wasm4::*;
 
@@ -22,7 +22,7 @@ mod events;
 mod assets;
 mod abort;
 
-static mut WORLD: Lazy<Arc<Mutex<World>>> = Lazy::new(|| Arc::new(Mutex::new(World::new())));
+static mut WORLD: OnceCell<World> = OnceCell::new();
 
 #[no_mangle]
 fn start() {
@@ -34,16 +34,16 @@ fn start() {
             0x34bca3];
         *DRAW_COLORS = 0x4320
     }
-
-    let world = &mut unsafe { WORLD.lock().abort() };
+    let mut world = World::new();
 
     world.create_player(GAMEPAD1);
     world.create_systems();
+    unsafe { WORLD.set(world).abort() };
 }
 
 #[no_mangle]
 fn update() {
-    let mut world = unsafe { WORLD.lock().abort() };
+    let world = unsafe { &mut WORLD.get_mut().abort() };
     world.execute_systems();
 
     let mut topic: Topic<i32> = Topic::new();
