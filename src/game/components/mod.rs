@@ -7,6 +7,7 @@ pub use move_component::*;
 pub use player_component::*;
 pub use position_component::*;
 pub use size_component::*;
+pub use sprite_component::*;
 
 pub mod camera_component;
 pub mod dash_component;
@@ -17,3 +18,4 @@ pub mod move_component;
 pub mod position_component;
 pub mod size_component;
 pub mod player_component;
+pub mod sprite_component;

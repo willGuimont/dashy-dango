@@ -26,7 +26,14 @@ static mut WORLD: Lazy<Arc<Mutex<World>>> = Lazy::new(|| Arc::new(Mutex::new(Wor
 
 #[no_mangle]
 fn start() {
-    unsafe { *DRAW_COLORS = 2 }
+    unsafe {
+        *PALETTE = [
+            0xf99dec,
+            0xfc49e1,
+            0x88fce7,
+            0x34bca3];
+        *DRAW_COLORS = 0x4320
+    }
 
     let world = &mut unsafe { WORLD.lock().abort() };
 

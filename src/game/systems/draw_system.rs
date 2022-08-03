@@ -1,6 +1,7 @@
 use crate::*;
+use crate::assets::sprites::*;
 use crate::ecs::Entity;
-use crate::game::components::{CameraComponent, PositionComponent};
+use crate::game::components::{CameraComponent, PositionComponent, SpriteComponent};
 use crate::game::systems::System;
 
 const SCREEN_CENTER: (f32, f32) = (76.0, 76.0);
@@ -28,9 +29,9 @@ impl DrawSystem {
 impl System for DrawSystem {
     fn execute_system(&mut self, registry: &mut Registry) {
         for (_, (_, cam_pos)) in entities_with_components!(registry, CameraComponent, PositionComponent) {
-            for (_, (pos, )) in entities_with_components!(registry, PositionComponent) {
+            for (_, (sprite, pos, )) in entities_with_components!(registry, SpriteComponent, PositionComponent) {
                 let new_pos = camera_conversion(pos, cam_pos);
-                blit(&SMILEY, new_pos.0, new_pos.1, 8, 8, BLIT_1BPP);
+                blit(sprite.data, new_pos.0, new_pos.1, sprite.width, sprite.heigt, sprite.flags);
             }
         }
     }

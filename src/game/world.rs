@@ -2,7 +2,8 @@ use std::collections::HashSet;
 use std::collections::LinkedList;
 
 use crate::{Abort, REFRESH_RATE, Registry, Vec2};
-use crate::game::components::{CameraComponent, DashComponent, GamepadComponent, MoveComponent, PlayerComponent, PositionComponent, SizeComponent};
+use crate::assets::DANGO_SPRITE;
+use crate::game::components::{CameraComponent, DashComponent, GamepadComponent, MoveComponent, PlayerComponent, PositionComponent, SizeComponent, SpriteComponent};
 use crate::game::systems::{DrawSystem, EnemySystem, EnemyWavesSystem, MoveSystem, System};
 
 const PLAYER_BASE_SPEED: i16 = 2;
@@ -26,6 +27,7 @@ impl World {
         self.registry.add_component(player, DashComponent { length: PLAYER_BASE_DASH, timeout: 0, duration: 0, direction: Vec2 { x: 0.0, y: 0.0 }, hit: HashSet::new() }).abort();
         self.registry.add_component(player, CameraComponent).abort();
         self.registry.add_component(player, SizeComponent { width: 8, height: 8 }).abort();
+        self.registry.add_component(player, SpriteComponent::new(DANGO_SPRITE));
     }
 
     pub fn create_systems(&mut self) {
