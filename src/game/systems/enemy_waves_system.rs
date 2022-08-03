@@ -1,8 +1,9 @@
 use std::f32::consts::TAU;
 
 use crate::{Abort, entities_with, has_all_components, Registry, Vec2};
+use crate::assets::GRASS_SPRITE;
 use crate::ecs::Entity;
-use crate::game::components::{EnemyComponent, HealthComponent, PositionComponent, SizeComponent};
+use crate::game::components::{EnemyComponent, HealthComponent, PositionComponent, SizeComponent, SpriteComponent};
 use crate::game::systems::System;
 
 pub struct EnemyWavesSystem {
@@ -33,6 +34,7 @@ impl EnemyWavesSystem {
             registry.add_component(e, EnemyComponent { speed: 0.25 }).abort();
             // TODO do not hardcode size
             registry.add_component(e, SizeComponent { width: 8, height: 8 }).abort();
+            registry.add_component(e, SpriteComponent { sprite: &GRASS_SPRITE });
         }
     }
 }

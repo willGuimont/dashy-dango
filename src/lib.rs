@@ -26,7 +26,14 @@ static mut WORLD: OnceCell<World> = OnceCell::new();
 
 #[no_mangle]
 fn start() {
-    unsafe { *DRAW_COLORS = 2 }
+    unsafe {
+        *PALETTE = [
+            0xf99dec,
+            0xfc49e1,
+            0x88fce7,
+            0x34bca3];
+        *DRAW_COLORS = 0x4320
+    }
     let mut world = World::new();
 
     world.create_player(GAMEPAD1);
