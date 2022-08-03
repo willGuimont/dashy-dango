@@ -5,16 +5,8 @@ use ecs_macro::Component;
 use crate::assets::Sprite;
 use crate::BaseComponent;
 
-#[derive(Component, Clone, Debug)]
+#[derive(Component, Clone)]
 pub struct SpriteComponent {
-    pub width: u32,
-    pub heigt: u32,
-    pub flags: u32,
-    pub data: &'static [u8],
+    pub sprite: &'static Sprite,
 }
 
-impl SpriteComponent {
-    pub fn new(sprite: Sprite) -> Self {
-        SpriteComponent { width: sprite.width, heigt: sprite.height, flags: sprite.flags, data: sprite.data }
-    }
-}

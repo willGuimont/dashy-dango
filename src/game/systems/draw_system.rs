@@ -25,9 +25,10 @@ pub struct DrawSystem;
 impl System for DrawSystem {
     fn execute_system(&mut self, registry: &mut Registry) {
         for (_, (_, cam_pos)) in entities_with_components!(registry, CameraComponent, PositionComponent) {
-            for (_, (sprite, pos, )) in entities_with_components!(registry, SpriteComponent, PositionComponent) {
+            for (_, (sprite_component, pos, )) in entities_with_components!(registry, SpriteComponent, PositionComponent) {
                 let new_pos = camera_conversion(pos, cam_pos);
-                blit(sprite.data, new_pos.x as i32, new_pos.y as i32, sprite.width, sprite.heigt, sprite.flags);
+                let sprite = &sprite_component.sprite;
+                blit(sprite.data, new_pos.x as i32, new_pos.y as i32, sprite.width, sprite.height, sprite.flags);
             }
         }
     }

@@ -34,7 +34,7 @@ impl EnemyWavesSystem {
             registry.add_component(e, EnemyComponent { speed: 0.25 }).abort();
             // TODO do not hardcode size
             registry.add_component(e, SizeComponent { width: 8, height: 8 }).abort();
-            registry.add_component(e, SpriteComponent::new(GRASS_SPRITE));
+            registry.add_component(e, SpriteComponent { sprite: &GRASS_SPRITE });
         }
     }
 }
