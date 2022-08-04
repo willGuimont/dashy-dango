@@ -25,5 +25,5 @@ macro_rules! make_sprite {
     }
 }
 
-make_sprite!(DANGO_SPRITE,DANGO);
+make_sprite!(DANGO_SPRITE, DANGO);
 make_sprite!(GRASS_SPRITE, GRASS);

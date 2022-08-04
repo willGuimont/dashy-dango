@@ -57,5 +57,3 @@ fn update() {
     topic.send_message(456);
     sub_1.pop_message().abort();
 }
-
-
