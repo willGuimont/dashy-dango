@@ -1,4 +1,4 @@
-use once_cell::sync::Lazy;
+use std::concat_idents;
 
 use crate::{BLIT_1BPP, BLIT_2BPP};
 
@@ -19,5 +19,11 @@ pub struct Sprite {
     pub data: &'static [u8],
 }
 
-pub const DANGO_SPRITE: Sprite = Sprite { width: DANGO_WIDTH, height: DANGO_HEIGHT, flags: DANGO_FLAGS, data: &DANGO };
-pub const GRASS_SPRITE: Sprite = Sprite { width: GRASS_WIDTH, height: GRASS_HEIGHT, flags: GRASS_FLAGS, data: &GRASS };
+macro_rules! make_sprite {
+    ($sprite_name:ident, $id:ident) => {
+        pub const $sprite_name: Sprite = Sprite { width: concat_idents!($id,_WIDTH), height: concat_idents!($id,_HEIGHT), flags: concat_idents!($id,_FLAGS), data: &$id };
+    }
+}
+
+make_sprite!(DANGO_SPRITE,DANGO);
+make_sprite!(GRASS_SPRITE, GRASS);

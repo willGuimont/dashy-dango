@@ -1,4 +1,5 @@
 #![feature(once_cell)]
+#![feature(concat_idents)]
 
 use std::cell::OnceCell;
 
