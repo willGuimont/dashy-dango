@@ -6,20 +6,6 @@ use crate::game::systems::System;
 
 const SCREEN_CENTER: (f32, f32) = (76.0, 76.0);
 
-//TODO add spriteComponent
-#[rustfmt::skip]
-const SMILEY: [u8; 8] = [
-    0b11000011,
-    0b10000001,
-    0b00100100,
-    0b00100100,
-    0b00000000,
-    0b00100100,
-    0b10011001,
-    0b11000011,
-];
-
-
 pub struct DrawSystem;
 
 impl System for DrawSystem {
