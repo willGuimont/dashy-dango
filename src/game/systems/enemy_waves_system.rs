@@ -4,6 +4,10 @@ use crate::{Abort, entities_with, has_all_components, Registry, Vec2};
 use crate::assets::GRASS_SPRITE;
 use crate::ecs::Entity;
 use crate::game::components::{EnemyComponent, HealthComponent, PositionComponent, SizeComponent, SpriteComponent};
+use crate::game::components::sentinel_move_component::SentinelMoveComponent;
+use crate::game::components::shooter_component::ShooterComponent;
+use crate::game::components::spiral_move_component::SpiralMoveComponent;
+use crate::game::components::straight_move_component::StraightMoveComponent;
 use crate::game::systems::System;
 
 pub struct EnemyWavesSystem {
@@ -31,7 +35,9 @@ impl EnemyWavesSystem {
             // TODO do not hardcode hp
             registry.add_component(e, HealthComponent { hp: 1, timeout: 0, hit_delay: 0 }).abort();
             // TODO do not hardcode speed
-            registry.add_component(e, EnemyComponent { speed: 0.25 }).abort();
+            registry.add_component(e, EnemyComponent {}).abort();
+            registry.add_component(e, SentinelMoveComponent { speed: 0.1, shooting_distance: 100.0 }).abort();
+            registry.add_component(e, ShooterComponent { bullet_speed: 2.0, firing_timeout: 200, firing_delay: 200, bullet_lifespan: 100 }).abort();
             // TODO do not hardcode size
             registry.add_component(e, SizeComponent { width: 8, height: 8 }).abort();
             registry.add_component(e, SpriteComponent { sprite: &GRASS_SPRITE });

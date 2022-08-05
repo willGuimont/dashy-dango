@@ -21,4 +21,10 @@ pub mod player_component;
 pub mod position_component;
 pub mod size_component;
 pub mod sprite_component;
+pub mod spiral_move_component;
+pub mod straight_move_component;
+pub mod sentinel_move_component;
+pub mod bullet_move_component;
+pub mod shooter_component;
+pub mod ttl_component;
 

@@ -32,6 +32,8 @@ impl Vec2 {
     }
 
     pub fn angle(self) -> f32 { self.x.atan2(self.y) }
+
+    pub fn perp(self) -> Vec2 { Vec2 { x: self.y, y: -self.x } }
 }
 
 impl ops::Add<Vec2> for Vec2 {
