@@ -29,7 +29,7 @@ impl EnemyWavesSystem {
             let pos = Vec2::new(c, s);
             registry.add_component(e, PositionComponent { pos }).abort();
             // TODO do not hardcode hp
-            registry.add_component(e, HealthComponent { hp: 1, timeout: 0, timeout_timer: 0 }).abort();
+            registry.add_component(e, HealthComponent { hp: 1, timeout: 0, hit_delay: 0 }).abort();
             // TODO do not hardcode speed
             registry.add_component(e, EnemyComponent { speed: 0.25 }).abort();
             // TODO do not hardcode size

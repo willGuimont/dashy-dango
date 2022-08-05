@@ -1,4 +1,4 @@
-use crate::{Abort, create_hit_box, entities_with, entities_with_components, get_components_clone_unwrap, get_components_unwrap, has_all_components, Registry, trace, Vec2};
+use crate::{Abort, create_box, entities_with, entities_with_components, get_components_clone_unwrap, get_components_unwrap, has_all_components, Registry, trace, Vec2};
 use crate::ecs::Entity;
 use crate::game::components::{EnemyComponent, HealthComponent, PlayerComponent, PositionComponent, SizeComponent};
 use crate::game::systems::System;
@@ -25,14 +25,14 @@ impl System for EnemySystem {
 fn collide_player(e_pos: Vec2, e_size: &SizeComponent, registry: &mut Registry) {
     for e in entities_with!(registry, PlayerComponent) {
         let (mut health, p_pos, p_size) = get_components_clone_unwrap!(registry,e,HealthComponent,PositionComponent,SizeComponent);
-        let player_hit = create_hit_box(p_pos.pos, p_size.width as f32, p_size.height as f32);
-        let enemy_hit = create_hit_box(e_pos, e_size.width as f32, e_size.height as f32);
+        let player_hit = create_box(p_pos.pos, p_size.width as f32, p_size.height as f32);
+        let enemy_hit = create_box(e_pos, e_size.width as f32, e_size.height as f32);
         if health.timeout > 0 {
             health.timeout -= 1;
             registry.add_component(e, health);
         } else if health.timeout <= 0 && enemy_hit.rect_inter(&player_hit) {
             health.hp -= 1;
-            health.timeout += health.timeout_timer;
+            health.timeout += health.hit_delay;
             registry.add_component(e, health);
         }
     }

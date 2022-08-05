@@ -30,7 +30,7 @@ impl World {
         self.registry.add_component(player, CameraComponent).abort();
         self.registry.add_component(player, SizeComponent { width: 8, height: 8 }).abort();
         self.registry.add_component(player, SpriteComponent { sprite: &DANGO_SPRITE }).abort();
-        self.registry.add_component(player, HealthComponent { hp: PLAYER_BASE_HEALTH, timeout: 0, timeout_timer: PLAYER_HIT_TIMEOUT }).abort();
+        self.registry.add_component(player, HealthComponent { hp: PLAYER_BASE_HEALTH, timeout: 0, hit_delay: PLAYER_HIT_TIMEOUT }).abort();
 
         let child = self.registry.new_entity();
         self.registry.add_component(child, PositionComponent { pos: Vec2::new(0.0, 0.0) }).abort();

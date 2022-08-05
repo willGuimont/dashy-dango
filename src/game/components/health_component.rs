@@ -8,5 +8,5 @@ use crate::ecs::BaseComponent;
 pub struct HealthComponent {
     pub hp: i16,
     pub timeout: i16,
-    pub timeout_timer: i16,
+    pub hit_delay: i16,
 }

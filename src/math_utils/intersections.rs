@@ -45,7 +45,7 @@ impl Quadrilateral {
     }
 }
 
-pub fn create_hit_box(pos: Vec2, width: f32, height: f32) -> Quadrilateral {
+pub fn create_box(pos: Vec2, width: f32, height: f32) -> Quadrilateral {
     let x = pos.x;
     let y = pos.y;
     let p1 = Point::new(x, y);

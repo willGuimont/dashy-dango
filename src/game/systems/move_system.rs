@@ -62,11 +62,11 @@ fn continue_dash(direction: Vec2, mut dash: DashComponent, size: SizeComponent, 
 }
 
 fn dash_damage(dash: &mut DashComponent, size: &SizeComponent, pos: &PositionComponent, registry: &mut Registry) {
-    let player_hit = create_hit_box(pos.pos, size.width as f32, size.height as f32);
+    let player_hit = create_box(pos.pos, size.width as f32, size.height as f32);
 
     for e in entities_with!(registry, HealthComponent, SizeComponent, PositionComponent, EnemyComponent) {
         let (e_size, e_pos) = get_components_clone_unwrap!(registry,e, SizeComponent, PositionComponent);
-        let entity_hit = create_hit_box(e_pos.pos, e_size.width as f32, e_size.height as f32);
+        let entity_hit = create_box(e_pos.pos, e_size.width as f32, e_size.height as f32);
 
         if !dash.hit.contains(&e) && player_hit.rect_inter(&entity_hit) {
             dash.hit.insert(e);
