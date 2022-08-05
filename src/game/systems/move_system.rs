@@ -85,13 +85,3 @@ fn kill_entity(dash: &DashComponent, registry: &mut Registry) {
         }
     }
 }
-
-fn create_hit_box(pos: Vec2, width: f32, height: f32) -> Quadrilateral {
-    let x = pos.x;
-    let y = pos.y;
-    let p1 = Point::new(x, y);
-    let p2 = Point::new(x, y + height);
-    let p3 = Point::new(x + width, y + height);
-    let p4 = Point::new(x + width, y);
-    Quadrilateral::new([p1, p2, p3, p4])
-}
