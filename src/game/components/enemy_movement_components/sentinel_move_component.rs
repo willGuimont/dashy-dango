@@ -7,5 +7,5 @@ use crate::ecs::BaseComponent;
 #[derive(Component, Clone, Debug)]
 pub struct SentinelMoveComponent {
     pub speed: f32,
-    pub shooting_distance: f32,
+    pub stopping_distance: f32,
 }
