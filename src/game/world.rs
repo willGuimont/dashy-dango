@@ -5,6 +5,7 @@ use crate::{Abort, REFRESH_RATE, Registry, Vec2};
 use crate::assets::DANGO_SPRITE;
 use crate::game::components::{CameraComponent, ChildComponent, DashComponent, GamepadComponent, HealthComponent, MoveComponent, PlayerComponent, PositionComponent, SizeComponent, SpriteComponent};
 use crate::game::systems::{ChildSystem, DrawSystem, EnemySystem, EnemyWavesSystem, MoveSystem, System};
+use crate::game::systems::ttl_system::TTLSystem;
 
 const PLAYER_BASE_SPEED: i16 = 2;
 const PLAYER_BASE_DASH: i16 = 60;
@@ -45,6 +46,7 @@ impl World {
         self.systems.push_back(Box::new(DrawSystem));
         self.systems.push_back(Box::new(EnemySystem));
         self.systems.push_back(Box::new(EnemyWavesSystem::new(10 * (REFRESH_RATE as i32))));
+        self.systems.push_back(Box::new(TTLSystem));
     }
 
     pub fn execute_systems(&mut self) {

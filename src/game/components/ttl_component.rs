@@ -5,4 +5,6 @@ use ecs_macro::Component;
 use crate::ecs::BaseComponent;
 
 #[derive(Component, Clone, Debug)]
-pub struct EnemyComponent;
+pub struct TTLComponent {
+    pub ttl: i16,
+}
