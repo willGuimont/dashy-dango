@@ -1,7 +1,9 @@
 pub use camera_component::*;
 pub use child_component::*;
 pub use dash_component::*;
+pub use enemy_attack_components::*;
 pub use enemy_component::*;
+pub use enemy_movement_components::*;
 pub use gamepad_component::*;
 pub use health_component::*;
 pub use move_component::*;
@@ -21,10 +23,7 @@ pub mod player_component;
 pub mod position_component;
 pub mod size_component;
 pub mod sprite_component;
-pub mod spiral_move_component;
-pub mod straight_move_component;
-pub mod sentinel_move_component;
-pub mod bullet_move_component;
-pub mod shooter_component;
 pub mod ttl_component;
+pub mod enemy_movement_components;
+pub mod enemy_attack_components;
 

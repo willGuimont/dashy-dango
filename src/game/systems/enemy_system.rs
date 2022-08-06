@@ -3,8 +3,8 @@ use crate::assets::GRASS_SPRITE;
 use crate::ecs::Entity;
 use crate::game::components::{EnemyComponent, HealthComponent, PlayerComponent, PositionComponent, SizeComponent, SpriteComponent};
 use crate::game::components::bullet_move_component::BulletMoveComponent;
+use crate::game::components::enemy_attack_components::shooter_component::ShooterComponent;
 use crate::game::components::sentinel_move_component::SentinelMoveComponent;
-use crate::game::components::shooter_component::ShooterComponent;
 use crate::game::components::spiral_move_component::SpiralMoveComponent;
 use crate::game::components::straight_move_component::StraightMoveComponent;
 use crate::game::components::ttl_component::TTLComponent;
@@ -17,13 +17,13 @@ impl System for EnemySystem {
         let (_, (_, player_pos)) = entities_with_components!(registry, PlayerComponent, PositionComponent).next().abort();
         let player_pos = player_pos.pos;
         for e in entities_with!(registry, EnemyComponent) {
-            if has_all_components!(registry, e, StraightMoveComponent) {
+            if registry.has_component::<StraightMoveComponent>(e) {
                 straight_move(registry, e, player_pos);
-            } else if has_all_components!(registry, e, SpiralMoveComponent) {
+            } else if registry.has_component::<SpiralMoveComponent>(e) {
                 spiral_move(registry, e, player_pos);
-            } else if has_all_components!(registry, e, SentinelMoveComponent) {
+            } else if registry.has_component::<SentinelMoveComponent>(e) {
                 sentinel_move(registry, e, player_pos);
-            } else if has_all_components!(registry,e,BulletMoveComponent) {
+            } else if registry.has_component::<BulletMoveComponent>(e) {
                 bullet_move(registry, e, player_pos);
             }
         }
