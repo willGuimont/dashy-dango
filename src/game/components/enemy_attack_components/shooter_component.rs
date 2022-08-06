@@ -10,4 +10,5 @@ pub struct ShooterComponent {
     pub firing_timeout: i16,
     pub firing_delay: i16,
     pub bullet_lifespan: i16,
+    pub firing_distance: i16,
 }
