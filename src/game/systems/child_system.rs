@@ -1,4 +1,4 @@
-use crate::{Abort, entities_with, has_all_components, Registry};
+use crate::{Abort, entities_with, has_all_components, Registry, trace};
 use crate::ecs::Entity;
 use crate::game::components::{ChildComponent, PositionComponent};
 use crate::game::systems::System;

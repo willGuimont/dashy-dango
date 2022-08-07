@@ -29,7 +29,7 @@ impl EnemyWavesSystem {
             registry.add_component(e, ShooterComponent { bullet_speed: 2.0, firing_timeout: 200, firing_delay: 200, bullet_lifespan: 100, firing_distance: 50 }).abort();
             // TODO do not hardcode size
             registry.add_component(e, SizeComponent { width: 8, height: 8 }).abort();
-            registry.add_component(e, SpriteComponent { sprite: &GRASS_SPRITE });
+            registry.add_component(e, SpriteComponent { sprite: &GRASS_SPRITE, zindex: 0 });
         }
     }
 }

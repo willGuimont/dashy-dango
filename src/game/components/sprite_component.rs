@@ -8,5 +8,6 @@ use crate::BaseComponent;
 #[derive(Component, Clone)]
 pub struct SpriteComponent {
     pub sprite: &'static Sprite,
+    pub zindex: u8,
 }
 

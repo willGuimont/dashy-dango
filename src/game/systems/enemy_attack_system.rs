@@ -42,7 +42,7 @@ fn create_bullet(registry: &mut Registry, direction: Vec2, speed: f32, bullet_li
     registry.add_component(bullet, HealthComponent { hp: 1, timeout: 0, hit_delay: 0 }).abort();
     registry.add_component(bullet, BulletMoveComponent { speed, direction }).abort();
     registry.add_component(bullet, SizeComponent { width: 8, height: 8 }).abort();
-    registry.add_component(bullet, SpriteComponent { sprite: &GRASS_SPRITE }).abort();
+    registry.add_component(bullet, SpriteComponent { sprite: &GRASS_SPRITE, zindex: 1 }).abort();
     registry.add_component(bullet, TTLComponent { ttl: bullet_lifespan }).abort();
     registry.add_component(bullet, PositionComponent { pos: Vec2 { x: bullet_x, y: bullet_y } }).abort();
 }
