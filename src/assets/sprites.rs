@@ -34,6 +34,27 @@ const DANGO_EYE: [u8; 1] = [
 ];
 const DANGO_EYE_DRAW: u16 = 0x0020;
 
+const BULLET_WIDTH: u32 = 2;
+const BULLET_HEIGHT: u32 = 2;
+const BULLET_FLAGS: u32 = BLIT_1BPP;
+const BULLET: [u8; 1] = [
+    0b11110000,
+];
+const BULLET_DRAW: u16 = 0x0040;
+
+const SPITWORM_WIDTH: u32 = 8;
+const SPITWORM_HEIGHT: u32 = 8;
+const SPITWORM_FLAGS: u32 = BLIT_2BPP;
+const SPITWORM: [u8; 16] = [0x14, 0x14, 0x69, 0x69, 0x15, 0x54, 0x07, 0xd0, 0x07, 0xd0, 0x05, 0x50, 0x01, 0x00, 0x01, 0x55];
+const SPITWORM_DRAW: u16 = 0x1320;
+
+const FLY_WIDTH: u32 = 8;
+const FLY_HEIGHT: u32 = 8;
+const FLY_FLAGS: u32 = 1;
+// BLIT_2BPP
+const FLY: [u8; 16] = [0x10, 0x04, 0x64, 0x19, 0x64, 0x19, 0x15, 0x54, 0x06, 0x90, 0x1a, 0xa4, 0x1a, 0xa4, 0x05, 0x50];
+const FLY_DRAW: u16 = 0x1320;
+
 pub struct Sprite {
     pub width: u32,
     pub height: u32,
@@ -53,3 +74,6 @@ make_sprite!(GRASS_SPRITE, GRASS);
 make_sprite!(DANGO_EYE_SPRITE, DANGO_EYE);
 make_sprite!(DANGO_OUTLINE_SPRITE, DANGO_OUTLINE);
 make_sprite!(DANGO_DASH_OUTLINE_SPRITE, DANGO_DASH_OUTLINE);
+make_sprite!(BULLET_SPRITE, BULLET);
+make_sprite!(SPITWORM_SPRITE, SPITWORM);
+make_sprite!(FLY_SPRITE, FLY);
