@@ -8,19 +8,10 @@ use crate::game::components::enemy_attack_components::shooter_component::Shooter
 use crate::game::components::sentinel_move_component::SentinelMoveComponent;
 use crate::game::systems::System;
 
-pub struct EnemyWavesSystem {
-    delay_between_waves: i32,
-    timeout: i32,
-}
+pub struct EnemyWavesSystem;
 
 impl EnemyWavesSystem {
-    pub fn new(delay_between_waves: i32) -> Self {
-        EnemyWavesSystem { delay_between_waves, timeout: 0 }
-    }
-
     fn spawn_new_wave(&mut self, registry: &mut Registry) {
-        self.timeout = self.delay_between_waves;
-
         let num_enemies = 10;
         let spawn_radius: f32 = 50.0;
         for i in 0..num_enemies {
@@ -46,8 +37,7 @@ impl EnemyWavesSystem {
 impl System for EnemyWavesSystem {
     fn execute_system(&mut self, registry: &mut Registry) {
         let num_enemies = entities_with!(registry, EnemyComponent).iter().count();
-        self.timeout -= 1;
-        if self.timeout <= 0 || num_enemies == 0 {
+        if num_enemies == 0 {
             self.spawn_new_wave(registry);
         }
     }
