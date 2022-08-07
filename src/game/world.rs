@@ -2,7 +2,7 @@ use std::collections::HashSet;
 use std::collections::LinkedList;
 
 use crate::{Abort, REFRESH_RATE, Registry, Vec2};
-use crate::assets::DANGO_SPRITE;
+use crate::assets::{DANGO_EYE_SPRITE, DANGO_OUTLINE_SPRITE, DANGO_SPRITE};
 use crate::game::components::{CameraComponent, ChildComponent, DashComponent, GamepadComponent, HealthComponent, MoveComponent, PlayerComponent, PositionComponent, SizeComponent, SpriteComponent};
 use crate::game::systems::{ChildSystem, DrawSystem, EnemySystem, EnemyWavesSystem, MoveSystem, System};
 use crate::game::systems::ttl_system::TTLSystem;
@@ -35,8 +35,13 @@ impl World {
 
         let child = self.registry.new_entity();
         self.registry.add_component(child, PositionComponent { pos: Vec2::new(0.0, 0.0) }).abort();
-        self.registry.add_component(child, ChildComponent { parent: player, relative_pos: Vec2 { x: 10.0, y: 0.0 } }).abort();
-        self.registry.add_component(child, SpriteComponent { sprite: &DANGO_SPRITE });
+        self.registry.add_component(child, ChildComponent { parent: player, relative_pos: Vec2 { x: 3.0, y: 4.0 } }).abort();
+        self.registry.add_component(child, SpriteComponent { sprite: &DANGO_EYE_SPRITE });
+
+        let child = self.registry.new_entity();
+        self.registry.add_component(child, PositionComponent { pos: Vec2::new(0.0, 0.0) }).abort();
+        self.registry.add_component(child, ChildComponent { parent: player, relative_pos: Vec2 { x: 0.0, y: 0.0 } }).abort();
+        self.registry.add_component(child, SpriteComponent { sprite: &DANGO_OUTLINE_SPRITE });
     }
 
     pub fn create_systems(&mut self) {

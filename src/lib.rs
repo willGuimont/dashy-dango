@@ -33,7 +33,7 @@ fn start() {
             0xfc49e1,
             0x88fce7,
             0x34bca3];
-        *DRAW_COLORS = 0x4320
+        *DRAW_COLORS = 0x1320
     }
     let mut world = World::new();
 

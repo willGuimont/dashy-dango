@@ -14,6 +14,7 @@ impl System for DrawSystem {
             for (_, (sprite_component, pos, )) in entities_with_components!(registry, SpriteComponent, PositionComponent) {
                 let new_pos = camera_conversion(pos, cam_pos);
                 let sprite = &sprite_component.sprite;
+                unsafe { *DRAW_COLORS = sprite.draw; }
                 blit(sprite.data, new_pos.x as i32, new_pos.y as i32, sprite.width, sprite.height, sprite.flags);
             }
         }
