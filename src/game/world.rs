@@ -1,7 +1,7 @@
 use std::collections::HashSet;
 use std::collections::LinkedList;
 
-use crate::{Abort, REFRESH_RATE, Registry, trace, Vec2};
+use crate::{Abort, Registry, Vec2};
 use crate::assets::DANGO_SPRITE;
 use crate::game::components::{CameraComponent, ChildComponent, DashComponent, GamepadComponent, HealthComponent, MoveComponent, PlayerComponent, PositionComponent, SizeComponent, SpriteComponent};
 use crate::game::systems::{ChildSystem, DrawSystem, EnemyAttackSystem, EnemyMovementSystem, EnemyWavesSystem, MoveSystem, System};
@@ -43,7 +43,7 @@ impl World {
         // TODO might consider adding a macro to remove all this boilerplate
         self.systems.push_back(Box::new(MoveSystem));
         self.systems.push_back(Box::new(ChildSystem));
-        self.systems.push_back(Box::new(EnemyWavesSystem::new(10 * (REFRESH_RATE as i32))));
+        self.systems.push_back(Box::new(EnemyWavesSystem));
         self.systems.push_back(Box::new(EnemyMovementSystem));
         self.systems.push_back(Box::new(EnemyAttackSystem));
         self.systems.push_back(Box::new(TTLSystem));
