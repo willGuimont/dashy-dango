@@ -1,7 +1,7 @@
 use std::collections::HashSet;
 use std::collections::LinkedList;
 
-use crate::{Abort, REFRESH_RATE, Registry, trace, Vec2};
+use crate::{Abort, REFRESH_RATE, Registry, Vec2};
 use crate::assets::DANGO_SPRITE;
 use crate::game::components::{CameraComponent, ChildComponent, DashComponent, GamepadComponent, HealthComponent, MoveComponent, PlayerComponent, PositionComponent, SizeComponent, SpriteComponent};
 use crate::game::systems::{ChildSystem, DrawSystem, EnemyAttackSystem, EnemyMovementSystem, EnemyWavesSystem, MoveSystem, System};

@@ -23,7 +23,7 @@ impl System for EnemyAttackSystem {
 fn shoot_attack(registry: &mut Registry, e: Entity, player_pos: Vec2) {
     let (mut shoot, enemy_pos) = get_components_clone_unwrap!(registry, e, ShooterComponent, PositionComponent);
     let enemy_pos = enemy_pos.pos;
-    let direction_to_player = (player_pos - enemy_pos);
+    let direction_to_player = player_pos - enemy_pos;
     let player_distance = direction_to_player.norm();
 
     if shoot.firing_timeout <= 0 && player_distance <= shoot.firing_distance as f32 {

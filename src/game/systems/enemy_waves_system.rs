@@ -6,8 +6,6 @@ use crate::ecs::Entity;
 use crate::game::components::{EnemyComponent, HealthComponent, PositionComponent, SizeComponent, SpriteComponent};
 use crate::game::components::enemy_attack_components::shooter_component::ShooterComponent;
 use crate::game::components::sentinel_move_component::SentinelMoveComponent;
-use crate::game::components::spiral_move_component::SpiralMoveComponent;
-use crate::game::components::straight_move_component::StraightMoveComponent;
 use crate::game::systems::System;
 
 pub struct EnemyWavesSystem {
@@ -48,6 +46,7 @@ impl EnemyWavesSystem {
 impl System for EnemyWavesSystem {
     fn execute_system(&mut self, registry: &mut Registry) {
         let num_enemies = entities_with!(registry, EnemyComponent).iter().count();
+        self.timeout -= 1;
         if self.timeout <= 0 || num_enemies == 0 {
             self.spawn_new_wave(registry);
         }
