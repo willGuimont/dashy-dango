@@ -1,5 +1,4 @@
 use crate::*;
-use crate::assets::sprites::*;
 use crate::ecs::Entity;
 use crate::game::components::{CameraComponent, PositionComponent, SpriteComponent};
 use crate::game::systems::System;

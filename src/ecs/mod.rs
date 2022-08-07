@@ -47,6 +47,7 @@ impl Registry {
         self.alive_entities.remove(&entity);
         self.components.iter_mut().for_each(|(_, cs)| {
             cs.remove(&entity);
+            cs.shrink_to_fit();
         });
     }
 
@@ -68,7 +69,10 @@ impl Registry {
     pub fn remove_component<T: BaseComponent + 'static + Clone>(&mut self, entity: Entity) {
         let type_id = TypeId::of::<T>();
         self.components.get_mut(&type_id)
-            .map(|c| c.remove(&entity));
+            .map(|c| {
+                c.remove(&entity);
+                c.shrink_to_fit();
+            });
     }
 
     pub fn has_component<T: BaseComponent + 'static + Clone>(&self, entity: Entity) -> bool {
