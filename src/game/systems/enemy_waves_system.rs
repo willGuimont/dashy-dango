@@ -43,28 +43,25 @@ impl EnemyWavesSystem {
         let dtheta = TAU / num_enemies as f32;
 
         for i in 0..wave.nb_sprinter {
-            let theta = i as f32 * TAU / wave.nb_sprinter as f32;
-            let c = player_pos.x + theta.cos() * spawn_radius;
-            let s = player_pos.y + theta.sin() * spawn_radius;
-            let pos = Vec2::new(c, s);
+            let pos = get_enemy_pos(i as f32, 0.0, wave.nb_sprinter as f32, player_pos, spawn_radius);
 
-            summon_sprinter(registry, pos);
+            let e = registry.new_entity();
+            init_sprinter(registry, e);
+            registry.add_component(e, PositionComponent { pos }).abort();
         }
         for i in 0..wave.nb_fly {
-            let theta = i as f32 * TAU / wave.nb_fly as f32 + dtheta;
-            let c = player_pos.x + theta.cos() * spawn_radius;
-            let s = player_pos.y + theta.sin() * spawn_radius;
-            let pos = Vec2::new(c, s);
+            let pos = get_enemy_pos(i as f32, dtheta, wave.nb_fly as f32, player_pos, spawn_radius);
 
-            summon_fly(registry, pos);
+            let e = registry.new_entity();
+            init_fly(registry, e);
+            registry.add_component(e, PositionComponent { pos }).abort();
         }
         for i in 0..wave.nb_spitworm {
-            let theta = i as f32 * TAU / wave.nb_spitworm as f32 + (2.0 * dtheta);
-            let c = player_pos.x + theta.cos() * spawn_radius;
-            let s = player_pos.y + theta.sin() * spawn_radius;
-            let pos = Vec2::new(c, s);
+            let pos = get_enemy_pos(i as f32, 2.0 * dtheta, wave.nb_spitworm as f32, player_pos, spawn_radius);
 
-            summon_spitworm(registry, pos);
+            let e = registry.new_entity();
+            init_spitworm(registry, e);
+            registry.add_component(e, PositionComponent { pos }).abort();
         }
     }
 }
@@ -85,20 +82,9 @@ impl System for EnemyWavesSystem {
     }
 }
 
-fn summon_sprinter(registry: &mut Registry, pos: Vec2) {
-    let e = registry.new_entity();
-    init_sprinter(registry, e);
-    registry.add_component(e, PositionComponent { pos }).abort();
-}
-
-fn summon_fly(registry: &mut Registry, pos: Vec2) {
-    let e = registry.new_entity();
-    init_fly(registry, e);
-    registry.add_component(e, PositionComponent { pos }).abort();
-}
-
-fn summon_spitworm(registry: &mut Registry, pos: Vec2) {
-    let e = registry.new_entity();
-    init_spitworm(registry, e);
-    registry.add_component(e, PositionComponent { pos }).abort();
+fn get_enemy_pos(i: f32, dtheta: f32, nb_entity: f32, player_pos: Vec2, spawn_radius: f32) -> Vec2 {
+    let theta = i * TAU / nb_entity + dtheta;
+    let c = player_pos.x + theta.cos() * spawn_radius;
+    let s = player_pos.y + theta.sin() * spawn_radius;
+    Vec2::new(c, s)
 }
