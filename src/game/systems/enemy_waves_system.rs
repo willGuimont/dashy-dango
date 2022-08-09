@@ -1,9 +1,9 @@
 use std::f32::consts::TAU;
 
 use crate::{Abort, entities_with, has_all_components, Registry, Vec2};
-use crate::assets::GRASS_SPRITE;
+use crate::assets::{FLY_SPRITE, GRASS_SPRITE, SPITWORM_SPRITE};
 use crate::ecs::Entity;
-use crate::game::components::{EnemyComponent, HealthComponent, PositionComponent, SizeComponent, SpriteComponent};
+use crate::game::components::{EnemyComponent, HealthComponent, PositionComponent, SizeComponent, SpiralMoveComponent, SpriteComponent};
 use crate::game::components::enemy_attack_components::shooter_component::ShooterComponent;
 use crate::game::components::sentinel_move_component::SentinelMoveComponent;
 use crate::game::systems::System;
@@ -25,11 +25,12 @@ impl EnemyWavesSystem {
             registry.add_component(e, HealthComponent { hp: 1, timeout: 0, hit_delay: 0 }).abort();
             // TODO do not hardcode speed
             registry.add_component(e, EnemyComponent).abort();
-            registry.add_component(e, SentinelMoveComponent { speed: 0.1, stopping_distance: 50.0 }).abort();
+            //registry.add_component(e, SentinelMoveComponent { speed: 0.1, stopping_distance: 50.0 }).abort();
+            registry.add_component(e, SpiralMoveComponent { perpendicular_speed: 1.0, parallel_speed: 0.1 }).abort();
             registry.add_component(e, ShooterComponent { bullet_speed: 2.0, firing_timeout: 200, firing_delay: 200, bullet_lifespan: 100, firing_distance: 50 }).abort();
             // TODO do not hardcode size
             registry.add_component(e, SizeComponent { width: 8, height: 8 }).abort();
-            registry.add_component(e, SpriteComponent { sprite: &GRASS_SPRITE });
+            registry.add_component(e, SpriteComponent { sprite: &FLY_SPRITE, zindex: 1 });
         }
     }
 }
