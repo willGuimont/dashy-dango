@@ -48,7 +48,7 @@ impl World {
         // TODO might consider adding a macro to remove all this boilerplate
         self.systems.push_back(Box::new(MoveSystem));
         self.systems.push_back(Box::new(ChildSystem));
-        self.systems.push_back(Box::new(EnemyWavesSystem));
+        self.systems.push_back(Box::new(EnemyWavesSystem { current_wave: 0 }));
         self.systems.push_back(Box::new(EnemyMovementSystem));
         self.systems.push_back(Box::new(EnemyAttackSystem));
         self.systems.push_back(Box::new(TTLSystem));
