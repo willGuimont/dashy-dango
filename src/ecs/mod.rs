@@ -1,6 +1,6 @@
 use std::any::{Any, TypeId};
 use std::collections::{HashMap, HashSet};
-use std::collections::hash_set::{IntoIter, Iter};
+use std::collections::hash_set::Iter;
 
 use crate::abort::Abort;
 

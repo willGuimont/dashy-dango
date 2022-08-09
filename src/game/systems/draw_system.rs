@@ -32,11 +32,17 @@ fn create_z_buffer(registry: &Registry) -> Vec<(&SpriteComponent, &PositionCompo
 }
 
 fn bubble_sort(vec: &mut Vec<(&SpriteComponent, &PositionComponent)>) {
+    let mut has_swap = false;
     for i in 0..vec.len() {
-        for j in i + 1..vec.len() {
-            if vec.get(i).abort().0.zindex > vec.get(j).abort().0.zindex {
-                vec.swap(i, j);
+        has_swap = false;
+        for j in 1..vec.len() - i {
+            if vec.get(j - 1).abort().0.zindex > vec.get(j).abort().0.zindex {
+                has_swap = true;
+                vec.swap(j - 1, j);
             }
+        }
+        if !has_swap {
+            return;
         }
     }
 }

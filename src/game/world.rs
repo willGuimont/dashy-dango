@@ -30,7 +30,7 @@ impl World {
         self.registry.add_component(player, DashComponent { length: PLAYER_BASE_DASH, timeout: 0, duration: 0, direction: Vec2 { x: 0.0, y: 0.0 }, hit: HashSet::new() }).abort();
         self.registry.add_component(player, CameraComponent).abort();
         self.registry.add_component(player, SizeComponent { width: 8, height: 8 }).abort();
-        self.registry.add_component(player, SpriteComponent { sprite: &DANGO_SPRITE, zindex: 1 }).abort();
+        self.registry.add_component(player, SpriteComponent { sprite: &DANGO_SPRITE, zindex: 0 }).abort();
         self.registry.add_component(player, HealthComponent { hp: PLAYER_BASE_HEALTH, timeout: 0, hit_delay: PLAYER_HIT_TIMEOUT }).abort();
 
         let child = self.registry.new_entity();
@@ -41,7 +41,7 @@ impl World {
         let child = self.registry.new_entity();
         self.registry.add_component(child, PositionComponent { pos: Vec2::new(0.0, 0.0) }).abort();
         self.registry.add_component(child, ChildComponent { parent: player, relative_pos: Vec2 { x: 0.0, y: 0.0 } }).abort();
-        self.registry.add_component(child, SpriteComponent { sprite: &DANGO_OUTLINE_SPRITE, zindex: 1 });
+        self.registry.add_component(child, SpriteComponent { sprite: &DANGO_OUTLINE_SPRITE, zindex: 0 });
     }
 
     pub fn create_systems(&mut self) {
