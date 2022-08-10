@@ -10,6 +10,7 @@ pub use health_component::*;
 pub use move_component::*;
 pub use player_component::*;
 pub use position_component::*;
+pub use score_component::*;
 pub use size_component::*;
 pub use sprite_component::*;
 
@@ -28,4 +29,5 @@ pub mod sprite_component;
 pub mod ttl_component;
 pub mod enemy_movement_components;
 pub mod enemy_attack_components;
+pub mod score_component;
 

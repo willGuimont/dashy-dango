@@ -46,14 +46,4 @@ fn start() {
 fn update() {
     let world = unsafe { &mut WORLD.get_mut().abort() };
     world.execute_systems();
-
-    let mut topic: Topic<i32> = Topic::new();
-    let mut sub_1 = Subscriber::new();
-    let mut sub_2 = Subscriber::new();
-    sub_1.follow(&mut topic);
-    sub_2.follow(&mut topic);
-
-    topic.send_message(123);
-    topic.send_message(456);
-    sub_1.pop_message().abort();
 }
