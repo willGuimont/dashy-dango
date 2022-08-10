@@ -59,7 +59,7 @@ impl World {
         self.systems.push_back(Box::new(TTLSystem));
         self.systems.push_back(Box::new(DangoEyesSystem));
         self.systems.push_back(Box::new(DrawSystem));
-        self.systems.push_back(Box::new(ScoreSystem { score: 1000, decrease_timer: 0, score_decrease_speed: 10, event_queue: score_event }));
+        self.systems.push_back(Box::new(ScoreSystem { score: 100, decrease_timer: 0, score_decrease_speed: 10, event_queue: score_event }));
     }
 
     pub fn execute_systems(&mut self) {
