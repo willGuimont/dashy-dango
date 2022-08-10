@@ -19,15 +19,14 @@ pub mod child_component;
 pub mod dango_eyes_component;
 pub mod dash_component;
 pub mod enemy_component;
+pub mod enemy_movement_components;
+pub mod enemy_attack_components;
 pub mod gamepad_component;
 pub mod health_component;
 pub mod move_component;
 pub mod player_component;
 pub mod position_component;
+pub mod score_component;
 pub mod size_component;
 pub mod sprite_component;
 pub mod ttl_component;
-pub mod enemy_movement_components;
-pub mod enemy_attack_components;
-pub mod score_component;
-
