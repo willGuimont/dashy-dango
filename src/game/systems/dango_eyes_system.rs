@@ -9,7 +9,7 @@ pub struct DangoEyesSystem;
 
 impl System for DangoEyesSystem {
     fn execute_system(&mut self, registry: &mut Registry) {
-        for e in entities_with!(registry, DangoEyeComponent, ChildComponent, PositionComponent) {
+        for e in entities_with!(registry, DangoEyeComponent, GamepadComponent, ChildComponent, PositionComponent) {
             let (gamepad, mut child) = get_components_clone_unwrap!(registry, e, GamepadComponent, ChildComponent);
             let direction = gamepad_to_vec(gamepad.get_gamepad());
             let offset = Vec2::new(
@@ -25,12 +25,11 @@ impl System for DangoEyesSystem {
             if direction.y < -1.0 {
                 direction.y = -1.0;
             }
-            if direction.x.abs() >= 1.0 && direction.y.abs() >= 1.0 {
+            if direction.x.abs() == 1.0 && direction.y.abs() == 1.0 {
                 direction.y = 1.0 * direction.y.signum();
             }
 
             child.relative_pos = direction + offset;
-
             registry.add_component(e, child);
         }
     }
