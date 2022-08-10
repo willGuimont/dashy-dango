@@ -13,12 +13,23 @@ impl System for DangoEyesSystem {
             let (gamepad, mut child) = get_components_clone_unwrap!(registry, e, GamepadComponent, ChildComponent);
             let direction = gamepad_to_vec(gamepad.get_gamepad());
             let offset = Vec2::new(
-                DANGO_SPRITE.width as f32 / 2.0 - DANGO_EYE_SPRITE.width as f32 / 2.0 + 1.0,
-                DANGO_SPRITE.height as f32 / 2.0 - DANGO_EYE_SPRITE.height as f32 / 2.0 + 1.0,
+                (DANGO_SPRITE.width - DANGO_EYE_SPRITE.width) as f32 / 2.0 + 1.0,
+                (DANGO_SPRITE.height - DANGO_EYE_SPRITE.height) as f32 / 2.0 + 1.0,
             );
-            let scaling = 1.0;
+            let scaling = 1.5;
 
-            child.relative_pos = scaling * direction + offset;
+            let mut direction = scaling * direction;
+            if direction.x > 1.0 {
+                direction.x = 1.0;
+            }
+            if direction.y < -1.0 {
+                direction.y = -1.0;
+            }
+            if direction.x.abs() >= 1.0 && direction.y.abs() >= 1.0 {
+                direction.y = 1.0 * direction.y.signum();
+            }
+
+            child.relative_pos = direction + offset;
 
             registry.add_component(e, child);
         }
