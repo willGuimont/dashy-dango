@@ -3,8 +3,8 @@ use std::collections::LinkedList;
 
 use crate::{Abort, Registry, Vec2};
 use crate::assets::{DANGO_EYE_SPRITE, DANGO_OUTLINE_SPRITE, DANGO_SPRITE};
-use crate::game::components::{CameraComponent, ChildComponent, DashComponent, GamepadComponent, HealthComponent, MoveComponent, PlayerComponent, PositionComponent, SizeComponent, SpriteComponent};
-use crate::game::systems::{ChildSystem, DrawSystem, EnemyAttackSystem, EnemyMovementSystem, EnemyWavesSystem, MoveSystem, System};
+use crate::game::components::{CameraComponent, ChildComponent, DangoEyeComponent, DashComponent, GamepadComponent, HealthComponent, MoveComponent, PlayerComponent, PositionComponent, SizeComponent, SpriteComponent};
+use crate::game::systems::{ChildSystem, DangoEyesSystem, DrawSystem, EnemyAttackSystem, EnemyMovementSystem, EnemyWavesSystem, MoveSystem, System};
 use crate::game::systems::ttl_system::TTLSystem;
 
 const PLAYER_BASE_SPEED: i16 = 2;
@@ -33,25 +33,27 @@ impl World {
         self.registry.add_component(player, SpriteComponent { sprite: &DANGO_SPRITE, zindex: 0 }).abort();
         self.registry.add_component(player, HealthComponent { hp: PLAYER_BASE_HEALTH, timeout: 0, hit_delay: PLAYER_HIT_TIMEOUT }).abort();
 
-        let child = self.registry.new_entity();
-        self.registry.add_component(child, PositionComponent { pos: Vec2::new(0.0, 0.0) }).abort();
-        self.registry.add_component(child, ChildComponent { parent: player, relative_pos: Vec2 { x: 3.0, y: 4.0 } }).abort();
-        self.registry.add_component(child, SpriteComponent { sprite: &DANGO_EYE_SPRITE, zindex: 2 });
+        let eyes = self.registry.new_entity();
+        self.registry.add_component(eyes, DangoEyeComponent).abort();
+        self.registry.add_component(eyes, GamepadComponent { gamepad }).abort();
+        self.registry.add_component(eyes, PositionComponent { pos: Vec2::new(0.0, 0.0) }).abort();
+        self.registry.add_component(eyes, ChildComponent { parent: player, relative_pos: Vec2 { x: 3.0, y: 4.0 } }).abort();
+        self.registry.add_component(eyes, SpriteComponent { sprite: &DANGO_EYE_SPRITE, zindex: 2 });
 
-        let child = self.registry.new_entity();
-        self.registry.add_component(child, PositionComponent { pos: Vec2::new(0.0, 0.0) }).abort();
-        self.registry.add_component(child, ChildComponent { parent: player, relative_pos: Vec2 { x: 0.0, y: 0.0 } }).abort();
-        self.registry.add_component(child, SpriteComponent { sprite: &DANGO_OUTLINE_SPRITE, zindex: 0 });
+        let outline = self.registry.new_entity();
+        self.registry.add_component(outline, PositionComponent { pos: Vec2::new(0.0, 0.0) }).abort();
+        self.registry.add_component(outline, ChildComponent { parent: player, relative_pos: Vec2 { x: 0.0, y: 0.0 } }).abort();
+        self.registry.add_component(outline, SpriteComponent { sprite: &DANGO_OUTLINE_SPRITE, zindex: 0 });
     }
 
     pub fn create_systems(&mut self) {
-        // TODO might consider adding a macro to remove all this boilerplate
         self.systems.push_back(Box::new(MoveSystem));
         self.systems.push_back(Box::new(ChildSystem));
         self.systems.push_back(Box::new(EnemyWavesSystem { current_wave: 0 }));
         self.systems.push_back(Box::new(EnemyMovementSystem));
         self.systems.push_back(Box::new(EnemyAttackSystem));
         self.systems.push_back(Box::new(TTLSystem));
+        self.systems.push_back(Box::new(DangoEyesSystem));
         self.systems.push_back(Box::new(DrawSystem));
     }
 

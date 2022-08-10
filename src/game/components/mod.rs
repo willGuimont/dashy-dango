@@ -1,5 +1,6 @@
 pub use camera_component::*;
 pub use child_component::*;
+pub use dango_eyes_component::*;
 pub use dash_component::*;
 pub use enemy_attack_components::*;
 pub use enemy_component::*;
@@ -14,6 +15,7 @@ pub use sprite_component::*;
 
 pub mod camera_component;
 pub mod child_component;
+pub mod dango_eyes_component;
 pub mod dash_component;
 pub mod enemy_component;
 pub mod gamepad_component;

@@ -10,7 +10,7 @@ pub struct MoveSystem;
 impl System for MoveSystem {
     fn execute_system(&mut self, registry: &mut Registry) {
         for e in entities_with!(registry, GamepadComponent, DashComponent, MoveComponent, PositionComponent) {
-            let (gamepad, dash, move_c, size, pos) = get_components_clone_unwrap!(registry,e,GamepadComponent,DashComponent, MoveComponent,SizeComponent, PositionComponent);
+            let (gamepad, dash, move_c, size, pos) = get_components_clone_unwrap!(registry, e, GamepadComponent, DashComponent, MoveComponent,SizeComponent, PositionComponent);
             let direction = gamepad_to_vec(gamepad.get_gamepad());
 
             if dash.duration > 0 {
