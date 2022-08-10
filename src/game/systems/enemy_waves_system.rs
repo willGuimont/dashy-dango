@@ -1,11 +1,9 @@
-use std::f32::consts::{PI, TAU};
+use std::f32::consts::TAU;
 
-use crate::{Abort, entities_with, entities_with_components, get_components_unwrap, has_all_components, Registry, trace, Vec2};
-use crate::assets::{FLY_SPRITE, GRASS_SPRITE, init_fly, init_spitworm, init_sprinter, SPITWORM_SPRITE};
+use crate::{Abort, entities_with, entities_with_components, get_components_unwrap, has_all_components, Registry, Vec2};
+use crate::assets::{init_fly, init_spitworm, init_sprinter};
 use crate::ecs::Entity;
-use crate::game::components::{EnemyComponent, HealthComponent, PlayerComponent, PositionComponent, SizeComponent, SpiralMoveComponent, SpriteComponent, StraightMoveComponent};
-use crate::game::components::enemy_attack_components::shooter_component::ShooterComponent;
-use crate::game::components::sentinel_move_component::SentinelMoveComponent;
+use crate::game::components::{EnemyComponent, PlayerComponent, PositionComponent};
 use crate::game::systems::System;
 
 const NB_WAVES: u8 = 6;
@@ -37,7 +35,6 @@ impl Wave {
 
 impl EnemyWavesSystem {
     fn spawn_wave(&mut self, registry: &mut Registry, wave: Wave, player_pos: Vec2) {
-        trace(self.current_wave.to_string());
         let num_enemies = wave.num_enemies();
         let spawn_radius = 50.0;
         let dtheta = TAU / num_enemies as f32;

@@ -1,5 +1,4 @@
 use crate::*;
-use crate::assets::Sprite;
 use crate::ecs::Entity;
 use crate::game::components::{CameraComponent, PositionComponent, SpriteComponent};
 use crate::game::systems::System;
@@ -32,9 +31,8 @@ fn create_z_buffer(registry: &Registry) -> Vec<(&SpriteComponent, &PositionCompo
 }
 
 fn bubble_sort(vec: &mut Vec<(&SpriteComponent, &PositionComponent)>) {
-    let mut has_swap = false;
     for i in 0..vec.len() {
-        has_swap = false;
+        let mut has_swap = false;
         for j in 1..vec.len() - i {
             if vec.get(j - 1).abort().0.zindex > vec.get(j).abort().0.zindex {
                 has_swap = true;

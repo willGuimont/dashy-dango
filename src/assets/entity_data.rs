@@ -1,6 +1,4 @@
-use std::path::Component;
-
-use crate::{Abort, BaseComponent, Registry};
+use crate::{Abort, Registry};
 use crate::assets::*;
 use crate::ecs::Entity;
 use crate::game::components::*;
