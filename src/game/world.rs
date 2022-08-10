@@ -1,10 +1,10 @@
 use std::collections::HashSet;
 use std::collections::LinkedList;
 
-use crate::{Abort, Registry, Vec2};
+use crate::{Abort, Registry, Subscriber, Topic, Vec2};
 use crate::assets::{DANGO_EYE_SPRITE, DANGO_OUTLINE_SPRITE, DANGO_SPRITE};
 use crate::game::components::{CameraComponent, ChildComponent, DangoEyeComponent, DashComponent, GamepadComponent, HealthComponent, MoveComponent, PlayerComponent, PositionComponent, SizeComponent, SpriteComponent};
-use crate::game::systems::{ChildSystem, DangoEyesSystem, DrawSystem, EnemyAttackSystem, EnemyMovementSystem, EnemyWavesSystem, MoveSystem, System};
+use crate::game::systems::{ChildSystem, DangoEyesSystem, DrawSystem, EnemyAttackSystem, EnemyMovementSystem, EnemyWavesSystem, MoveSystem, ScoreSystem, System};
 use crate::game::systems::ttl_system::TTLSystem;
 
 const PLAYER_BASE_SPEED: i16 = 2;
@@ -47,7 +47,11 @@ impl World {
     }
 
     pub fn create_systems(&mut self) {
-        self.systems.push_back(Box::new(MoveSystem));
+        let mut score_event = Subscriber::new();
+        let mut score_topic = Topic::new();
+        score_event.follow(&mut score_topic);
+
+        self.systems.push_back(Box::new(MoveSystem { event_queue: score_topic }));
         self.systems.push_back(Box::new(ChildSystem));
         self.systems.push_back(Box::new(EnemyWavesSystem { current_wave: 0 }));
         self.systems.push_back(Box::new(EnemyMovementSystem));
@@ -55,6 +59,7 @@ impl World {
         self.systems.push_back(Box::new(TTLSystem));
         self.systems.push_back(Box::new(DangoEyesSystem));
         self.systems.push_back(Box::new(DrawSystem));
+        self.systems.push_back(Box::new(ScoreSystem { score: 1000, decrease_timer: 0, score_decrease_speed: 10, event_queue: score_event }));
     }
 
     pub fn execute_systems(&mut self) {
