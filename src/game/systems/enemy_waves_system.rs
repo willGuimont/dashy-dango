@@ -72,7 +72,6 @@ impl System for EnemyWavesSystem {
             self.spawn_wave(registry, WAVES[self.current_wave as usize], player_pos);
             self.current_wave += 1;
             if self.current_wave >= NB_WAVES {
-                //Implement game winning
                 self.current_wave -= 1;
             }
         }

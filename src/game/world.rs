@@ -1,8 +1,9 @@
 use std::collections::HashSet;
 use std::collections::LinkedList;
 
-use crate::{Abort, Registry, Subscriber, Topic, Vec2};
+use crate::{Abort, entities_with, entities_with_components, GameState, get_components_unwrap, has_all_components, Registry, set_game_state, Subscriber, Topic, Vec2};
 use crate::assets::{DANGO_EYE_SPRITE, DANGO_OUTLINE_SPRITE, DANGO_SPRITE};
+use crate::ecs::Entity;
 use crate::game::components::{CameraComponent, ChildComponent, DangoEyeComponent, DashComponent, GamepadComponent, HealthComponent, MoveComponent, PlayerComponent, PositionComponent, SizeComponent, SpriteComponent};
 use crate::game::systems::{ChildSystem, DangoEyesSystem, DrawSystem, EnemyAttackSystem, EnemyMovementSystem, EnemyWavesSystem, MoveSystem, ScoreSystem, System};
 use crate::game::systems::ttl_system::TTLSystem;
@@ -15,6 +16,7 @@ const PLAYER_HIT_TIMEOUT: i16 = 1000;
 pub struct World {
     pub registry: Registry,
     pub systems: LinkedList<Box<dyn System>>,
+
 }
 
 // TODO make world independent of our actual game, this logic should probably be in lib.rs, or some helper module
@@ -59,12 +61,22 @@ impl World {
         self.systems.push_back(Box::new(TTLSystem));
         self.systems.push_back(Box::new(DangoEyesSystem));
         self.systems.push_back(Box::new(DrawSystem));
-        self.systems.push_back(Box::new(ScoreSystem { score: 100, decrease_timer: 0, score_decrease_speed: 10, event_queue: score_event }));
+        self.systems.push_back(Box::new(ScoreSystem { score: 0, decrease_timer: 0, score_decrease_speed: 10, event_queue: score_event }));
     }
 
     pub fn execute_systems(&mut self) {
         for system in self.systems.iter_mut() {
             system.execute_system(&mut self.registry);
         }
+    }
+
+    fn update_game_state(&mut self) -> GameState {
+        let (_, (_, health)) = entities_with_components!(self.registry, PlayerComponent, HealthComponent).next().abort();
+        if health.hp <= 0 {
+            let score = 0;
+            let wave = 0;
+            return GameState::Loose(score, wave);
+        }
+        GameState::Ongoing
     }
 }
