@@ -1,5 +1,6 @@
 #![feature(once_cell)]
 #![feature(concat_idents)]
+#![feature(iter_advance_by)]
 
 use std::cell::OnceCell;
 
@@ -47,6 +48,7 @@ fn start() {
     let mut world = World::new();
 
     world.create_player(GAMEPAD1);
+    world.create_game_manager();
     world.create_systems();
     unsafe { WORLD.set(world).abort() };
 }
@@ -86,11 +88,17 @@ fn execute_game() {
 fn win_game(score: i32) {
     let string_score = "You won the game with ".to_owned() + &int_to_string(score);
     let string_score = string_score + " points!";
-    text("Congratulation!", 50, 10);
-    text(string_score, 70, 30);
+    text("Congratulation!", 10, 10);
+    text(string_score, 10, 30);
 }
 
-fn loose_game(score: i32, wave: u8) {}
+fn loose_game(score: i32, wave: u8) {
+    let string_score = "You lost the game with ".to_owned() + &int_to_string(score);
+    let string_score = string_score + " points!";
+    let wave = "on wave ".to_owned() + &int_to_string(wave as i32);
+    text(string_score, 10, 30);
+    text(wave, 10, 50);
+}
 
 pub fn set_game_state(game_state: GameState) {
     unsafe { GAME_STATE = game_state; }

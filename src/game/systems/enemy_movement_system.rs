@@ -1,6 +1,6 @@
-use crate::{Abort, create_box, entities_with, entities_with_components, get_components_clone_unwrap, get_components_unwrap, has_all_components, Registry, Vec2};
+use crate::{Abort, create_box, entities_with, entities_with_components, get_components_clone_unwrap, get_components_unwrap, has_all_components, Registry, trace, Vec2};
 use crate::ecs::Entity;
-use crate::game::components::{EnemyComponent, HealthComponent, PlayerComponent, PositionComponent, SizeComponent};
+use crate::game::components::{DashComponent, EnemyComponent, GameManagerComponent, HealthComponent, PlayerComponent, PositionComponent, SizeComponent};
 use crate::game::components::bullet_move_component::BulletMoveComponent;
 use crate::game::components::sentinel_move_component::SentinelMoveComponent;
 use crate::game::components::spiral_move_component::SpiralMoveComponent;
@@ -29,6 +29,7 @@ impl System for EnemyMovementSystem {
                 let (movement, ) = get_components_unwrap!(registry,e,BulletMoveComponent);
                 enemy_pos = bullet_move(enemy_pos, player_pos, movement);
             }
+
             collide_player(enemy_pos, &enemy_size, registry);
             registry.add_component(e, PositionComponent { pos: enemy_pos });
         }
@@ -68,16 +69,24 @@ fn bullet_move(enemy_pos: Vec2, _player_pos: Vec2, movement: &BulletMoveComponen
 
 fn collide_player(e_pos: Vec2, e_size: &SizeComponent, registry: &mut Registry) {
     for e in entities_with!(registry, PlayerComponent) {
-        let (mut health, p_pos, p_size) = get_components_clone_unwrap!(registry,e,HealthComponent,PositionComponent,SizeComponent);
+        let (mut health, p_pos, p_size, dash) = get_components_clone_unwrap!(registry,e,HealthComponent,PositionComponent,SizeComponent, DashComponent);
         let player_hit = create_box(p_pos.pos, p_size.width as f32, p_size.height as f32);
         let enemy_hit = create_box(e_pos, e_size.width as f32, e_size.height as f32);
         if health.timeout > 0 {
             health.timeout -= 1;
             registry.add_component(e, health);
-        } else if health.timeout <= 0 && enemy_hit.rect_inter(&player_hit) {
+        } else if health.timeout <= 0 && dash.duration <= 0 && enemy_hit.rect_inter(&player_hit) {
+            trace(health.hp.to_string());
             health.hp -= 1;
             health.timeout += health.hit_delay;
+
+            let (&game_manager_entity, (_, )) = entities_with_components!(registry, GameManagerComponent).next().abort();
+            let (mut game_manager, ) = get_components_clone_unwrap!(registry,game_manager_entity,GameManagerComponent);
+
+            game_manager.player_hp = health.hp;
+
             registry.add_component(e, health);
+            registry.add_component(game_manager_entity, game_manager);
         }
     }
 }

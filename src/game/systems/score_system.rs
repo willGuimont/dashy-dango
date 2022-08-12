@@ -1,4 +1,6 @@
-use crate::{DRAW_COLORS, Registry, Subscriber, text};
+use crate::{Abort, DRAW_COLORS, entities_with, entities_with_components, get_components_clone_unwrap, get_components_unwrap, has_all_components, Registry, Subscriber, text};
+use crate::ecs::Entity;
+use crate::game::components::GameManagerComponent;
 use crate::game::systems::System;
 use crate::utils::int_to_string;
 
@@ -13,6 +15,11 @@ impl System for ScoreSystem {
     fn execute_system(&mut self, registry: &mut Registry) {
         self.score_decrease();
         self.read_event_queue();
+
+        let (&game_manager_entity, (_, )) = entities_with_components!(registry, GameManagerComponent).next().abort();
+        let (mut game_manager, ) = get_components_clone_unwrap!(registry,game_manager_entity,GameManagerComponent);
+        game_manager.score = self.score;
+        registry.add_component(game_manager_entity, game_manager);
 
         unsafe { *DRAW_COLORS = 0x0023; }
         text(int_to_string(self.score), 76, 0);
