@@ -76,7 +76,6 @@ fn collide_player(e_pos: Vec2, e_size: &SizeComponent, registry: &mut Registry) 
             health.timeout -= 1;
             registry.add_component(e, health);
         } else if health.timeout <= 0 && dash.duration <= 0 && enemy_hit.rect_inter(&player_hit) {
-            trace(health.hp.to_string());
             health.hp -= 1;
             health.timeout += health.hit_delay;
 

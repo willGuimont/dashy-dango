@@ -11,7 +11,7 @@ use crate::game::systems::ttl_system::TTLSystem;
 const PLAYER_BASE_SPEED: i16 = 2;
 const PLAYER_BASE_DASH: i16 = 60;
 const PLAYER_BASE_HEALTH: i16 = 5;
-const PLAYER_HIT_TIMEOUT: i16 = 1000;
+const PLAYER_HIT_TIMEOUT: i16 = 500;
 const BASE_SCORE: i32 = 100;
 
 pub struct World {
@@ -23,13 +23,22 @@ pub struct World {
 impl World {
     pub fn new() -> Self { World { registry: Registry::new(), systems: LinkedList::new() } }
 
+    pub fn set(&mut self, gamepad: *const u8) {
+        self.registry = Registry::new();
+        self.systems = LinkedList::new();
+
+        self.create_player(gamepad);
+        self.create_game_manager();
+        self.create_systems();
+    }
+
     pub fn create_player(&mut self, gamepad: *const u8) {
         let player = self.registry.new_entity();
         self.registry.add_component(player, PlayerComponent).abort();
         self.registry.add_component(player, PositionComponent { pos: Vec2::new(0.0, 0.0) }).abort();
         self.registry.add_component(player, GamepadComponent { gamepad }).abort();
         self.registry.add_component(player, MoveComponent { speed: PLAYER_BASE_SPEED }).abort();
-        self.registry.add_component(player, DashComponent { length: PLAYER_BASE_DASH, timeout: 0, duration: 0, direction: Vec2 { x: 0.0, y: 0.0 }, hit: HashSet::new() }).abort();
+        self.registry.add_component(player, DashComponent { length: PLAYER_BASE_DASH, timeout: 10, duration: 0, direction: Vec2 { x: 0.0, y: 0.0 }, hit: HashSet::new() }).abort();
         self.registry.add_component(player, CameraComponent).abort();
         self.registry.add_component(player, SizeComponent { width: 8, height: 8 }).abort();
         self.registry.add_component(player, SpriteComponent { sprite: &DANGO_SPRITE, zindex: 0 }).abort();
@@ -83,7 +92,7 @@ impl World {
     fn update_game_state(&mut self) -> GameState {
         let (_, (game_manager, )) = entities_with_components!(self.registry, GameManagerComponent).next().abort();
 
-        if game_manager.current_wave > NB_WAVES {
+        if game_manager.current_wave >= NB_WAVES {
             return GameState::Win(game_manager.score);
         }
         if game_manager.player_hp <= 0 {

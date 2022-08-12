@@ -34,7 +34,6 @@ pub enum GameState {
 static mut WORLD: OnceCell<World> = OnceCell::new();
 static mut GAME_STATE: GameState = GameState::Title;
 
-
 #[no_mangle]
 fn start() {
     unsafe {
@@ -45,12 +44,6 @@ fn start() {
             0x34bca3];
         *DRAW_COLORS = 0x1320
     }
-    let mut world = World::new();
-
-    world.create_player(GAMEPAD1);
-    world.create_game_manager();
-    world.create_systems();
-    unsafe { WORLD.set(world).abort() };
 }
 
 #[no_mangle]
@@ -66,15 +59,24 @@ fn update() {
 }
 
 fn begin_game() {
-    text("Welcome to Dashy Dango!", 10, 10);
-    text("Help the Dango survive by fightings waves of enemy", 10, 30);
-    text("Controls", 10, 50);
-    text("-X to dash", 10, 70);
-    text("-Z to switch colour palette", 10, 90);
-    text(" Press x to start!", 10, 110);
+    unsafe { *DRAW_COLORS = 0x4323 }
+
+    text_centered("Welcome to", 5);
+    text_centered("Dashy Dango!", 15);
+    text_centered("Help the Dango", 30);
+    text_centered("survive by fighting", 40);
+    text_centered("waves of enemy", 50);
+
+    text("Controls", 5, 70);
+    text("-X to dash", 5, 80);
+    text("-Z to switch", 5, 90);
+    text("colour palette", 5, 98);
+
+    text_centered(" Press x to start!", 130);
 
     unsafe {
         if is_dashing(*GAMEPAD1) {
+            setup_world();
             set_game_state(GameState::Ongoing);
         }
     }
@@ -86,20 +88,60 @@ fn execute_game() {
 }
 
 fn win_game(score: i32) {
-    let string_score = "You won the game with ".to_owned() + &int_to_string(score);
-    let string_score = string_score + " points!";
-    text("Congratulation!", 10, 10);
-    text(string_score, 10, 30);
+    unsafe { *DRAW_COLORS = 0x4323 }
+    text_centered("Congratulation!", 10);
+    text_centered("You won the game", 20);
+    text_centered("with", 30);
+    text_centered(&int_to_string(score), 40);
+    text_centered("points!", 50);
+
+    text_centered("Press x", 100);
+    text_centered("to play again!", 110);
+
+    unsafe {
+        if is_dashing(*GAMEPAD1) {
+            reset_world();
+            set_game_state(GameState::Ongoing);
+        }
+    }
 }
 
 fn loose_game(score: i32, wave: u8) {
-    let string_score = "You lost the game with ".to_owned() + &int_to_string(score);
-    let string_score = string_score + " points!";
-    let wave = "on wave ".to_owned() + &int_to_string(wave as i32);
-    text(string_score, 10, 30);
-    text(wave, 10, 50);
+    unsafe { *DRAW_COLORS = 0x4323 }
+    text_centered("You lost the game", 10);
+    text_centered("with", 20);
+    text_centered(&int_to_string(score), 30);
+    text_centered("points", 40);
+    text_centered("on wave", 50);
+    text_centered(&int_to_string(wave as i32), 60);
+
+    text_centered("Press x", 100);
+    text_centered("to try again!", 110);
+
+    unsafe {
+        if is_dashing(*GAMEPAD1) {
+            reset_world();
+            set_game_state(GameState::Ongoing);
+        }
+    }
 }
 
 pub fn set_game_state(game_state: GameState) {
     unsafe { GAME_STATE = game_state; }
+}
+
+fn setup_world() {
+    let mut world = World::new();
+    world.set(GAMEPAD1);
+    unsafe { WORLD.set(world).abort(); }
+}
+
+fn reset_world() {
+    let mut world = unsafe { &mut WORLD.get_mut().abort() };
+    world.set(GAMEPAD1);
+}
+
+fn text_centered(message: &str, y: i32) {
+    let x = ((20.0 - (message.len() as f32)) / 2.0 * 8.0) as i32;
+    text(message, x, y);
 }

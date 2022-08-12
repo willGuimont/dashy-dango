@@ -6,7 +6,7 @@ use crate::ecs::Entity;
 use crate::game::components::{EnemyComponent, GameManagerComponent, PlayerComponent, PositionComponent};
 use crate::game::systems::System;
 
-pub const NB_WAVES: u8 = 6;
+pub const NB_WAVES: u8 = 7;
 const WAVES: [Wave; NB_WAVES as usize] = [
     Wave { nb_sprinter: 5, nb_fly: 0, nb_spitworm: 0 },
     Wave { nb_sprinter: 10, nb_fly: 0, nb_spitworm: 0 },
@@ -14,6 +14,7 @@ const WAVES: [Wave; NB_WAVES as usize] = [
     Wave { nb_sprinter: 0, nb_fly: 10, nb_spitworm: 0 },
     Wave { nb_sprinter: 0, nb_fly: 0, nb_spitworm: 5 },
     Wave { nb_sprinter: 5, nb_fly: 5, nb_spitworm: 5 },
+    Wave { nb_sprinter: 0, nb_fly: 0, nb_spitworm: 0 },
 ];
 
 pub struct EnemyWavesSystem {
