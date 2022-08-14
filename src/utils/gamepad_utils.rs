@@ -18,6 +18,7 @@ pub fn gamepad_to_vec(gamepad: u8) -> Vec2 {
     direction.normalized()
 }
 
+
 pub fn is_dashing(gamepad: u8) -> bool {
     gamepad & BUTTON_1 != 0
 }
