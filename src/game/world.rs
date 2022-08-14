@@ -41,7 +41,7 @@ impl World {
         self.registry.add_component(player, DashComponent { length: PLAYER_BASE_DASH, timeout: 10, duration: 0, direction: Vec2 { x: 0.0, y: 0.0 }, hit: HashSet::new() }).abort();
         self.registry.add_component(player, CameraComponent).abort();
         self.registry.add_component(player, SizeComponent { width: 8, height: 8 }).abort();
-        self.registry.add_component(player, SpriteComponent { sprite: &DANGO_SPRITE, zindex: 0 }).abort();
+        self.registry.add_component(player, SpriteComponent { sprite: &DANGO_SPRITE, zindex: 2 }).abort();
         self.registry.add_component(player, HealthComponent { hp: PLAYER_BASE_HEALTH, timeout: 0, hit_delay: PLAYER_HIT_TIMEOUT }).abort();
 
         let eyes = self.registry.new_entity();
@@ -49,7 +49,7 @@ impl World {
         self.registry.add_component(eyes, GamepadComponent { gamepad }).abort();
         self.registry.add_component(eyes, PositionComponent { pos: Vec2::new(0.0, 0.0) }).abort();
         self.registry.add_component(eyes, ChildComponent { parent: player, relative_pos: Vec2 { x: 3.0, y: 4.0 } }).abort();
-        self.registry.add_component(eyes, SpriteComponent { sprite: &DANGO_EYE_SPRITE, zindex: 2 });
+        self.registry.add_component(eyes, SpriteComponent { sprite: &DANGO_EYE_SPRITE, zindex: 4 });
     }
 
     pub fn create_game_manager(&mut self) {
