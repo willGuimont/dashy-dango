@@ -37,7 +37,7 @@ impl MoveSystem {
         }
         let movement = direction * move_c.speed as f32;
         pos.pos = pos.pos + movement;
-        add_components!(registry, e, pos, dash,sprite);
+        add_components!(registry, e, pos, dash, sprite);
     }
 
     fn process_dash(&mut self, dir: Vec2, mut dash: DashComponent, size: SizeComponent, mut pos: PositionComponent, mut sprite: SpriteComponent, registry: &mut Registry, e: Entity) {
