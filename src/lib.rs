@@ -11,7 +11,7 @@ use crate::ecs::{BaseComponent, Registry};
 use crate::events::{Subscriber, Topic};
 use crate::game::world::World;
 use crate::math_utils::*;
-use crate::utils::{gamepad_utils, int_to_string, is_dashing};
+use crate::utils::{gamepad_utils, int_to_string, is_dashing, is_pallete_changed};
 
 #[cfg(feature = "buddy-alloc")]
 mod alloc;
@@ -31,17 +31,20 @@ pub enum GameState {
     Loose(i32, u8),
 }
 
+const PALETTES: [[u32; 4]; 2] = [
+    [0xf99dec, 0xfc49e1, 0x88fce7, 0x34bca3],
+    [0xFF73C3, 0xDB073D, 0x8EC7D2, 0x0D6986]
+];
+
 static mut WORLD: OnceCell<World> = OnceCell::new();
 static mut GAME_STATE: GameState = GameState::Title;
+static mut CURRENT_PALLETE: usize = 0;
+static mut OLD_GAMEPAD: u8 = 0;
 
 #[no_mangle]
 fn start() {
     unsafe {
-        *PALETTE = [
-            0xf99dec,
-            0xfc49e1,
-            0x88fce7,
-            0x34bca3];
+        *PALETTE = PALETTES[CURRENT_PALLETE];
         *DRAW_COLORS = 0x1320
     }
 }
@@ -55,6 +58,12 @@ fn update() {
             GameState::Win(score) => win_game(score),
             GameState::Loose(score, wave) => loose_game(score, wave),
         }
+
+        if is_pallete_changed(*GAMEPAD1 & (*GAMEPAD1 ^ OLD_GAMEPAD)) {
+            CURRENT_PALLETE = (CURRENT_PALLETE + 1) % PALETTES.len();
+            *PALETTE = PALETTES[CURRENT_PALLETE];
+        }
+        OLD_GAMEPAD = *GAMEPAD1;
     }
 }
 

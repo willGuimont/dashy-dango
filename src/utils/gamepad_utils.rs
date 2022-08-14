@@ -21,3 +21,5 @@ pub fn gamepad_to_vec(gamepad: u8) -> Vec2 {
 pub fn is_dashing(gamepad: u8) -> bool {
     gamepad & BUTTON_1 != 0
 }
+
+pub fn is_pallete_changed(gamepad: u8) -> bool { gamepad & BUTTON_2 != 0 }
