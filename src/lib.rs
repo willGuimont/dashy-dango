@@ -1,5 +1,6 @@
 #![feature(once_cell)]
 #![feature(concat_idents)]
+#![feature(iter_advance_by)]
 
 use std::cell::OnceCell;
 
@@ -10,7 +11,7 @@ use crate::ecs::{BaseComponent, Registry};
 use crate::events::{Subscriber, Topic};
 use crate::game::world::World;
 use crate::math_utils::*;
-use crate::utils::gamepad_utils;
+use crate::utils::{gamepad_utils, int_to_string, is_dashing};
 
 #[cfg(feature = "buddy-alloc")]
 mod alloc;
@@ -23,7 +24,15 @@ mod events;
 mod assets;
 mod abort;
 
+pub enum GameState {
+    Title,
+    Ongoing,
+    Win(i32),
+    Loose(i32, u8),
+}
+
 static mut WORLD: OnceCell<World> = OnceCell::new();
+static mut GAME_STATE: GameState = GameState::Title;
 
 #[no_mangle]
 fn start() {
@@ -35,15 +44,104 @@ fn start() {
             0x34bca3];
         *DRAW_COLORS = 0x1320
     }
-    let mut world = World::new();
-
-    world.create_player(GAMEPAD1);
-    world.create_systems();
-    unsafe { WORLD.set(world).abort() };
 }
 
 #[no_mangle]
 fn update() {
+    unsafe {
+        match GAME_STATE {
+            GameState::Title => begin_game(),
+            GameState::Ongoing => execute_game(),
+            GameState::Win(score) => win_game(score),
+            GameState::Loose(score, wave) => loose_game(score, wave),
+        }
+    }
+}
+
+fn begin_game() {
+    unsafe { *DRAW_COLORS = 0x4323 }
+
+    text_centered("Welcome to", 5);
+    text_centered("Dashy Dango!", 15);
+    text_centered("Help the Dango", 30);
+    text_centered("survive by fighting", 40);
+    text_centered("waves of enemy", 50);
+
+    text("Controls", 5, 70);
+    text("-X to dash", 5, 80);
+    text("-Z to switch", 5, 90);
+    text("colour palette", 5, 98);
+
+    text_centered(" Press x to start!", 130);
+
+    unsafe {
+        if is_dashing(*GAMEPAD1) {
+            setup_world();
+            set_game_state(GameState::Ongoing);
+        }
+    }
+}
+
+fn execute_game() {
     let world = unsafe { &mut WORLD.get_mut().abort() };
     world.execute_systems();
+}
+
+fn win_game(score: i32) {
+    unsafe { *DRAW_COLORS = 0x4323 }
+    text_centered("Congratulation!", 10);
+    text_centered("You won the game", 20);
+    text_centered("with", 30);
+    text_centered(&int_to_string(score), 40);
+    text_centered("points!", 50);
+
+    text_centered("Press x", 100);
+    text_centered("to play again!", 110);
+
+    unsafe {
+        if is_dashing(*GAMEPAD1) {
+            reset_world();
+            set_game_state(GameState::Ongoing);
+        }
+    }
+}
+
+fn loose_game(score: i32, wave: u8) {
+    unsafe { *DRAW_COLORS = 0x4323 }
+    text_centered("You lost the game", 10);
+    text_centered("with", 20);
+    text_centered(&int_to_string(score), 30);
+    text_centered("points", 40);
+    text_centered("on wave", 50);
+    text_centered(&int_to_string(wave as i32), 60);
+
+    text_centered("Press x", 100);
+    text_centered("to try again!", 110);
+
+    unsafe {
+        if is_dashing(*GAMEPAD1) {
+            reset_world();
+            set_game_state(GameState::Ongoing);
+        }
+    }
+}
+
+pub fn set_game_state(game_state: GameState) {
+    unsafe { GAME_STATE = game_state; }
+}
+
+fn setup_world() {
+    let mut world = World::new();
+    world.set(GAMEPAD1);
+    unsafe { WORLD.set(world).abort(); }
+}
+
+fn reset_world() {
+    let mut world = unsafe { &mut WORLD.get_mut().abort() };
+    world.set(GAMEPAD1);
+}
+
+fn text_centered(message: &str, y: i32) {
+    let x = ((20.0 - (message.len() as f32)) / 2.0 * 8.0) as i32;
+    text(message, x, y);
 }

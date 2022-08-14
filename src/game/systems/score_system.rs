@@ -1,5 +1,8 @@
-use crate::{DRAW_COLORS, Registry, Subscriber, text};
+use crate::{Abort, DRAW_COLORS, entities_with, entities_with_components, get_components_clone_unwrap, get_components_unwrap, has_all_components, Registry, Subscriber, text};
+use crate::ecs::Entity;
+use crate::game::components::GameManagerComponent;
 use crate::game::systems::System;
+use crate::utils::int_to_string;
 
 pub struct ScoreSystem {
     pub score: i32,
@@ -12,6 +15,11 @@ impl System for ScoreSystem {
     fn execute_system(&mut self, registry: &mut Registry) {
         self.score_decrease();
         self.read_event_queue();
+
+        let (&game_manager_entity, (_, )) = entities_with_components!(registry, GameManagerComponent).next().abort();
+        let (mut game_manager, ) = get_components_clone_unwrap!(registry,game_manager_entity,GameManagerComponent);
+        game_manager.score = self.score;
+        registry.add_component(game_manager_entity, game_manager);
 
         unsafe { *DRAW_COLORS = 0x0023; }
         text(int_to_string(self.score), 76, 0);
@@ -35,30 +43,3 @@ impl ScoreSystem {
     }
 }
 
-//Taken from https://doc.rust-lang.org/src/alloc/string.rs.html#2517-2536, recoded to avoid importing it and reduce cart size
-fn int_to_string(num: i32) -> String {
-    let mut buf = String::with_capacity(4);
-    if num < 0 {
-        buf.push('-');
-    }
-    let mut n: u32 = if num < 0 { -num as u32 } else { num as u32 };
-
-    if n >= 10 {
-        if n >= 100 {
-            if n >= 1000 {
-                if n >= 10000 {
-                    buf.push((b'0' + ((n / 10000) as u8)) as char);
-                    n %= 10000;
-                }
-                buf.push((b'0' + ((n / 1000) as u8)) as char);
-                n %= 1000;
-            }
-            buf.push((b'0' + ((n / 100) as u8)) as char);
-            n %= 100;
-        }
-        buf.push((b'0' + ((n / 10) as u8)) as char);
-        n %= 10;
-    }
-    buf.push((b'0' + (n as u8)) as char);
-    buf
-}

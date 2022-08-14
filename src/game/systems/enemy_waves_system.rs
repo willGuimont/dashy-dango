@@ -1,12 +1,12 @@
 use std::f32::consts::TAU;
 
-use crate::{Abort, entities_with, entities_with_components, get_components_unwrap, has_all_components, Registry, Vec2};
+use crate::{Abort, entities_with, entities_with_components, get_components_clone_unwrap, get_components_unwrap, has_all_components, Registry, Vec2};
 use crate::assets::{init_fly, init_spitworm, init_sprinter};
 use crate::ecs::Entity;
-use crate::game::components::{EnemyComponent, PlayerComponent, PositionComponent};
+use crate::game::components::{EnemyComponent, GameManagerComponent, PlayerComponent, PositionComponent};
 use crate::game::systems::System;
 
-const NB_WAVES: u8 = 6;
+pub const NB_WAVES: u8 = 7;
 const WAVES: [Wave; NB_WAVES as usize] = [
     Wave { nb_sprinter: 5, nb_fly: 0, nb_spitworm: 0 },
     Wave { nb_sprinter: 10, nb_fly: 0, nb_spitworm: 0 },
@@ -14,6 +14,7 @@ const WAVES: [Wave; NB_WAVES as usize] = [
     Wave { nb_sprinter: 0, nb_fly: 10, nb_spitworm: 0 },
     Wave { nb_sprinter: 0, nb_fly: 0, nb_spitworm: 5 },
     Wave { nb_sprinter: 5, nb_fly: 5, nb_spitworm: 5 },
+    Wave { nb_sprinter: 0, nb_fly: 0, nb_spitworm: 0 },
 ];
 
 pub struct EnemyWavesSystem {
@@ -66,15 +67,16 @@ impl EnemyWavesSystem {
 impl System for EnemyWavesSystem {
     fn execute_system(&mut self, registry: &mut Registry) {
         let num_enemies = entities_with!(registry, EnemyComponent).iter().count();
-        if num_enemies == 0 {
+        if num_enemies == 0 && self.current_wave < NB_WAVES {
             let (_, (_, player_pos)) = entities_with_components!(registry, PlayerComponent, PositionComponent).next().abort();
             let player_pos = player_pos.pos;
             self.spawn_wave(registry, WAVES[self.current_wave as usize], player_pos);
             self.current_wave += 1;
-            if self.current_wave >= NB_WAVES {
-                //Implement game winning
-                self.current_wave -= 1;
-            }
+
+            let (&game_manager_entity, (_, )) = entities_with_components!(registry, GameManagerComponent).next().abort();
+            let (mut game_manager, ) = get_components_clone_unwrap!(registry,game_manager_entity,GameManagerComponent);
+            game_manager.current_wave = self.current_wave;
+            registry.add_component(game_manager_entity, game_manager);
         }
     }
 }
