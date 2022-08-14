@@ -4,21 +4,15 @@ use crate::{BLIT_1BPP, BLIT_2BPP};
 
 const DANGO_WIDTH: u32 = 8;
 const DANGO_HEIGHT: u32 = 8;
-const DANGO_FLAGS: u32 = BLIT_1BPP;
-const DANGO: [u8; 8] = [0x00, 0x00, 0x3c, 0x7e, 0x7e, 0x7e, 0x7e, 0x00];
-const DANGO_DRAW: u16 = 0x0030;
+const DANGO_FLAGS: u32 = BLIT_2BPP;
+const DANGO: [u8; 16] = [0x00, 0x00, 0x05, 0x50, 0x1a, 0xa4, 0x6a, 0xa9, 0x6a, 0xa9, 0x6a, 0xa9, 0x6a, 0xa9, 0x15, 0x54];
+const DANGO_DRAW: u16 = 0x0341;
 
-const DANGO_OUTLINE_WIDTH: u32 = 8;
-const DANGO_OUTLINE_HEIGHT: u32 = 8;
-const DANGO_OUTLINE_FLAGS: u32 = BLIT_1BPP;
-const DANGO_OUTLINE: [u8; 8] = [0x00, 0x3c, 0x42, 0x81, 0x81, 0x81, 0x81, 0x7e];
-const DANGO_OUTLINE_DRAW: u16 = 0x0040;
-
-const DANGO_DASH_OUTLINE_WIDTH: u32 = 8;
-const DANGO_DASH_OUTLINE_HEIGHT: u32 = 8;
-const DANGO_DASH_OUTLINE_FLAGS: u32 = BLIT_1BPP;
-const DANGO_DASH_OUTLINE: [u8; 8] = DANGO_OUTLINE;
-const DANGO_DASH_OUTLINE_DRAW: u16 = 0x0030;
+const DANGO_DASH_WIDTH: u32 = 8;
+const DANGO_DASH_HEIGHT: u32 = 8;
+const DANGO_DASH_FLAGS: u32 = BLIT_2BPP;
+const DANGO_DASH: [u8; 16] = DANGO;
+const DANGO_DASH_DRAW: u16 = 0x0321;
 
 const GRASS_WIDTH: u32 = 8;
 const GRASS_HEIGHT: u32 = 8;
@@ -69,10 +63,9 @@ macro_rules! make_sprite {
 }
 
 make_sprite!(DANGO_SPRITE, DANGO);
+make_sprite!(DANGO_DASH_SPRITE, DANGO_DASH);
 make_sprite!(GRASS_SPRITE, GRASS);
 make_sprite!(DANGO_EYE_SPRITE, DANGO_EYE);
-make_sprite!(DANGO_OUTLINE_SPRITE, DANGO_OUTLINE);
-make_sprite!(DANGO_DASH_OUTLINE_SPRITE, DANGO_DASH_OUTLINE);
 make_sprite!(BULLET_SPRITE, BULLET);
 make_sprite!(SPITWORM_SPRITE, SPITWORM);
 make_sprite!(FLY_SPRITE, FLY);

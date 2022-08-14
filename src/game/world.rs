@@ -2,7 +2,7 @@ use std::collections::HashSet;
 use std::collections::LinkedList;
 
 use crate::{Abort, entities_with, entities_with_components, GameState, get_components_unwrap, has_all_components, Registry, set_game_state, Subscriber, Topic, Vec2};
-use crate::assets::{DANGO_EYE_SPRITE, DANGO_OUTLINE_SPRITE, DANGO_SPRITE};
+use crate::assets::{DANGO_EYE_SPRITE, DANGO_SPRITE};
 use crate::ecs::Entity;
 use crate::game::components::{CameraComponent, ChildComponent, DangoEyeComponent, DashComponent, GameManagerComponent, GamepadComponent, HealthComponent, MoveComponent, PlayerComponent, PositionComponent, SizeComponent, SpriteComponent};
 use crate::game::systems::{ChildSystem, DangoEyesSystem, DrawSystem, EnemyAttackSystem, EnemyMovementSystem, EnemyWavesSystem, MoveSystem, NB_WAVES, ScoreSystem, System};
@@ -50,11 +50,6 @@ impl World {
         self.registry.add_component(eyes, PositionComponent { pos: Vec2::new(0.0, 0.0) }).abort();
         self.registry.add_component(eyes, ChildComponent { parent: player, relative_pos: Vec2 { x: 3.0, y: 4.0 } }).abort();
         self.registry.add_component(eyes, SpriteComponent { sprite: &DANGO_EYE_SPRITE, zindex: 2 });
-
-        let outline = self.registry.new_entity();
-        self.registry.add_component(outline, PositionComponent { pos: Vec2::new(0.0, 0.0) }).abort();
-        self.registry.add_component(outline, ChildComponent { parent: player, relative_pos: Vec2 { x: 0.0, y: 0.0 } }).abort();
-        self.registry.add_component(outline, SpriteComponent { sprite: &DANGO_OUTLINE_SPRITE, zindex: 0 });
     }
 
     pub fn create_game_manager(&mut self) {
