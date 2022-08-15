@@ -5,13 +5,13 @@ use crate::{Abort, entities_with, entities_with_components, GameState, get_compo
 use crate::assets::{DANGO_EYE_SPRITE, DANGO_SPRITE};
 use crate::ecs::Entity;
 use crate::game::components::{CameraComponent, ChildComponent, DangoEyeComponent, DashComponent, GameManagerComponent, GamepadComponent, HealthComponent, MoveComponent, PlayerComponent, PositionComponent, SizeComponent, SpriteComponent};
-use crate::game::systems::{ChildSystem, DangoEyesSystem, DrawSystem, EnemyAttackSystem, EnemyMovementSystem, EnemyWavesSystem, HealthFlashSystem, MoveSystem, NB_WAVES, ScoreSystem, System};
+use crate::game::systems::{ChildSystem, DangoEyesSystem, DrawSystem, EnemyAttackSystem, EnemyMovementSystem, EnemyWavesSystem, HealthFlashSystem, HealthSystem, MoveSystem, NB_WAVES, ScoreSystem, System};
 use crate::game::systems::ttl_system::TTLSystem;
 
 const PLAYER_BASE_SPEED: i16 = 2;
 const PLAYER_BASE_DASH: i16 = 60;
 const PLAYER_BASE_HEALTH: i16 = 5;
-const PLAYER_HIT_TIMEOUT: i16 = 500;
+const PLAYER_HIT_TIMEOUT: i16 = 100;
 const BASE_SCORE: i32 = 100;
 
 pub struct World {
@@ -62,11 +62,18 @@ impl World {
         let mut score_topic = Topic::new();
         score_event.follow(&mut score_topic);
 
-        self.systems.push_back(Box::new(MoveSystem { event_queue: score_topic }));
+        let mut health_event = Subscriber::new();
+        let mut enemy_movement_system_health_topic = Topic::new();
+        let mut move_system_health_topic = Topic::new();
+        health_event.follow(&mut enemy_movement_system_health_topic);
+        health_event.follow(&mut move_system_health_topic);
+
+        self.systems.push_back(Box::new(MoveSystem { health_queue: move_system_health_topic }));
         self.systems.push_back(Box::new(ChildSystem));
         self.systems.push_back(Box::new(EnemyWavesSystem { current_wave: 0 }));
-        self.systems.push_back(Box::new(EnemyMovementSystem));
+        self.systems.push_back(Box::new(EnemyMovementSystem { event_queue: enemy_movement_system_health_topic }));
         self.systems.push_back(Box::new(EnemyAttackSystem));
+        self.systems.push_back(Box::new(HealthSystem { event_queue: health_event, score_queue: score_topic }));
         self.systems.push_back(Box::new(HealthFlashSystem));
         self.systems.push_back(Box::new(TTLSystem));
         self.systems.push_back(Box::new(DangoEyesSystem));

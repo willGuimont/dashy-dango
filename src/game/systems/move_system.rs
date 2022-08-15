@@ -7,7 +7,7 @@ use crate::gamepad_utils::gamepad_to_vec;
 use crate::utils::is_dashing;
 
 pub struct MoveSystem {
-    pub event_queue: Topic<i32>,
+    pub health_queue: Topic<(Entity, i32, i32)>,
 }
 
 impl System for MoveSystem {
@@ -85,14 +85,7 @@ impl MoveSystem {
 
     fn kill_entity(&mut self, dash: &DashComponent, registry: &mut Registry) {
         for (i, &e) in dash.hit.iter().enumerate() {
-            let (mut health, score) = get_components_clone_unwrap!(registry,e, HealthComponent, ScoreComponent);
-            health.hp -= 1;
-            if health.hp <= 0 {
-                self.event_queue.send_message(score.score * (i + 1) as i32);
-                registry.destroy_entity(e);
-            } else {
-                add_components!(registry, e, health);
-            }
+            self.health_queue.send_message((e, 1, (i + 1) as i32));
         }
     }
 
