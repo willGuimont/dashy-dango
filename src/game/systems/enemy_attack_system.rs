@@ -1,7 +1,7 @@
 use crate::{Abort, entities_with, entities_with_components, get_components_clone_unwrap, get_components_unwrap, has_all_components, Registry, Vec2};
 use crate::assets::BULLET_SPRITE;
 use crate::ecs::Entity;
-use crate::game::components::{BulletMoveComponent, EnemyComponent, HealthComponent, PlayerComponent, PositionComponent, ShooterComponent, SizeComponent, SpriteComponent};
+use crate::game::components::{BulletMoveComponent, EnemyComponent, HealthComponent, PlayerComponent, PositionComponent, ScoreComponent, ShooterComponent, SizeComponent, SpriteComponent};
 use crate::game::components::ttl_component::TTLComponent;
 use crate::game::systems::System;
 
@@ -42,7 +42,8 @@ fn create_bullet(registry: &mut Registry, direction: Vec2, speed: f32, bullet_li
     registry.add_component(bullet, HealthComponent { hp: 1, timeout: 0, hit_delay: 0 }).abort();
     registry.add_component(bullet, BulletMoveComponent { speed, direction }).abort();
     registry.add_component(bullet, SizeComponent { width: 2, height: 2 }).abort();
-    registry.add_component(bullet, SpriteComponent { sprite: &BULLET_SPRITE, zindex: 3 }).abort();
+    registry.add_component(bullet, SpriteComponent { sprite: &BULLET_SPRITE, zindex: 3, is_visible: true }).abort();
     registry.add_component(bullet, TTLComponent { ttl: bullet_lifespan }).abort();
     registry.add_component(bullet, PositionComponent { pos: Vec2 { x: bullet_x, y: bullet_y } }).abort();
+    registry.add_component(bullet, ScoreComponent { score: 10 });
 }

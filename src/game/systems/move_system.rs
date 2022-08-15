@@ -99,7 +99,7 @@ impl MoveSystem {
     fn create_after_image(&mut self, registry: &mut Registry, after_image_pos: Vec2, direction: Vec2) {
         let after_image = registry.new_entity();
         registry.add_component(after_image, PositionComponent { pos: after_image_pos });
-        registry.add_component(after_image, SpriteComponent { sprite: &DANGO_SPRITE, zindex: 0 });
+        registry.add_component(after_image, SpriteComponent { sprite: &DANGO_SPRITE, zindex: 0, is_visible: true });
         registry.add_component(after_image, TTLComponent { ttl: 5 });
 
         let eyes = registry.new_entity();
@@ -107,6 +107,6 @@ impl MoveSystem {
         registry.add_component(eyes, DangoEyeComponent);
         registry.add_component(eyes, PositionComponent { pos: Vec2::new(0.0, 0.0) }).abort();
         registry.add_component(eyes, ChildComponent { parent: after_image, relative_pos: Vec2 { x: 3.0, y: 4.0 } }).abort();
-        registry.add_component(eyes, SpriteComponent { sprite: &DANGO_EYE_SPRITE, zindex: 1 });
+        registry.add_component(eyes, SpriteComponent { sprite: &DANGO_EYE_SPRITE, zindex: 1, is_visible: true });
     }
 }

@@ -48,6 +48,12 @@ const FLY_FLAGS: u32 = BLIT_2BPP;
 const FLY: [u8; 16] = [0x10, 0x04, 0x64, 0x19, 0x64, 0x19, 0x15, 0x54, 0x06, 0x90, 0x1a, 0xa4, 0x1a, 0xa4, 0x05, 0x50];
 const FLY_DRAW: u16 = 0x1320;
 
+const ROBOT_WIDTH: u32 = 8;
+const ROBOT_HEIGHT: u32 = 8;
+const ROBOT_FLAGS: u32 = BLIT_2BPP;
+const ROBOT: [u8; 16] = [0x00, 0x00, 0x15, 0x54, 0x04, 0x10, 0x84, 0x12, 0x85, 0x52, 0x85, 0x52, 0x85, 0x52, 0x80, 0x02];
+const ROBOT_DRAW: u16 = 0x2132;
+
 pub struct Sprite {
     pub width: u32,
     pub height: u32,
@@ -69,3 +75,4 @@ make_sprite!(DANGO_EYE_SPRITE, DANGO_EYE);
 make_sprite!(BULLET_SPRITE, BULLET);
 make_sprite!(SPITWORM_SPRITE, SPITWORM);
 make_sprite!(FLY_SPRITE, FLY);
+make_sprite!(ROBOT_SPRITE,ROBOT);

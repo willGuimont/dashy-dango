@@ -9,5 +9,6 @@ use crate::BaseComponent;
 pub struct SpriteComponent {
     pub sprite: &'static Sprite,
     pub zindex: u8,
+    pub is_visible: bool,
 }
 

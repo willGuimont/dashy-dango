@@ -22,7 +22,7 @@ impl System for ScoreSystem {
         registry.add_component(game_manager_entity, game_manager);
 
         unsafe { *DRAW_COLORS = 0x0023; }
-        text(int_to_string(self.score), 76, 0);
+        text(int_to_string(self.score), 0, 0);
     }
 }
 

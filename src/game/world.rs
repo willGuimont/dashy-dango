@@ -5,7 +5,7 @@ use crate::{Abort, entities_with, entities_with_components, GameState, get_compo
 use crate::assets::{DANGO_EYE_SPRITE, DANGO_SPRITE};
 use crate::ecs::Entity;
 use crate::game::components::{CameraComponent, ChildComponent, DangoEyeComponent, DashComponent, GameManagerComponent, GamepadComponent, HealthComponent, MoveComponent, PlayerComponent, PositionComponent, SizeComponent, SpriteComponent};
-use crate::game::systems::{ChildSystem, DangoEyesSystem, DrawSystem, EnemyAttackSystem, EnemyMovementSystem, EnemyWavesSystem, MoveSystem, NB_WAVES, ScoreSystem, System};
+use crate::game::systems::{ChildSystem, DangoEyesSystem, DrawSystem, EnemyAttackSystem, EnemyMovementSystem, EnemyWavesSystem, HealthFlashSystem, MoveSystem, NB_WAVES, ScoreSystem, System};
 use crate::game::systems::ttl_system::TTLSystem;
 
 const PLAYER_BASE_SPEED: i16 = 2;
@@ -41,7 +41,7 @@ impl World {
         self.registry.add_component(player, DashComponent { length: PLAYER_BASE_DASH, timeout: 10, duration: 0, direction: Vec2 { x: 0.0, y: 0.0 }, hit: HashSet::new() }).abort();
         self.registry.add_component(player, CameraComponent).abort();
         self.registry.add_component(player, SizeComponent { width: 8, height: 8 }).abort();
-        self.registry.add_component(player, SpriteComponent { sprite: &DANGO_SPRITE, zindex: 2 }).abort();
+        self.registry.add_component(player, SpriteComponent { sprite: &DANGO_SPRITE, zindex: 2, is_visible: true }).abort();
         self.registry.add_component(player, HealthComponent { hp: PLAYER_BASE_HEALTH, timeout: 0, hit_delay: PLAYER_HIT_TIMEOUT }).abort();
 
         let eyes = self.registry.new_entity();
@@ -49,7 +49,7 @@ impl World {
         self.registry.add_component(eyes, GamepadComponent { gamepad }).abort();
         self.registry.add_component(eyes, PositionComponent { pos: Vec2::new(0.0, 0.0) }).abort();
         self.registry.add_component(eyes, ChildComponent { parent: player, relative_pos: Vec2 { x: 3.0, y: 4.0 } }).abort();
-        self.registry.add_component(eyes, SpriteComponent { sprite: &DANGO_EYE_SPRITE, zindex: 4 });
+        self.registry.add_component(eyes, SpriteComponent { sprite: &DANGO_EYE_SPRITE, zindex: 4, is_visible: true });
     }
 
     pub fn create_game_manager(&mut self) {
@@ -67,6 +67,7 @@ impl World {
         self.systems.push_back(Box::new(EnemyWavesSystem { current_wave: 0 }));
         self.systems.push_back(Box::new(EnemyMovementSystem));
         self.systems.push_back(Box::new(EnemyAttackSystem));
+        self.systems.push_back(Box::new(HealthFlashSystem));
         self.systems.push_back(Box::new(TTLSystem));
         self.systems.push_back(Box::new(DangoEyesSystem));
         self.systems.push_back(Box::new(DrawSystem));
