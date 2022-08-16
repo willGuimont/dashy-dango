@@ -7,7 +7,7 @@ use crate::gamepad_utils::gamepad_to_vec;
 use crate::utils::is_dashing;
 
 pub struct MoveSystem {
-    pub event_queue: Topic<i32>,
+    pub health_queue: Topic<(Entity, i32, i32)>,
 }
 
 impl System for MoveSystem {
@@ -85,21 +85,14 @@ impl MoveSystem {
 
     fn kill_entity(&mut self, dash: &DashComponent, registry: &mut Registry) {
         for (i, &e) in dash.hit.iter().enumerate() {
-            let (mut health, score) = get_components_clone_unwrap!(registry,e, HealthComponent, ScoreComponent);
-            health.hp -= 1;
-            if health.hp <= 0 {
-                self.event_queue.send_message(score.score * (i + 1) as i32);
-                registry.destroy_entity(e);
-            } else {
-                add_components!(registry, e, health);
-            }
+            self.health_queue.send_message((e, 1, (i + 1) as i32));
         }
     }
 
     fn create_after_image(&mut self, registry: &mut Registry, after_image_pos: Vec2, direction: Vec2) {
         let after_image = registry.new_entity();
         registry.add_component(after_image, PositionComponent { pos: after_image_pos });
-        registry.add_component(after_image, SpriteComponent { sprite: &DANGO_SPRITE, zindex: 0 });
+        registry.add_component(after_image, SpriteComponent { sprite: &DANGO_SPRITE, zindex: 0, is_visible: true });
         registry.add_component(after_image, TTLComponent { ttl: 5 });
 
         let eyes = registry.new_entity();
@@ -107,6 +100,6 @@ impl MoveSystem {
         registry.add_component(eyes, DangoEyeComponent);
         registry.add_component(eyes, PositionComponent { pos: Vec2::new(0.0, 0.0) }).abort();
         registry.add_component(eyes, ChildComponent { parent: after_image, relative_pos: Vec2 { x: 3.0, y: 4.0 } }).abort();
-        registry.add_component(eyes, SpriteComponent { sprite: &DANGO_EYE_SPRITE, zindex: 1 });
+        registry.add_component(eyes, SpriteComponent { sprite: &DANGO_EYE_SPRITE, zindex: 1, is_visible: true });
     }
 }

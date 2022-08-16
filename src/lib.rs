@@ -71,15 +71,15 @@ fn begin_game() {
     unsafe { *DRAW_COLORS = 0x4323 }
 
     text_centered("Welcome to", 5);
-    text_centered("Dashy Dango!", 15);
+    text_centered("Dashy Dango!", 13);
     text_centered("Help the Dango", 30);
-    text_centered("survive by fighting", 40);
-    text_centered("waves of enemy", 50);
+    text_centered("survive by fighting", 38);
+    text_centered("waves of enemy", 46);
 
     text("Controls", 5, 70);
-    text("-X to dash", 5, 80);
-    text("-Z to switch", 5, 90);
-    text("colour palette", 5, 98);
+    text("-X to dash", 5, 78);
+    text("-Z to switch", 5, 86);
+    text("colour palette", 5, 94);
 
     text_centered(" Press x to start!", 130);
 
@@ -99,13 +99,13 @@ fn execute_game() {
 fn win_game(score: i32) {
     unsafe { *DRAW_COLORS = 0x4323 }
     text_centered("Congratulation!", 10);
-    text_centered("You won the game", 20);
-    text_centered("with", 30);
-    text_centered(&int_to_string(score), 40);
-    text_centered("points!", 50);
+    text_centered("You won the game", 18);
+    text_centered("with", 26);
+    text_centered(&int_to_string(score), 34);
+    text_centered("points!", 42);
 
     text_centered("Press x", 100);
-    text_centered("to play again!", 110);
+    text_centered("to play again!", 108);
 
     unsafe {
         if is_dashing(*GAMEPAD1) {
@@ -118,14 +118,14 @@ fn win_game(score: i32) {
 fn loose_game(score: i32, wave: u8) {
     unsafe { *DRAW_COLORS = 0x4323 }
     text_centered("You lost the game", 10);
-    text_centered("with", 20);
-    text_centered(&int_to_string(score), 30);
-    text_centered("points", 40);
-    text_centered("on wave", 50);
-    text_centered(&int_to_string(wave as i32), 60);
+    text_centered("with", 18);
+    text_centered(&int_to_string(score), 26);
+    text_centered("points", 34);
+    text_centered("on wave", 42);
+    text_centered(&int_to_string(wave as i32), 50);
 
     text_centered("Press x", 100);
-    text_centered("to try again!", 110);
+    text_centered("to try again!", 108);
 
     unsafe {
         if is_dashing(*GAMEPAD1) {

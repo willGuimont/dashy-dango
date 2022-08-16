@@ -1,6 +1,7 @@
 use crate::*;
+use crate::assets::{DANGO_EYE_SPRITE, DANGO_SPRITE};
 use crate::ecs::Entity;
-use crate::game::components::{CameraComponent, PositionComponent, SpriteComponent};
+use crate::game::components::{CameraComponent, GameManagerComponent, PositionComponent, SpriteComponent};
 use crate::game::systems::System;
 
 const SCREEN_CENTER: (f32, f32) = (76.0, 76.0);
@@ -13,11 +14,16 @@ impl System for DrawSystem {
         bubble_sort(&mut z_buffer);
         for (_, (_, cam_pos)) in entities_with_components!(registry, CameraComponent, PositionComponent) {
             for (sprite_component, pos) in z_buffer.iter() {
-                let new_pos = camera_conversion(pos, cam_pos);
-                let sprite = sprite_component.sprite;
-                unsafe { *DRAW_COLORS = sprite.draw; }
-                blit(sprite.data, new_pos.x as i32, new_pos.y as i32, sprite.width, sprite.height, sprite.flags);
+                if sprite_component.is_visible {
+                    let new_pos = camera_conversion(pos, cam_pos);
+                    let sprite = sprite_component.sprite;
+                    unsafe { *DRAW_COLORS = sprite.draw; }
+                    blit(sprite.data, new_pos.x as i32, new_pos.y as i32, sprite.width, sprite.height, sprite.flags);
+                }
             }
+        }
+        for (e, (gamestate, )) in entities_with_components!(registry, GameManagerComponent) {
+            draw_health(gamestate.player_hp);
         }
     }
 }
@@ -42,6 +48,17 @@ fn bubble_sort(vec: &mut Vec<(&SpriteComponent, &PositionComponent)>) {
         if !has_swap {
             return;
         }
+    }
+}
+
+fn draw_health(player_health: i16) {
+    unsafe { *DRAW_COLORS = 0x0002; }
+    rect(0, 0, 160, 8);
+    for i in 0..player_health {
+        unsafe { *DRAW_COLORS = 0x0342; }
+        blit(DANGO_SPRITE.data, (160 - (i + 1) * 8) as i32, 0, DANGO_SPRITE.width, DANGO_SPRITE.height, DANGO_SPRITE.flags);
+        unsafe { *DRAW_COLORS = DANGO_EYE_SPRITE.draw; }
+        blit(DANGO_EYE_SPRITE.data, 3 + (160 - (i + 1) * 8) as i32, 4, DANGO_EYE_SPRITE.width, DANGO_EYE_SPRITE.height, DANGO_EYE_SPRITE.flags);
     }
 }
 
