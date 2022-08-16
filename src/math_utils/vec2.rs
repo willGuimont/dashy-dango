@@ -133,3 +133,11 @@ impl ops::Div<f32> for Vec2 {
         self * (1. / rhs)
     }
 }
+
+impl ops::Rem<f32> for Vec2 {
+    type Output = Self;
+
+    fn rem(self, rhs: f32) -> Self::Output {
+        Vec2::new(self.x % rhs, self.y % rhs)
+    }
+}

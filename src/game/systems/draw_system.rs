@@ -1,10 +1,12 @@
 use crate::*;
-use crate::assets::{DANGO_EYE_SPRITE, DANGO_SPRITE};
+use crate::assets::{DANGO_EYE_SPRITE, DANGO_SPRITE, GRASS_SPRITE};
 use crate::ecs::Entity;
 use crate::game::components::{CameraComponent, GameManagerComponent, PositionComponent, SpriteComponent};
 use crate::game::systems::System;
+use crate::game::world::WORLD_BOUNDARIES;
 
 const SCREEN_CENTER: (f32, f32) = (76.0, 76.0);
+const GRASS: [Vec2; 2] = [Vec2 { x: 1.0, y: 1.0 }, Vec2 { x: 15.0, y: 15.0 }];
 
 pub struct DrawSystem;
 
@@ -13,16 +15,18 @@ impl System for DrawSystem {
         let mut z_buffer = create_z_buffer(registry);
         bubble_sort(&mut z_buffer);
         for (_, (_, cam_pos)) in entities_with_components!(registry, CameraComponent, PositionComponent) {
+            draw_grass(cam_pos);
+
             for (sprite_component, pos) in z_buffer.iter() {
                 if sprite_component.is_visible {
-                    let new_pos = camera_conversion(pos, cam_pos);
+                    let draw_pos = camera_conversion(pos.pos, cam_pos.pos);
                     let sprite = sprite_component.sprite;
                     unsafe { *DRAW_COLORS = sprite.draw; }
-                    blit(sprite.data, new_pos.x as i32, new_pos.y as i32, sprite.width, sprite.height, sprite.flags);
+                    blit(sprite.data, draw_pos.x as i32, draw_pos.y as i32, sprite.width, sprite.height, sprite.flags);
                 }
             }
         }
-        for (e, (gamestate, )) in entities_with_components!(registry, GameManagerComponent) {
+        for (_, (gamestate, )) in entities_with_components!(registry, GameManagerComponent) {
             draw_health(gamestate.player_hp);
         }
     }
@@ -62,7 +66,40 @@ fn draw_health(player_health: i16) {
     }
 }
 
-fn camera_conversion(pos: &PositionComponent, cam_pos: &PositionComponent) -> Vec2 {
+fn draw_grass(cam_pos: &PositionComponent) {
+    let cam_pos = cam_pos.pos;
+    for grass in GRASS {
+        let distance = cam_pos - grass;
+        let x_parallel_world = (distance.x / WORLD_BOUNDARIES) as i32;
+        let y_parallel_world = (distance.y / WORLD_BOUNDARIES) as i32;
+        for x in x_parallel_world - 1..x_parallel_world + 2 {
+            for y in y_parallel_world - 1..y_parallel_world + 2 {
+                let new_distance = grass + Vec2 { x: x as f32 * WORLD_BOUNDARIES, y: y as f32 * WORLD_BOUNDARIES };
+                if is_sprite_in_bound(cam_pos, new_distance, GRASS_SPRITE.width as f32, GRASS_SPRITE.height as f32) {
+                    let camera_grass = camera_conversion(new_distance, cam_pos);
+                    unsafe { *DRAW_COLORS = GRASS_SPRITE.draw; }
+                    blit(GRASS_SPRITE.data, camera_grass.x as i32, camera_grass.y as i32, GRASS_SPRITE.width, GRASS_SPRITE.height, GRASS_SPRITE.flags);
+                }
+            }
+        }
+    }
+}
+
+fn is_sprite_in_bound(cam_pos: Vec2, pos: Vec2, width: f32, height: f32) -> bool {
+    is_point_in_bound(cam_pos, pos) || is_point_in_bound(cam_pos, pos + Vec2 { x: width, y: height })
+}
+
+fn is_point_in_bound(cam_pos: Vec2, pos: Vec2) -> bool {
+    let new_pos = camera_conversion(pos, cam_pos);
+
+    if new_pos.x >= -0.0 && new_pos.x <= 160.0 && new_pos.y >= -0.0 && new_pos.y <= 160.0 {
+        return true;
+    }
+
+    return false;
+}
+
+fn camera_conversion(pos: Vec2, cam_pos: Vec2) -> Vec2 {
     let center = Vec2::new(SCREEN_CENTER.0, SCREEN_CENTER.1);
-    pos.pos - cam_pos.pos + center
+    pos - cam_pos + center
 }

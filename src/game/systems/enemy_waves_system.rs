@@ -67,7 +67,7 @@ impl EnemyWavesSystem {
 impl System for EnemyWavesSystem {
     fn execute_system(&mut self, registry: &mut Registry) {
         let num_enemies = entities_with!(registry, EnemyComponent).iter().count();
-        if num_enemies == 0 && self.current_wave < NB_WAVES {
+        if false && num_enemies == 0 && self.current_wave < NB_WAVES {
             let (_, (_, player_pos)) = entities_with_components!(registry, PlayerComponent, PositionComponent).next().abort();
             let player_pos = player_pos.pos;
             self.spawn_wave(registry, WAVES[self.current_wave as usize], player_pos);

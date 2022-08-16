@@ -3,6 +3,7 @@ use crate::assets::{DANGO_DASH_SPRITE, DANGO_EYE_SPRITE, DANGO_SPRITE};
 use crate::ecs::Entity;
 use crate::game::components::{ChildComponent, DangoEyeComponent, DashComponent, DirectionComponent, EnemyComponent, GamepadComponent, HealthComponent, MoveComponent, PositionComponent, ScoreComponent, SizeComponent, SpriteComponent, TTLComponent};
 use crate::game::systems::system::System;
+use crate::game::world::WORLD_BOUNDARIES;
 use crate::gamepad_utils::gamepad_to_vec;
 use crate::utils::is_dashing;
 

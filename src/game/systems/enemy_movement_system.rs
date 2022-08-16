@@ -32,6 +32,7 @@ impl System for EnemyMovementSystem {
                 enemy_pos = bullet_move(enemy_pos, player_pos, movement);
             }
 
+
             self.collide_player(enemy_pos, &enemy_size, registry);
             registry.add_component(e, PositionComponent { pos: enemy_pos });
         }

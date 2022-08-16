@@ -13,6 +13,7 @@ const PLAYER_BASE_DASH: i16 = 60;
 const PLAYER_BASE_HEALTH: i16 = 5;
 const PLAYER_HIT_TIMEOUT: i16 = 100;
 const BASE_SCORE: i32 = 100;
+pub const WORLD_BOUNDARIES: f32 = 160.0;
 
 pub struct World {
     pub registry: Registry,
