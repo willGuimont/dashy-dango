@@ -8,7 +8,7 @@ use crate::game::components::straight_move_component::StraightMoveComponent;
 use crate::game::systems::System;
 
 pub struct EnemyMovementSystem {
-    pub event_queue: Topic<(Entity, i32, i32)>,
+    pub damage_topic: Topic<(Entity, i32, i32)>,
 }
 
 impl System for EnemyMovementSystem {
@@ -46,7 +46,7 @@ impl EnemyMovementSystem {
             let enemy_hit = create_box(e_pos, e_size.width as f32, e_size.height as f32);
 
             if enemy_hit.rect_inter(&player_hit) {
-                self.event_queue.send_message((e, 1, 1));
+                self.damage_topic.send_message((e, 1, 1));
             }
         }
     }

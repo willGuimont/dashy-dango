@@ -71,9 +71,9 @@ impl World {
         self.systems.push_back(Box::new(MoveSystem { health_queue: move_system_health_topic }));
         self.systems.push_back(Box::new(ChildSystem));
         self.systems.push_back(Box::new(EnemyWavesSystem { current_wave: 0 }));
-        self.systems.push_back(Box::new(EnemyMovementSystem { event_queue: enemy_movement_system_health_topic }));
+        self.systems.push_back(Box::new(EnemyMovementSystem { damage_topic: enemy_movement_system_health_topic }));
         self.systems.push_back(Box::new(EnemyAttackSystem));
-        self.systems.push_back(Box::new(HealthSystem { event_queue: health_event, score_queue: score_topic }));
+        self.systems.push_back(Box::new(HealthSystem { event_queue: health_event, score_topic: score_topic }));
         self.systems.push_back(Box::new(HealthFlashSystem));
         self.systems.push_back(Box::new(TTLSystem));
         self.systems.push_back(Box::new(DangoEyesSystem));
