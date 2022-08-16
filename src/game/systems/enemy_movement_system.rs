@@ -83,4 +83,3 @@ fn sentinel_move(enemy_pos: Vec2, player_pos: Vec2, movement: &SentinelMoveCompo
 fn bullet_move(enemy_pos: Vec2, _player_pos: Vec2, movement: &BulletMoveComponent) -> Vec2 {
     enemy_pos + movement.direction.normalized() * movement.speed
 }
-
