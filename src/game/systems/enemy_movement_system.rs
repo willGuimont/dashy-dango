@@ -32,6 +32,7 @@ impl System for EnemyMovementSystem {
                 enemy_pos = bullet_move(enemy_pos, player_pos, movement);
             }
 
+
             self.collide_player(enemy_pos, &enemy_size, registry);
             registry.add_component(e, PositionComponent { pos: enemy_pos });
         }
@@ -82,4 +83,3 @@ fn sentinel_move(enemy_pos: Vec2, player_pos: Vec2, movement: &SentinelMoveCompo
 fn bullet_move(enemy_pos: Vec2, _player_pos: Vec2, movement: &BulletMoveComponent) -> Vec2 {
     enemy_pos + movement.direction.normalized() * movement.speed
 }
-
