@@ -5,7 +5,7 @@ use crate::game::systems::System;
 
 pub struct HealthSystem {
     pub event_queue: Subscriber<(Entity, i32, i32)>,
-    pub score_queue: Topic<i32>,
+    pub score_topic: Topic<i32>,
 }
 
 impl System for HealthSystem {
@@ -46,7 +46,7 @@ impl HealthSystem {
 
             if health.hp == 0 {
                 let score = registry.get_component::<ScoreComponent>(e).abort();
-                self.score_queue.send_message(score.score * score_multiplier);
+                self.score_topic.send_message(score.score * score_multiplier);
                 registry.destroy_entity(e);
             } else {
                 registry.add_component(e, health);
@@ -63,6 +63,7 @@ impl HealthSystem {
 
             if health.hp == 0 {
                 //For some reason destroying player causes issue
+                registry.add_component(e, health);
                 // registry.destroy_entity(e);
             } else {
                 registry.add_component(e, health);
@@ -72,7 +73,7 @@ impl HealthSystem {
 
     fn update_game_manager(&mut self, registry: &mut Registry, e: Entity, health: &HealthComponent) {
         let (&game_manager_entity, (_, )) = entities_with_components!(registry, GameManagerComponent).next().abort();
-        let (mut game_manager, ) = get_components_clone_unwrap!(registry,game_manager_entity,GameManagerComponent);
+        let (mut game_manager, ) = get_components_clone_unwrap!(registry, game_manager_entity, GameManagerComponent);
 
         game_manager.player_hp = health.hp;
         registry.add_component(game_manager_entity, game_manager);

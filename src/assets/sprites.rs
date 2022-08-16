@@ -75,4 +75,4 @@ make_sprite!(DANGO_EYE_SPRITE, DANGO_EYE);
 make_sprite!(BULLET_SPRITE, BULLET);
 make_sprite!(SPITWORM_SPRITE, SPITWORM);
 make_sprite!(FLY_SPRITE, FLY);
-make_sprite!(ROBOT_SPRITE,ROBOT);
+make_sprite!(ROBOT_SPRITE, ROBOT);
