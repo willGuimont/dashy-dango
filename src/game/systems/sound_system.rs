@@ -24,8 +24,8 @@ impl System for SoundSystem {
 
 impl SoundSystem {
     fn play_sounds(&mut self) {
-        while let Some(soundEvent) = self.sound_queue.pop_message() {
-            let sound = get_sound(soundEvent);
+        while let Some(sound_event) = self.sound_queue.pop_message() {
+            let sound = get_sound(sound_event);
             let (freq, duration) = make_sound(sound.0, sound.1, 0, 0, sound.2, 16);
             tone(freq, duration, 100, TONE_TRIANGLE);
         }
