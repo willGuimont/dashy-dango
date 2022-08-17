@@ -15,6 +15,7 @@ pub use position_component::*;
 pub use score_component::*;
 pub use size_component::*;
 pub use sprite_component::*;
+pub use tombstone_component::*;
 pub use ttl_component::*;
 
 pub mod camera_component;
@@ -34,4 +35,5 @@ pub mod position_component;
 pub mod score_component;
 pub mod size_component;
 pub mod sprite_component;
+pub mod tombstone_component;
 pub mod ttl_component;

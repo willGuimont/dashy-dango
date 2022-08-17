@@ -9,30 +9,31 @@ pub struct EnemyAttackSystem;
 
 impl System for EnemyAttackSystem {
     fn execute_system(&mut self, registry: &mut Registry) {
-        let (_, (_, player_pos)) = entities_with_components!(registry, PlayerComponent, PositionComponent).next().abort();
-        let player_pos = player_pos.pos;
         for e in entities_with!(registry, EnemyComponent) {
             if registry.has_component::<ShooterComponent>(e)
             {
-                shoot_attack(registry, e, player_pos);
+                shoot_attack(registry, e);
             }
         }
     }
 }
 
-fn shoot_attack(registry: &mut Registry, e: Entity, player_pos: Vec2) {
+fn shoot_attack(registry: &mut Registry, e: Entity) {
     let (mut shoot, enemy_pos) = get_components_clone_unwrap!(registry, e, ShooterComponent, PositionComponent);
-    let enemy_pos = enemy_pos.pos;
-    let direction_to_player = player_pos - enemy_pos;
-    let player_distance = direction_to_player.norm();
+    if registry.is_alive(shoot.target) {
+        let (target_pos, ) = get_components_unwrap!(registry,shoot.target, PositionComponent);
+        let enemy_pos = enemy_pos.pos;
+        let direction_to_player = target_pos.pos - enemy_pos;
+        let player_distance = direction_to_player.norm();
 
-    if shoot.firing_timeout <= 0 && player_distance <= shoot.firing_distance as f32 {
-        create_bullet(registry, direction_to_player.normalized(), shoot.bullet_speed, shoot.bullet_lifespan, enemy_pos.x, enemy_pos.y);
-        shoot.firing_timeout = shoot.firing_delay;
-        registry.add_component(e, shoot);
-    } else {
-        shoot.firing_timeout -= 1;
-        registry.add_component(e, shoot);
+        if shoot.firing_timeout <= 0 && player_distance <= shoot.firing_distance as f32 {
+            create_bullet(registry, direction_to_player.normalized(), shoot.bullet_speed, shoot.bullet_lifespan, enemy_pos.x, enemy_pos.y);
+            shoot.firing_timeout = shoot.firing_delay;
+            registry.add_component(e, shoot);
+        } else {
+            shoot.firing_timeout -= 1;
+            registry.add_component(e, shoot);
+        }
     }
 }
 

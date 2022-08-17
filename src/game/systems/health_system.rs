@@ -1,6 +1,7 @@
 use crate::{Abort, entities_with, entities_with_components, get_components, get_components_clone_unwrap, get_components_unwrap, has_all_components, Registry, Subscriber, Topic, update};
+use crate::assets::TOMBSTONE_SPRITE;
 use crate::ecs::Entity;
-use crate::game::components::{DashComponent, GameManagerComponent, HealthComponent, PlayerComponent, ScoreComponent};
+use crate::game::components::{CameraComponent, DashComponent, GameManagerComponent, HealthComponent, PlayerComponent, PositionComponent, ScoreComponent, SpriteComponent, TombstoneComponent};
 use crate::game::systems::System;
 
 pub struct HealthSystem {
@@ -62,9 +63,13 @@ impl HealthSystem {
             self.update_game_manager(registry, e, &health);
 
             if health.hp == 0 {
-                //For some reason destroying player causes issue
-                registry.add_component(e, health);
-                // registry.destroy_entity(e);
+                let tomb = registry.new_entity();
+                let pos = registry.get_component::<PositionComponent>(e).abort().pos;
+                registry.add_component(tomb, PositionComponent { pos }).abort();
+                registry.add_component(tomb, CameraComponent).abort();
+                registry.add_component(tomb, TombstoneComponent).abort();
+                registry.add_component(tomb, SpriteComponent { sprite: &TOMBSTONE_SPRITE, zindex: 3, is_visible: true });
+                registry.destroy_entity(e);
             } else {
                 registry.add_component(e, health);
             }
@@ -72,10 +77,11 @@ impl HealthSystem {
     }
 
     fn update_game_manager(&mut self, registry: &mut Registry, e: Entity, health: &HealthComponent) {
-        let (&game_manager_entity, (_, )) = entities_with_components!(registry, GameManagerComponent).next().abort();
-        let (mut game_manager, ) = get_components_clone_unwrap!(registry, game_manager_entity, GameManagerComponent);
+        for game_manager_entity in entities_with!(registry, GameManagerComponent) {
+            let (mut game_manager, ) = get_components_clone_unwrap!(registry, game_manager_entity, GameManagerComponent);
 
-        game_manager.player_hp = health.hp;
-        registry.add_component(game_manager_entity, game_manager);
+            game_manager.player_hp = health.hp;
+            registry.add_component(game_manager_entity, game_manager);
+        }
     }
 }

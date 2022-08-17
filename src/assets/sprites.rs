@@ -54,6 +54,12 @@ const ROBOT_FLAGS: u32 = BLIT_2BPP;
 const ROBOT: [u8; 16] = [0x00, 0x00, 0x15, 0x54, 0x04, 0x10, 0x84, 0x12, 0x85, 0x52, 0x85, 0x52, 0x85, 0x52, 0x80, 0x02];
 const ROBOT_DRAW: u16 = 0x2132;
 
+const TOMBSTONE_WIDTH: u32 = 8;
+const TOMBSTONE_HEIGHT: u32 = 8;
+const TOMBSTONE_FLAGS: u32 = BLIT_2BPP;
+const TOMBSTONE: [u8; 16] = [0x05, 0x00, 0x1a, 0x40, 0x6a, 0x90, 0x6a, 0x90, 0x6a, 0x90, 0x6a, 0x90, 0x6a, 0x90, 0x55, 0x50];
+const TOMBSTONE_DRAW: u16 = 0x2320;
+
 pub struct Sprite {
     pub width: u32,
     pub height: u32,
@@ -76,3 +82,4 @@ make_sprite!(BULLET_SPRITE, BULLET);
 make_sprite!(SPITWORM_SPRITE, SPITWORM);
 make_sprite!(FLY_SPRITE, FLY);
 make_sprite!(ROBOT_SPRITE, ROBOT);
+make_sprite!(TOMBSTONE_SPRITE, TOMBSTONE);
