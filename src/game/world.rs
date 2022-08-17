@@ -5,7 +5,7 @@ use crate::{Abort, entities_with, entities_with_components, GameState, get_compo
 use crate::assets::{DANGO_EYE_SPRITE, DANGO_SPRITE};
 use crate::ecs::Entity;
 use crate::game::components::{CameraComponent, ChildComponent, DangoEyeComponent, DashComponent, GameManagerComponent, GamepadComponent, HealthComponent, MoveComponent, PlayerComponent, PositionComponent, SizeComponent, SpriteComponent};
-use crate::game::systems::{ChildSystem, DangoEyesSystem, DrawSystem, EnemyAttackSystem, EnemyMovementSystem, EnemyWavesSystem, HealthFlashSystem, HealthSystem, MoveSystem, NB_WAVES, ScoreSystem, SoundSystem, System};
+use crate::game::systems::{ChildSystem, DangoEyesSystem, DrawSystem, EnemyAttackSystem, EnemyMovementSystem, EnemyWavesSystem, HealthFlashSystem, HealthSystem, MoveSystem, NB_WAVES, ScoreSystem, SoundEvent, SoundSystem, System};
 use crate::game::systems::ttl_system::TTLSystem;
 
 const PLAYER_BASE_SPEED: i16 = 2;
@@ -13,14 +13,14 @@ const PLAYER_BASE_DASH: i16 = 60;
 const PLAYER_BASE_HEALTH: i16 = 5;
 const PLAYER_HIT_TIMEOUT: i16 = 100;
 const BASE_SCORE: i32 = 100;
-const GAME_END_TIMEOUT: u8 = 200;
+const GAME_END_TIMEOUT: u8 = 100;
 pub const WORLD_BOUNDARIES: f32 = 160.0;
 
 pub struct World {
     pub registry: Registry,
     pub systems: LinkedList<Box<dyn System>>,
     pub game_end_timeout: u8,
-    pub sound_topic: Topic<(u32, u32, u32)>,
+    pub sound_topic: Topic<SoundEvent>,
 }
 
 impl World {
@@ -110,7 +110,7 @@ impl World {
             let (mut game_manager, ) = get_components_clone_unwrap!(self.registry,e,GameManagerComponent);
             if game_manager.current_wave >= NB_WAVES {
                 if self.game_end_timeout == GAME_END_TIMEOUT {
-                    self.sound_topic.send_message((240 * 4, 240 * 8, 60));
+                    self.sound_topic.send_message(SoundEvent::Win);
                     self.game_end_timeout -= 1;
                 } else if self.game_end_timeout > 0 {
                     self.game_end_timeout -= 1;

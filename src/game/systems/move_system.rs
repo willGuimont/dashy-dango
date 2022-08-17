@@ -2,6 +2,7 @@ use crate::*;
 use crate::assets::{DANGO_DASH_SPRITE, DANGO_EYE_SPRITE, DANGO_SPRITE};
 use crate::ecs::Entity;
 use crate::game::components::{ChildComponent, DangoEyeComponent, DashComponent, DirectionComponent, EnemyComponent, GamepadComponent, HealthComponent, MoveComponent, PositionComponent, ScoreComponent, SizeComponent, SpriteComponent, TTLComponent};
+use crate::game::systems::SoundEvent;
 use crate::game::systems::system::System;
 use crate::game::world::WORLD_BOUNDARIES;
 use crate::gamepad_utils::gamepad_to_vec;
@@ -9,7 +10,7 @@ use crate::utils::is_dashing;
 
 pub struct MoveSystem {
     pub health_queue: Topic<(Entity, i32, i32)>,
-    pub sound_queue: Topic<(u32, u32, u32)>,
+    pub sound_queue: Topic<SoundEvent>,
 }
 
 impl System for MoveSystem {
@@ -54,6 +55,8 @@ impl MoveSystem {
         dash.direction = direction;
         sprite.sprite = &DANGO_SPRITE;
 
+        self.sound_queue.send_message(SoundEvent::Dash);
+
         add_components!(registry, e, pos, dash, sprite);
     }
 
@@ -86,8 +89,7 @@ impl MoveSystem {
     }
 
     fn kill_entity(&mut self, dash: &DashComponent, registry: &mut Registry) {
-        let sound = (280 * dash.hit.len()) as u32;
-        self.sound_queue.send_message((sound, sound * 2, 10));
+        self.sound_queue.send_message(SoundEvent::Kill(dash.hit.len() as u32));
         for (i, &e) in dash.hit.iter().enumerate() {
             self.health_queue.send_message((e, 1, (i + 1) as i32));
         }
