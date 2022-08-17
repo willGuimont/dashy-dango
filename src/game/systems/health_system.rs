@@ -2,11 +2,12 @@ use crate::{Abort, entities_with, entities_with_components, get_components, get_
 use crate::assets::TOMBSTONE_SPRITE;
 use crate::ecs::Entity;
 use crate::game::components::{CameraComponent, DashComponent, GameManagerComponent, HealthComponent, PlayerComponent, PositionComponent, ScoreComponent, SpriteComponent, TombstoneComponent};
-use crate::game::systems::System;
+use crate::game::systems::{SoundEvent, System};
 
 pub struct HealthSystem {
     pub event_queue: Subscriber<(Entity, i32, i32)>,
     pub score_topic: Topic<i32>,
+    pub sound_topic: Topic<SoundEvent>,
 }
 
 impl System for HealthSystem {
@@ -70,8 +71,10 @@ impl HealthSystem {
                 registry.add_component(tomb, TombstoneComponent).abort();
                 registry.add_component(tomb, SpriteComponent { sprite: &TOMBSTONE_SPRITE, zindex: 3, is_visible: true });
                 registry.destroy_entity(e);
+                self.sound_topic.send_message(SoundEvent::Die);
             } else {
                 registry.add_component(e, health);
+                self.sound_topic.send_message(SoundEvent::TakeDamage);
             }
         }
     }
