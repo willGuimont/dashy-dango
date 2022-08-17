@@ -9,6 +9,7 @@ use crate::utils::is_dashing;
 
 pub struct MoveSystem {
     pub health_queue: Topic<(Entity, i32, i32)>,
+    pub sound_queue: Topic<(u32, u32, u32)>,
 }
 
 impl System for MoveSystem {
@@ -85,6 +86,8 @@ impl MoveSystem {
     }
 
     fn kill_entity(&mut self, dash: &DashComponent, registry: &mut Registry) {
+        let sound = (280 * dash.hit.len()) as u32;
+        self.sound_queue.send_message((sound, sound * 2, 10));
         for (i, &e) in dash.hit.iter().enumerate() {
             self.health_queue.send_message((e, 1, (i + 1) as i32));
         }

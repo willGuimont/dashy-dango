@@ -8,6 +8,7 @@ pub use health_flash_system::*;
 pub use health_system::*;
 pub use move_system::*;
 pub use score_system::*;
+pub use sound_system::*;
 pub use system::*;
 
 pub mod child_system;
@@ -20,5 +21,6 @@ pub mod health_system;
 pub mod health_flash_system;
 pub mod move_system;
 pub mod score_system;
+pub mod sound_system;
 pub mod system;
 pub mod ttl_system;

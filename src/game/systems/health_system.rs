@@ -7,6 +7,7 @@ use crate::game::systems::System;
 pub struct HealthSystem {
     pub event_queue: Subscriber<(Entity, i32, i32)>,
     pub score_topic: Topic<i32>,
+    pub sound_topic: Topic<(u32, u32, u32)>,
 }
 
 impl System for HealthSystem {
@@ -70,8 +71,10 @@ impl HealthSystem {
                 registry.add_component(tomb, TombstoneComponent).abort();
                 registry.add_component(tomb, SpriteComponent { sprite: &TOMBSTONE_SPRITE, zindex: 3, is_visible: true });
                 registry.destroy_entity(e);
+                self.sound_topic.send_message((280, 280 / 4, 60));
             } else {
                 registry.add_component(e, health);
+                self.sound_topic.send_message((280, 280 / 2, 10));
             }
         }
     }
