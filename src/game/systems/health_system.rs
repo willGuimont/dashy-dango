@@ -1,6 +1,7 @@
 use crate::{Abort, entities_with, entities_with_components, get_components, get_components_clone_unwrap, get_components_unwrap, has_all_components, Registry, Subscriber, Topic, update};
+use crate::assets::TOMBSTONE_SPRITE;
 use crate::ecs::Entity;
-use crate::game::components::{CameraComponent, DashComponent, GameManagerComponent, HealthComponent, PlayerComponent, PositionComponent, ScoreComponent, TombstoneComponent};
+use crate::game::components::{CameraComponent, DashComponent, GameManagerComponent, HealthComponent, PlayerComponent, PositionComponent, ScoreComponent, SpriteComponent, TombstoneComponent};
 use crate::game::systems::System;
 
 pub struct HealthSystem {
@@ -67,6 +68,7 @@ impl HealthSystem {
                 registry.add_component(tomb, PositionComponent { pos }).abort();
                 registry.add_component(tomb, CameraComponent).abort();
                 registry.add_component(tomb, TombstoneComponent).abort();
+                registry.add_component(tomb, SpriteComponent { sprite: &TOMBSTONE_SPRITE, zindex: 3, is_visible: true });
                 registry.destroy_entity(e);
             } else {
                 registry.add_component(e, health);

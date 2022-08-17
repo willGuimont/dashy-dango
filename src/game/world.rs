@@ -1,7 +1,7 @@
 use std::collections::HashSet;
 use std::collections::LinkedList;
 
-use crate::{Abort, entities_with, entities_with_components, GameState, get_components_unwrap, has_all_components, Registry, set_game_state, Subscriber, Topic, Vec2};
+use crate::{Abort, entities_with, entities_with_components, GameState, get_components_clone_unwrap, get_components_unwrap, has_all_components, Registry, set_game_state, Subscriber, Topic, Vec2};
 use crate::assets::{DANGO_EYE_SPRITE, DANGO_SPRITE};
 use crate::ecs::Entity;
 use crate::game::components::{CameraComponent, ChildComponent, DangoEyeComponent, DashComponent, GameManagerComponent, GamepadComponent, HealthComponent, MoveComponent, PlayerComponent, PositionComponent, SizeComponent, SpriteComponent};
@@ -13,20 +13,23 @@ const PLAYER_BASE_DASH: i16 = 60;
 const PLAYER_BASE_HEALTH: i16 = 5;
 const PLAYER_HIT_TIMEOUT: i16 = 100;
 const BASE_SCORE: i32 = 100;
+const GAME_END_TIMEOUT: u8 = 200;
 pub const WORLD_BOUNDARIES: f32 = 160.0;
 
 pub struct World {
     pub registry: Registry,
     pub systems: LinkedList<Box<dyn System>>,
+    pub game_end_timeout: u8,
 }
 
 // TODO make world independent of our actual game, this logic should probably be in lib.rs, or some helper module
 impl World {
-    pub fn new() -> Self { World { registry: Registry::new(), systems: LinkedList::new() } }
+    pub fn new() -> Self { World { registry: Registry::new(), systems: LinkedList::new(), game_end_timeout: GAME_END_TIMEOUT } }
 
     pub fn set(&mut self, gamepad: *const u8) {
         self.registry = Registry::new();
         self.systems = LinkedList::new();
+        self.game_end_timeout = GAME_END_TIMEOUT;
 
         self.create_player(gamepad);
         self.create_game_manager();
@@ -55,7 +58,7 @@ impl World {
 
     pub fn create_game_manager(&mut self) {
         let game_manager = self.registry.new_entity();
-        self.registry.add_component(game_manager, GameManagerComponent { current_wave: 0, score: BASE_SCORE, player_hp: PLAYER_BASE_HEALTH }).abort();
+        self.registry.add_component(game_manager, GameManagerComponent { current_wave: 0, score: BASE_SCORE, player_hp: PLAYER_BASE_HEALTH, game_ended: false }).abort();
     }
 
     pub fn create_systems(&mut self) {
@@ -94,12 +97,24 @@ impl World {
     }
 
     fn update_game_state(&mut self) -> GameState {
-        for (_, (game_manager, )) in entities_with_components!(self.registry, GameManagerComponent) {
+        for e in entities_with!(self.registry, GameManagerComponent) {
+            let (mut game_manager, ) = get_components_clone_unwrap!(self.registry,e,GameManagerComponent);
             if game_manager.current_wave >= NB_WAVES {
-                return GameState::Win(game_manager.score);
-            }
-            if game_manager.player_hp <= 0 {
-                return GameState::Loose(game_manager.score, game_manager.current_wave);
+                if self.game_end_timeout > 0 {
+                    self.game_end_timeout -= 1;
+                } else {
+                    return GameState::Win(game_manager.score);
+                }
+                game_manager.game_ended = true;
+                self.registry.add_component(e, game_manager);
+            } else if game_manager.player_hp <= 0 {
+                if self.game_end_timeout > 0 {
+                    self.game_end_timeout -= 1;
+                } else {
+                    return GameState::Loose(game_manager.score, game_manager.current_wave);
+                }
+                game_manager.game_ended = true;
+                self.registry.add_component(e, game_manager);
             }
         }
         GameState::Ongoing

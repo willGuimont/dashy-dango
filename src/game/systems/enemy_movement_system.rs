@@ -65,13 +65,10 @@ fn straight_move(enemy_pos: Vec2, target_pos: Vec2, movement: &StraightMoveCompo
 fn spiral_move(enemy_pos: Vec2, target_pos: Vec2, movement: &SpiralMoveComponent, is_alive: bool) -> Vec2 {
     let direction_to_player = (target_pos - enemy_pos).normalized();
 
-    let mut perp_movement = direction_to_player.perp() * movement.perpendicular_speed;
+    let perp_movement = direction_to_player.perp() * movement.perpendicular_speed;
     let mut par_movement = direction_to_player * movement.parallel_speed;
 
-    if !is_alive {
-        perp_movement = perp_movement * -1.0;
-        par_movement = par_movement * -1.0;
-    };
+    if !is_alive { par_movement = par_movement * -1.0; };
 
     enemy_pos + perp_movement + par_movement
 }
@@ -80,8 +77,6 @@ fn sentinel_move(enemy_pos: Vec2, target_pos: Vec2, movement: &SentinelMoveCompo
     let enemy_pos = enemy_pos;
     let mut direction_to_player = target_pos - enemy_pos;
     let player_distance = direction_to_player.norm();
-
-    if !is_alive { direction_to_player = direction_to_player * -1.0; };
 
     if player_distance >= movement.stopping_distance {
         enemy_pos + direction_to_player.normalized() * movement.speed

@@ -9,4 +9,5 @@ pub struct GameManagerComponent {
     pub current_wave: u8,
     pub score: i32,
     pub player_hp: i16,
+    pub game_ended: bool,
 }
