@@ -35,30 +35,33 @@ impl Wave {
 }
 
 impl EnemyWavesSystem {
-    fn spawn_wave(&mut self, registry: &mut Registry, wave: Wave, player_pos: Vec2) {
+    fn spawn_wave(&mut self, registry: &mut Registry, wave: Wave, player_entity: Entity) {
         let num_enemies = wave.num_enemies();
         let spawn_radius = 50.0;
         let dtheta = TAU / num_enemies as f32;
+
+        let (player_pos, ) = get_components_unwrap!(registry, player_entity, PositionComponent);
+        let player_pos = player_pos.pos;
 
         for i in 0..wave.nb_sprinter {
             let pos = get_enemy_pos(i as f32, 0.0, wave.nb_sprinter as f32, player_pos, spawn_radius);
 
             let e = registry.new_entity();
-            init_sprinter(registry, e);
+            init_sprinter(registry, e, player_entity);
             registry.add_component(e, PositionComponent { pos }).abort();
         }
         for i in 0..wave.nb_fly {
             let pos = get_enemy_pos(i as f32, dtheta, wave.nb_fly as f32, player_pos, spawn_radius);
 
             let e = registry.new_entity();
-            init_fly(registry, e);
+            init_fly(registry, e, player_entity);
             registry.add_component(e, PositionComponent { pos }).abort();
         }
         for i in 0..wave.nb_spitworm {
             let pos = get_enemy_pos(i as f32, 2.0 * dtheta, wave.nb_spitworm as f32, player_pos, spawn_radius);
 
             let e = registry.new_entity();
-            init_spitworm(registry, e);
+            init_spitworm(registry, e, player_entity);
             registry.add_component(e, PositionComponent { pos }).abort();
         }
     }
@@ -69,9 +72,7 @@ impl System for EnemyWavesSystem {
         let num_enemies = entities_with!(registry, EnemyComponent).iter().count();
         if num_enemies == 0 && self.current_wave < NB_WAVES {
             for player_entity in entities_with!(registry, PlayerComponent, PositionComponent) {
-                let (player_pos, ) = get_components_unwrap!(registry,player_entity,PositionComponent);
-                let player_pos = player_pos.pos;
-                self.spawn_wave(registry, WAVES[self.current_wave as usize], player_pos);
+                self.spawn_wave(registry, WAVES[self.current_wave as usize], player_entity);
                 self.current_wave += 1;
 
                 for game_manager_entity in entities_with!(registry, GameManagerComponent) {

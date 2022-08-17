@@ -1,6 +1,6 @@
 use crate::{Abort, entities_with, entities_with_components, get_components, get_components_clone_unwrap, get_components_unwrap, has_all_components, Registry, Subscriber, Topic, update};
 use crate::ecs::Entity;
-use crate::game::components::{DashComponent, GameManagerComponent, HealthComponent, PlayerComponent, ScoreComponent};
+use crate::game::components::{CameraComponent, DashComponent, GameManagerComponent, HealthComponent, PlayerComponent, PositionComponent, ScoreComponent, TombstoneComponent};
 use crate::game::systems::System;
 
 pub struct HealthSystem {
@@ -62,8 +62,11 @@ impl HealthSystem {
             self.update_game_manager(registry, e, &health);
 
             if health.hp == 0 {
-                //For some reason destroying player causes issue
-                //registry.add_component(e, health);
+                let tomb = registry.new_entity();
+                let pos = registry.get_component::<PositionComponent>(e).abort().pos;
+                registry.add_component(tomb, PositionComponent { pos }).abort();
+                registry.add_component(tomb, CameraComponent).abort();
+                registry.add_component(tomb, TombstoneComponent).abort();
                 registry.destroy_entity(e);
             } else {
                 registry.add_component(e, health);
