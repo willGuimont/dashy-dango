@@ -183,7 +183,7 @@ fn read_saved_highscore() -> [i32; NB_HIGHSCORE_SAVED] {
         let mut buffer = [0; NB_HIGHSCORE_SAVED * 4];
         diskr(buffer.as_mut_ptr(), buffer.len() as u32);
 
-        let mut int_buffer: [[u8; 4]; NB_HIGHSCORE_SAVED as usize] = [[0; 4]; NB_HIGHSCORE_SAVED];
+        let mut int_buffer = [[0; 4]; NB_HIGHSCORE_SAVED];
         for i in 0..NB_HIGHSCORE_SAVED * 4 {
             int_buffer[i / 4][i % 4] = buffer[i];
         }
@@ -198,11 +198,11 @@ fn read_saved_highscore() -> [i32; NB_HIGHSCORE_SAVED] {
 fn write_new_highscore(score: i32) {
     let game_data = read_saved_highscore();
     let new_game_data = compare_highscore(score, game_data);
-    let mut buffer: [[u8; 4]; NB_HIGHSCORE_SAVED] = [[0; 4]; NB_HIGHSCORE_SAVED];
+    let mut buffer = [[0; 4]; NB_HIGHSCORE_SAVED];
     for i in 0..NB_HIGHSCORE_SAVED {
         buffer[i] = new_game_data[i].to_le_bytes();
     }
-    let mut game_data_bytes: [u8; (NB_HIGHSCORE_SAVED * 4)] = [0; NB_HIGHSCORE_SAVED * 4];
+    let mut game_data_bytes = [0; NB_HIGHSCORE_SAVED * 4];
     for i in 0..NB_HIGHSCORE_SAVED * 4 {
         game_data_bytes[i] = buffer[i / 4][i % 4];
     }
