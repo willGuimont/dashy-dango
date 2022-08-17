@@ -16,11 +16,11 @@ impl System for ScoreSystem {
         self.score_decrease();
         self.read_event_queue();
 
-        let (&game_manager_entity, (_, )) = entities_with_components!(registry, GameManagerComponent).next().abort();
-        let (mut game_manager, ) = get_components_clone_unwrap!(registry,game_manager_entity,GameManagerComponent);
-        game_manager.score = self.score;
-        registry.add_component(game_manager_entity, game_manager);
-
+        for game_manager_entity in entities_with!(registry, GameManagerComponent) {
+            let (mut game_manager, ) = get_components_clone_unwrap!(registry,game_manager_entity,GameManagerComponent);
+            game_manager.score = self.score;
+            registry.add_component(game_manager_entity, game_manager);
+        }
         unsafe { *DRAW_COLORS = 0x0023; }
         text(int_to_string(self.score), 0, 0);
     }

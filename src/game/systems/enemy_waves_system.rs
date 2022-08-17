@@ -67,16 +67,19 @@ impl EnemyWavesSystem {
 impl System for EnemyWavesSystem {
     fn execute_system(&mut self, registry: &mut Registry) {
         let num_enemies = entities_with!(registry, EnemyComponent).iter().count();
-        if false && num_enemies == 0 && self.current_wave < NB_WAVES {
-            let (_, (_, player_pos)) = entities_with_components!(registry, PlayerComponent, PositionComponent).next().abort();
-            let player_pos = player_pos.pos;
-            self.spawn_wave(registry, WAVES[self.current_wave as usize], player_pos);
-            self.current_wave += 1;
+        if num_enemies == 0 && self.current_wave < NB_WAVES {
+            for player_entity in entities_with!(registry, PlayerComponent, PositionComponent) {
+                let (player_pos, ) = get_components_unwrap!(registry,player_entity,PositionComponent);
+                let player_pos = player_pos.pos;
+                self.spawn_wave(registry, WAVES[self.current_wave as usize], player_pos);
+                self.current_wave += 1;
 
-            let (&game_manager_entity, (_, )) = entities_with_components!(registry, GameManagerComponent).next().abort();
-            let (mut game_manager, ) = get_components_clone_unwrap!(registry,game_manager_entity,GameManagerComponent);
-            game_manager.current_wave = self.current_wave;
-            registry.add_component(game_manager_entity, game_manager);
+                for game_manager_entity in entities_with!(registry, GameManagerComponent) {
+                    let (mut game_manager, ) = get_components_clone_unwrap!(registry,game_manager_entity,GameManagerComponent);
+                    game_manager.current_wave = self.current_wave;
+                    registry.add_component(game_manager_entity, game_manager);
+                }
+            }
         }
     }
 }

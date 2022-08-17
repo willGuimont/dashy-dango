@@ -94,15 +94,14 @@ impl World {
     }
 
     fn update_game_state(&mut self) -> GameState {
-        let (_, (game_manager, )) = entities_with_components!(self.registry, GameManagerComponent).next().abort();
-
-        if game_manager.current_wave >= NB_WAVES {
-            return GameState::Win(game_manager.score);
+        for (_, (game_manager, )) in entities_with_components!(self.registry, GameManagerComponent) {
+            if game_manager.current_wave >= NB_WAVES {
+                return GameState::Win(game_manager.score);
+            }
+            if game_manager.player_hp <= 0 {
+                return GameState::Loose(game_manager.score, game_manager.current_wave);
+            }
         }
-        if game_manager.player_hp <= 0 {
-            return GameState::Loose(game_manager.score, game_manager.current_wave);
-        }
-
         GameState::Ongoing
     }
 }

@@ -63,8 +63,8 @@ impl HealthSystem {
 
             if health.hp == 0 {
                 //For some reason destroying player causes issue
-                registry.add_component(e, health);
-                // registry.destroy_entity(e);
+                //registry.add_component(e, health);
+                registry.destroy_entity(e);
             } else {
                 registry.add_component(e, health);
             }
@@ -72,10 +72,11 @@ impl HealthSystem {
     }
 
     fn update_game_manager(&mut self, registry: &mut Registry, e: Entity, health: &HealthComponent) {
-        let (&game_manager_entity, (_, )) = entities_with_components!(registry, GameManagerComponent).next().abort();
-        let (mut game_manager, ) = get_components_clone_unwrap!(registry, game_manager_entity, GameManagerComponent);
+        for game_manager_entity in entities_with!(registry, GameManagerComponent) {
+            let (mut game_manager, ) = get_components_clone_unwrap!(registry, game_manager_entity, GameManagerComponent);
 
-        game_manager.player_hp = health.hp;
-        registry.add_component(game_manager_entity, game_manager);
+            game_manager.player_hp = health.hp;
+            registry.add_component(game_manager_entity, game_manager);
+        }
     }
 }
