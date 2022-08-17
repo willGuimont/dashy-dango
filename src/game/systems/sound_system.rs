@@ -20,7 +20,7 @@ impl SoundSystem {
     }
 }
 
-//Function to create sound from variables. Code taken from Petehellberg https://github.com/aduros/wasm4/discussions/8#discussioncomment-1348839
+//Function to create sound from variables. Code taken from Peterhellberg https://github.com/aduros/wasm4/discussions/8#discussioncomment-1348839
 fn make_sound(freq1: u32, freq2: u32, ack: u32, dec: u32, sus: u32, rel: u32) -> (u32, u32) {
     let freq = freq1 | freq2 << 16;
     let duration = ack << 24 | dec << 16 | sus | rel << 8;
