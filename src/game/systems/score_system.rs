@@ -14,7 +14,7 @@ pub struct ScoreSystem {
 impl System for ScoreSystem {
     fn execute_system(&mut self, registry: &mut Registry) {
         for game_manager_entity in entities_with!(registry, GameManagerComponent) {
-            let (mut game_manager, ) = get_components_clone_unwrap!(registry,game_manager_entity,GameManagerComponent);
+            let (mut game_manager, ) = get_components_clone_unwrap!(registry, game_manager_entity, GameManagerComponent);
             if !game_manager.game_ended {
                 self.score_decrease();
                 self.read_event_queue();

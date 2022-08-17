@@ -22,7 +22,6 @@ pub struct World {
     pub game_end_timeout: u8,
 }
 
-// TODO make world independent of our actual game, this logic should probably be in lib.rs, or some helper module
 impl World {
     pub fn new() -> Self { World { registry: Registry::new(), systems: LinkedList::new(), game_end_timeout: GAME_END_TIMEOUT } }
 

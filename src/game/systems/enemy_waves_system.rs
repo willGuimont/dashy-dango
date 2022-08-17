@@ -76,7 +76,7 @@ impl System for EnemyWavesSystem {
                 self.current_wave += 1;
 
                 for game_manager_entity in entities_with!(registry, GameManagerComponent) {
-                    let (mut game_manager, ) = get_components_clone_unwrap!(registry,game_manager_entity,GameManagerComponent);
+                    let (mut game_manager, ) = get_components_clone_unwrap!(registry, game_manager_entity, GameManagerComponent);
                     game_manager.current_wave = self.current_wave;
                     registry.add_component(game_manager_entity, game_manager);
                 }
