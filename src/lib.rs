@@ -3,6 +3,7 @@
 #![feature(iter_advance_by)]
 
 use std::cell::OnceCell;
+use std::mem;
 
 use wasm4::*;
 
@@ -35,6 +36,7 @@ const PALETTES: [[u32; 4]; 2] = [
     [0xf99dec, 0xfc49e1, 0x88fce7, 0x34bca3],
     [0xFF73C3, 0xDB073D, 0x8EC7D2, 0x0D6986]
 ];
+const NB_HIGHSCORE_SAVED: usize = 5;
 
 static mut WORLD: OnceCell<World> = OnceCell::new();
 static mut GAME_STATE: GameState = GameState::Title;
@@ -97,6 +99,8 @@ fn execute_game() {
 }
 
 fn win_game(score: i32) {
+    let highscore = read_saved_highscore();
+
     unsafe { *DRAW_COLORS = 0x4323 }
     text_centered("Congratulation!", 10);
     text_centered("You won the game", 18);
@@ -104,8 +108,13 @@ fn win_game(score: i32) {
     text_centered(&int_to_string(score), 34);
     text_centered("points!", 42);
 
-    text_centered("Press x", 100);
-    text_centered("to play again!", 108);
+    text_centered("Highscores", 60);
+    for i in 0..NB_HIGHSCORE_SAVED {
+        text_centered(&int_to_string(highscore[i]), (68 + (i * 8)) as i32)
+    }
+
+    text_centered("Press x", 130);
+    text_centered("to play again!", 138);
 
     unsafe {
         if is_dashing(*GAMEPAD1) {
@@ -116,6 +125,8 @@ fn win_game(score: i32) {
 }
 
 fn loose_game(score: i32, wave: u8) {
+    let highscore = read_saved_highscore();
+
     unsafe { *DRAW_COLORS = 0x4323 }
     text_centered("You lost the game", 10);
     text_centered("with", 18);
@@ -124,8 +135,13 @@ fn loose_game(score: i32, wave: u8) {
     text_centered("on wave", 42);
     text_centered(&int_to_string(wave as i32), 50);
 
-    text_centered("Press x", 100);
-    text_centered("to try again!", 108);
+    text_centered("Highscores", 70);
+    for i in 0..NB_HIGHSCORE_SAVED {
+        text_centered(&int_to_string(highscore[i]), (78 + (i * 8)) as i32)
+    }
+
+    text_centered("Press x", 130);
+    text_centered("to try again!", 138);
 
     unsafe {
         if is_dashing(*GAMEPAD1) {
@@ -136,6 +152,12 @@ fn loose_game(score: i32, wave: u8) {
 }
 
 pub fn set_game_state(game_state: GameState) {
+    match game_state {
+        GameState::Title => (),
+        GameState::Ongoing => (),
+        GameState::Win(score) => write_new_highscore(score),
+        GameState::Loose(score, _) => write_new_highscore(score),
+    }
     unsafe { GAME_STATE = game_state; }
 }
 
@@ -153,4 +175,60 @@ fn reset_world() {
 fn text_centered(message: &str, y: i32) {
     let x = ((20.0 - (message.len() as f32)) / 2.0 * 8.0) as i32;
     text(message, x, y);
+}
+
+fn read_saved_highscore() -> [i32; NB_HIGHSCORE_SAVED] {
+    let mut game_data = [0; NB_HIGHSCORE_SAVED];
+    unsafe {
+        let mut buffer = [0; NB_HIGHSCORE_SAVED * 4];
+        diskr(buffer.as_mut_ptr(), buffer.len() as u32);
+
+        let mut int_buffer = [[0; 4]; NB_HIGHSCORE_SAVED];
+        for i in 0..NB_HIGHSCORE_SAVED * 4 {
+            int_buffer[i / 4][i % 4] = buffer[i];
+        }
+        for i in 0..int_buffer.len() {
+            game_data[i] = i32::from_le_bytes(int_buffer[i]);
+        }
+    };
+
+    game_data
+}
+
+fn write_new_highscore(score: i32) {
+    let game_data = read_saved_highscore();
+    let new_game_data = compare_highscore(score, game_data);
+    let mut buffer = [[0; 4]; NB_HIGHSCORE_SAVED];
+    for i in 0..NB_HIGHSCORE_SAVED {
+        buffer[i] = new_game_data[i].to_le_bytes();
+    }
+    let mut game_data_bytes = [0; NB_HIGHSCORE_SAVED * 4];
+    for i in 0..NB_HIGHSCORE_SAVED * 4 {
+        game_data_bytes[i] = buffer[i / 4][i % 4];
+    }
+
+    unsafe {
+        diskw(game_data_bytes.as_ptr(), core::mem::size_of::<[i32; NB_HIGHSCORE_SAVED]>() as u32);
+    }
+}
+
+fn compare_highscore(score: i32, game_data: [i32; NB_HIGHSCORE_SAVED as usize]) -> [i32; NB_HIGHSCORE_SAVED] {
+    for i in 0..NB_HIGHSCORE_SAVED {
+        if score > game_data[i] {
+            let mut new_data = [0; NB_HIGHSCORE_SAVED];
+            for j in 0..NB_HIGHSCORE_SAVED {
+                if i > j {
+                    new_data[j] = game_data[j];
+                } else if i == j {
+                    new_data[j] = score;
+                } else {
+                    new_data[j] = game_data[j - 1];
+                }
+            }
+
+            return new_data;
+        }
+    }
+
+    return game_data;
 }
