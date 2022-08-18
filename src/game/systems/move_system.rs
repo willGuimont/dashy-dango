@@ -19,18 +19,18 @@ impl System for MoveSystem {
             let direction = gamepad_to_vec(gamepad.get_gamepad());
 
             if dash.duration > 0 {
-                self.continue_dash(dash.direction, dash, size, pos, registry, e);
+                self.continue_dash(registry, e, dash.direction, dash, size, pos);
             } else if is_dashing(gamepad.get_gamepad()) && dash.timeout == 0 {
-                self.process_dash(direction, dash, size, pos, sprite, registry, e);
+                self.process_dash(registry, e, direction, dash, size, pos, sprite);
             } else {
-                self.move_player(direction, dash, move_c, pos, sprite, registry, e);
+                self.move_player(registry, e, direction, dash, move_c, pos, sprite);
             }
         }
     }
 }
 
 impl MoveSystem {
-    fn move_player(&mut self, direction: Vec2, mut dash: DashComponent, move_c: MoveComponent, mut pos: PositionComponent, mut sprite: SpriteComponent, registry: &mut Registry, e: Entity) {
+    fn move_player(&mut self, registry: &mut Registry, e: Entity, direction: Vec2, mut dash: DashComponent, move_c: MoveComponent, mut pos: PositionComponent, mut sprite: SpriteComponent) {
         if dash.timeout > 0 {
             dash.timeout -= 1;
             if dash.timeout <= 0 {
@@ -42,7 +42,7 @@ impl MoveSystem {
         add_components!(registry, e, pos, dash, sprite);
     }
 
-    fn process_dash(&mut self, dir: Vec2, mut dash: DashComponent, size: SizeComponent, mut pos: PositionComponent, mut sprite: SpriteComponent, registry: &mut Registry, e: Entity) {
+    fn process_dash(&mut self, registry: &mut Registry, e: Entity, dir: Vec2, mut dash: DashComponent, size: SizeComponent, mut pos: PositionComponent, mut sprite: SpriteComponent) {
         let direction = if dir.norm() == 0.0 { Vec2::new(1.0, 0.0) } else { dir };
 
         self.dash_damage(&mut dash, &size, &pos, registry);
@@ -59,7 +59,7 @@ impl MoveSystem {
         add_components!(registry, e, pos, dash, sprite);
     }
 
-    fn continue_dash(&mut self, direction: Vec2, mut dash: DashComponent, size: SizeComponent, mut pos: PositionComponent, registry: &mut Registry, e: Entity) {
+    fn continue_dash(&mut self, registry: &mut Registry, e: Entity, direction: Vec2, mut dash: DashComponent, size: SizeComponent, mut pos: PositionComponent) {
         self.dash_damage(&mut dash, &size, &pos, registry);
         let segment_size = dash.length as f32 / size.width as f32;
         let segment = direction * segment_size;
