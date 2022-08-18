@@ -95,7 +95,7 @@ impl System for EnemyWavesSystem {
         let wave_text = "Wave:";
         text(wave_text, 0, bottom_screen);
         let wave_text_len = wave_text.len() as i32;
-        text(int_to_string((self.next_wave - 1) as i32), 8 * wave_text_len, bottom_screen);
+        text(int_to_string(self.next_wave as i32), 8 * wave_text_len, bottom_screen);
 
         let enemies_text = "Enemies:";
         let spacing = 5;
