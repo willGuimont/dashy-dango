@@ -5,6 +5,7 @@ use crate::assets::{init_fly, init_spitworm, init_sprinter};
 use crate::ecs::Entity;
 use crate::game::components::{EnemyComponent, GameManagerComponent, PlayerComponent, PositionComponent};
 use crate::game::systems::System;
+use crate::utils::{cos, sin};
 
 pub const NB_WAVES: u8 = 7;
 const WAVES: [Wave; NB_WAVES as usize] = [
@@ -87,7 +88,7 @@ impl System for EnemyWavesSystem {
 
 fn get_enemy_pos(i: f32, dtheta: f32, nb_entity: f32, player_pos: Vec2, spawn_radius: f32) -> Vec2 {
     let theta = i * TAU / nb_entity + dtheta;
-    let c = player_pos.x + theta.cos() * spawn_radius;
-    let s = player_pos.y + theta.sin() * spawn_radius;
+    let c = player_pos.x + cos(theta) * spawn_radius;
+    let s = player_pos.y + sin(theta) * spawn_radius;
     Vec2::new(c, s)
 }
