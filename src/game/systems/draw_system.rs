@@ -6,7 +6,21 @@ use crate::game::systems::System;
 use crate::game::world::WORLD_BOUNDARIES;
 
 const SCREEN_CENTER: (f32, f32) = (76.0, 76.0);
-const GRASS: [Vec2; 2] = [Vec2 { x: 1.0, y: 1.0 }, Vec2 { x: 15.0, y: 15.0 }];
+// Randomly generated from:
+// for i in range(10):
+//   print(f'Vec2 {{ x: {random.randint(-160, 160):.1f}, y: {random.randint(-160, 160):.1f} }},')
+const GRASS: [Vec2; 10] = [
+    Vec2 { x: 106.0, y: -70.0 },
+    Vec2 { x: 2.0, y: -45.0 },
+    Vec2 { x: -119.0, y: -127.0 },
+    Vec2 { x: 86.0, y: 142.0 },
+    Vec2 { x: -61.0, y: 36.0 },
+    Vec2 { x: -1.0, y: -86.0 },
+    Vec2 { x: -137.0, y: -95.0 },
+    Vec2 { x: -134.0, y: -41.0 },
+    Vec2 { x: 152.0, y: -54.0 },
+    Vec2 { x: 13.0, y: -5.0 },
+];
 
 pub struct DrawSystem;
 
