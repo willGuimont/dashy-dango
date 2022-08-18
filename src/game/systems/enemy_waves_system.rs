@@ -1,6 +1,6 @@
 use std::f32::consts::TAU;
 
-use crate::{Abort, entities_with, get_components_clone_unwrap, get_components_unwrap, has_all_components, Registry, Topic, Vec2};
+use crate::{Abort, DRAW_COLORS, entities_with, get_components_clone_unwrap, get_components_unwrap, has_all_components, int_to_string, rect, Registry, SCREEN_SIZE, text, Topic, Vec2};
 use crate::assets::{init_fly, init_spitworm, init_sprinter};
 use crate::ecs::Entity;
 use crate::game::components::{BulletMoveComponent, EnemyComponent, GameManagerComponent, PlayerComponent, PositionComponent};
@@ -73,7 +73,9 @@ impl System for EnemyWavesSystem {
         let num_enemies = entities_with!(registry, EnemyComponent).iter().count() - entities_with!(registry, BulletMoveComponent).iter().count();
         if num_enemies == 0 {
             self.score_topic.send_message(100);
-            self.next_wave += 1;
+            if self.next_wave == 0 || self.next_wave - 1 <= NB_WAVES {
+                self.next_wave += 1;
+            }
             for game_manager_entity in entities_with!(registry, GameManagerComponent) {
                 let (mut game_manager, ) = get_components_clone_unwrap!(registry, game_manager_entity, GameManagerComponent);
                 game_manager.current_wave = self.next_wave;
@@ -86,6 +88,20 @@ impl System for EnemyWavesSystem {
                 }
             }
         }
+        let bottom_screen = SCREEN_SIZE as i32 - 8;
+        unsafe { *DRAW_COLORS = 0x0002; }
+        rect(0, bottom_screen, 160, 8);
+        unsafe { *DRAW_COLORS = 0x0023; }
+        let wave_text = "Wave:";
+        text(wave_text, 0, bottom_screen);
+        let wave_text_len = wave_text.len() as i32;
+        text(int_to_string((self.next_wave - 1) as i32), 8 * wave_text_len, bottom_screen);
+
+        let enemies_text = "Enemies:";
+        let spacing = 5;
+        text(enemies_text, 8 * (wave_text_len + spacing), bottom_screen);
+        let enemies_text_len = enemies_text.len() as i32;
+        text(int_to_string(num_enemies as i32), 8 * (enemies_text_len + wave_text_len + spacing) as i32, bottom_screen);
     }
 }
 
