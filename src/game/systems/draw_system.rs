@@ -40,6 +40,7 @@ fn create_z_buffer(registry: &Registry) -> Vec<(&SpriteComponent, &PositionCompo
     sprites
 }
 
+// TODO move to utils
 fn bubble_sort(vec: &mut Vec<(&SpriteComponent, &PositionComponent)>) {
     for i in 0..vec.len() {
         let mut has_swap = false;
