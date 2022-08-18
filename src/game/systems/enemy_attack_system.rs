@@ -1,7 +1,7 @@
-use crate::{Abort, entities_with, entities_with_components, get_components_clone_unwrap, get_components_unwrap, has_all_components, Registry, Vec2};
+use crate::{Abort, entities_with, get_components_clone_unwrap, get_components_unwrap, has_all_components, Registry, Vec2};
 use crate::assets::BULLET_SPRITE;
 use crate::ecs::Entity;
-use crate::game::components::{BulletMoveComponent, EnemyComponent, HealthComponent, PlayerComponent, PositionComponent, ScoreComponent, ShooterComponent, SizeComponent, SpriteComponent};
+use crate::game::components::{BulletMoveComponent, EnemyComponent, HealthComponent, PositionComponent, ScoreComponent, ShooterComponent, SizeComponent, SpriteComponent};
 use crate::game::components::ttl_component::TTLComponent;
 use crate::game::systems::System;
 

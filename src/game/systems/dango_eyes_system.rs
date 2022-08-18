@@ -1,4 +1,4 @@
-use crate::{Abort, entities_with, get_components_clone_unwrap, has_all_components, Registry, trace, Vec2};
+use crate::{Abort, entities_with, get_components_clone_unwrap, has_all_components, Registry, Vec2};
 use crate::assets::{DANGO_EYE_SPRITE, DANGO_SPRITE};
 use crate::ecs::Entity;
 use crate::game::components::{ChildComponent, DangoEyeComponent, DirectionComponent, GamepadComponent, PositionComponent};

@@ -1,7 +1,7 @@
 use std::collections::HashSet;
 use std::collections::LinkedList;
 
-use crate::{Abort, entities_with, entities_with_components, GameState, get_components_clone_unwrap, get_components_unwrap, has_all_components, Registry, set_game_state, Subscriber, Topic, Vec2};
+use crate::{Abort, entities_with, GameState, get_components_clone_unwrap, has_all_components, Registry, set_game_state, Subscriber, Topic, Vec2};
 use crate::assets::{DANGO_EYE_SPRITE, DANGO_SPRITE};
 use crate::ecs::Entity;
 use crate::game::components::{CameraComponent, ChildComponent, DangoEyeComponent, DashComponent, GameManagerComponent, GamepadComponent, HealthComponent, MoveComponent, PlayerComponent, PositionComponent, SizeComponent, SpriteComponent};

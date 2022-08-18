@@ -1,4 +1,4 @@
-use crate::{entities_with, entities_with_components, get_components_clone_unwrap, get_components_unwrap, has_all_components, Registry, trace};
+use crate::{entities_with, get_components_clone_unwrap, has_all_components, Registry};
 use crate::abort::Abort;
 use crate::ecs::Entity;
 use crate::game::components::{HealthComponent, PlayerComponent, SpriteComponent};
