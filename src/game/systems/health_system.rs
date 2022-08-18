@@ -75,6 +75,7 @@ impl HealthSystem {
             } else {
                 registry.add_component(e, health);
                 self.sound_topic.send_message(SoundEvent::TakeDamage);
+                self.score_topic.send_message(-50);
             }
         }
     }
