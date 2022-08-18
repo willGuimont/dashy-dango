@@ -76,14 +76,13 @@ fn begin_game() {
     text_centered("Help the Dango", 30);
     text_centered("survive by fighting", 38);
     text_centered("waves of enemies.", 46);
-    text_centered("Clear waves quickly", 54);
-    text_centered("for more points.", 62);
+    text_centered("Dash into enemies", 54);
+    text_centered("to eliminate them", 62);
 
     text("Controls:", 5, 78);
     text("-X to dash", 5, 86);
-    text(" on enemies", 5, 94);
-    text("-Z to switch", 5, 102);
-    text(" colour palette", 5, 110);
+    text("-Z to switch", 5, 94);
+    text(" colour palette", 5, 102);
 
     text_centered(" Press x to start!", 140);
 

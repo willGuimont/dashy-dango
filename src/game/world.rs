@@ -68,8 +68,10 @@ impl World {
 
     pub fn create_systems(&mut self) {
         let mut score_event = Subscriber::new();
-        let mut score_topic = Topic::new();
-        score_event.follow(&mut score_topic);
+        let mut health_system_score_topic = Topic::new();
+        let mut enemy_wave_system_score_topic = Topic::new();
+        score_event.follow(&mut health_system_score_topic);
+        score_event.follow(&mut enemy_wave_system_score_topic);
 
         let mut health_event = Subscriber::new();
         let mut enemy_movement_system_health_topic = Topic::new();
@@ -86,14 +88,14 @@ impl World {
 
         self.systems.push_back(Box::new(MoveSystem { health_queue: move_system_health_topic, sound_queue: move_system_sound_topic }));
         self.systems.push_back(Box::new(ChildSystem));
-        self.systems.push_back(Box::new(EnemyWavesSystem { current_wave: 0 }));
         self.systems.push_back(Box::new(EnemyMovementSystem { damage_topic: enemy_movement_system_health_topic }));
         self.systems.push_back(Box::new(EnemyAttackSystem));
-        self.systems.push_back(Box::new(HealthSystem { event_queue: health_event, score_topic: score_topic, sound_topic: health_system_sound_topic }));
+        self.systems.push_back(Box::new(HealthSystem { event_queue: health_event, score_topic: health_system_score_topic, sound_topic: health_system_sound_topic }));
         self.systems.push_back(Box::new(HealthFlashSystem));
         self.systems.push_back(Box::new(TTLSystem));
         self.systems.push_back(Box::new(DangoEyesSystem));
         self.systems.push_back(Box::new(DrawSystem));
+        self.systems.push_back(Box::new(EnemyWavesSystem { next_wave: 0, score_topic: enemy_wave_system_score_topic }));
         self.systems.push_back(Box::new(ScoreSystem { score: BASE_SCORE, decrease_timer: 0, score_decrease_speed: 10, event_queue: score_event }));
         self.systems.push_back(Box::new(SoundSystem { sound_queue: sound_event }));
     }
@@ -112,7 +114,7 @@ impl World {
     fn update_game_state(&mut self) -> GameState {
         for e in entities_with!(self.registry, GameManagerComponent) {
             let (mut game_manager, ) = get_components_clone_unwrap!(self.registry,e,GameManagerComponent);
-            if game_manager.current_wave >= NB_WAVES {
+            if game_manager.current_wave != 0 && game_manager.current_wave - 1 > NB_WAVES {
                 if self.game_end_timeout == GAME_END_TIMEOUT {
                     self.sound_topic.send_message(SoundEvent::Win);
                     self.game_end_timeout -= 1;
