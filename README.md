@@ -18,7 +18,7 @@ w4 watch target/wasm32-unknown-unknown/release/cart.wasm
 
 Requirements:
 
-- [wasm-opt](https://github.com/WebAssembly/binaryen)
+- [wasm-opt](https://github.com/WebAssembly/binaryen) <= 97
 - [wasm-snip](https://github.com/rustwasm/wasm-snip)
 
 ```bash

@@ -17,13 +17,7 @@ pub struct SoundSystem {
 }
 
 impl System for SoundSystem {
-    fn execute_system(&mut self, registry: &mut Registry) {
-        self.play_sounds();
-    }
-}
-
-impl SoundSystem {
-    fn play_sounds(&mut self) {
+    fn execute_system(&mut self, _registry: &mut Registry) {
         while let Some(sound_event) = self.sound_queue.pop_message() {
             let sound = get_sound(sound_event);
             let (freq, duration) = make_sound(sound.0, sound.1, 0, 0, sound.2, 16);

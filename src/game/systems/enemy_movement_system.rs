@@ -1,6 +1,6 @@
-use crate::{Abort, create_box, entities_with, entities_with_components, get_components_clone_unwrap, get_components_unwrap, has_all_components, Registry, Topic, trace, Vec2};
+use crate::{Abort, create_box, entities_with, get_components_clone_unwrap, get_components_unwrap, has_all_components, Registry, Topic, Vec2};
 use crate::ecs::Entity;
-use crate::game::components::{DashComponent, EnemyComponent, GameManagerComponent, HealthComponent, PlayerComponent, PositionComponent, SizeComponent, TombstoneComponent};
+use crate::game::components::{EnemyComponent, PlayerComponent, PositionComponent, SizeComponent, TombstoneComponent};
 use crate::game::components::bullet_move_component::BulletMoveComponent;
 use crate::game::components::sentinel_move_component::SentinelMoveComponent;
 use crate::game::components::spiral_move_component::SpiralMoveComponent;
@@ -73,9 +73,9 @@ fn spiral_move(enemy_pos: Vec2, target_pos: Vec2, movement: &SpiralMoveComponent
     enemy_pos + perp_movement + par_movement
 }
 
-fn sentinel_move(enemy_pos: Vec2, target_pos: Vec2, movement: &SentinelMoveComponent, is_alive: bool) -> Vec2 {
+fn sentinel_move(enemy_pos: Vec2, target_pos: Vec2, movement: &SentinelMoveComponent, _is_alive: bool) -> Vec2 {
     let enemy_pos = enemy_pos;
-    let mut direction_to_player = target_pos - enemy_pos;
+    let direction_to_player = target_pos - enemy_pos;
     let player_distance = direction_to_player.norm();
 
     if player_distance >= movement.stopping_distance {

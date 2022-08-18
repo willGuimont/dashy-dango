@@ -1,4 +1,4 @@
-use crate::{Abort, entities_with, entities_with_components, get_components, get_components_clone_unwrap, get_components_unwrap, has_all_components, Registry, Subscriber, Topic, update};
+use crate::{Abort, entities_with, get_components_clone_unwrap, has_all_components, Registry, Subscriber, Topic};
 use crate::assets::TOMBSTONE_SPRITE;
 use crate::ecs::Entity;
 use crate::game::components::{CameraComponent, DashComponent, GameManagerComponent, HealthComponent, PlayerComponent, PositionComponent, ScoreComponent, SpriteComponent, TombstoneComponent};
@@ -29,7 +29,7 @@ impl HealthSystem {
     }
 
     fn deal_damage(&mut self, registry: &mut Registry) {
-        while let Some((e, damage, score_multiplier)) = self.event_queue.pop_message() {
+        while let Some((e, _damage, score_multiplier)) = self.event_queue.pop_message() {
             if registry.has_component::<HealthComponent>(e) {
                 let (health, ) = get_components_clone_unwrap!(registry,e, HealthComponent);
                 if registry.has_component::<PlayerComponent>(e) {
@@ -61,7 +61,7 @@ impl HealthSystem {
         if health.timeout <= 0 && dash.duration <= 0 {
             health.hp -= 1;
             health.timeout += health.hit_delay;
-            self.update_game_manager(registry, e, &health);
+            self.update_game_manager(registry, &health);
 
             if health.hp == 0 {
                 let tomb = registry.new_entity();
@@ -79,7 +79,7 @@ impl HealthSystem {
         }
     }
 
-    fn update_game_manager(&mut self, registry: &mut Registry, e: Entity, health: &HealthComponent) {
+    fn update_game_manager(&mut self, registry: &mut Registry, health: &HealthComponent) {
         for game_manager_entity in entities_with!(registry, GameManagerComponent) {
             let (mut game_manager, ) = get_components_clone_unwrap!(registry, game_manager_entity, GameManagerComponent);
 

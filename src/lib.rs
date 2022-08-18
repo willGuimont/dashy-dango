@@ -3,7 +3,6 @@
 #![feature(iter_advance_by)]
 
 use std::cell::OnceCell;
-use std::mem;
 
 use wasm4::*;
 
@@ -168,7 +167,7 @@ fn setup_world() {
 }
 
 fn reset_world() {
-    let mut world = unsafe { &mut WORLD.get_mut().abort() };
+    let world = unsafe { &mut WORLD.get_mut().abort() };
     world.set(GAMEPAD1);
 }
 

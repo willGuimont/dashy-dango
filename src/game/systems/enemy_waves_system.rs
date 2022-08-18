@@ -1,6 +1,6 @@
 use std::f32::consts::TAU;
 
-use crate::{Abort, entities_with, entities_with_components, get_components_clone_unwrap, get_components_unwrap, has_all_components, Registry, Vec2};
+use crate::{Abort, entities_with, get_components_clone_unwrap, get_components_unwrap, has_all_components, Registry, Vec2};
 use crate::assets::{init_fly, init_spitworm, init_sprinter};
 use crate::ecs::Entity;
 use crate::game::components::{EnemyComponent, GameManagerComponent, PlayerComponent, PositionComponent};
