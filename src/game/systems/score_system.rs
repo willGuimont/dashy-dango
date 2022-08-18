@@ -1,4 +1,4 @@
-use crate::{Abort, DRAW_COLORS, entities_with, get_components_clone_unwrap, has_all_components, Registry, Subscriber, text};
+use crate::{Abort, DRAW_COLORS, entities_with, entities_with_components, get_components_clone_unwrap, has_all_components, Registry, Subscriber, text};
 use crate::ecs::Entity;
 use crate::game::components::GameManagerComponent;
 use crate::game::systems::System;
@@ -24,7 +24,9 @@ impl System for ScoreSystem {
         }
 
         unsafe { *DRAW_COLORS = 0x0023; }
-        text(int_to_string(self.score), 0, 0);
+        let score_text = "Score:";
+        text(score_text, 0, 0);
+        text(int_to_string(self.score), 8 * score_text.len() as i32, 0);
     }
 }
 
