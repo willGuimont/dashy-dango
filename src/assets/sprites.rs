@@ -60,6 +60,18 @@ const TOMBSTONE_FLAGS: u32 = BLIT_2BPP;
 const TOMBSTONE: [u8; 16] = [0x05, 0x00, 0x1a, 0x40, 0x6a, 0x90, 0x6a, 0x90, 0x6a, 0x90, 0x6a, 0x90, 0x6a, 0x90, 0x55, 0x50];
 const TOMBSTONE_DRAW: u16 = 0x2320;
 
+const ARROW_WIDTH: u32 = 8;
+const ARROW_HEIGHT: u32 = 8;
+const ARROW_FLAGS: u32 = BLIT_1BPP;
+const ARROW: [u8; 8] = [0x00, 0x18, 0x30, 0x60, 0xff, 0x60, 0x30, 0x18];
+const ARROW_DRAW: u16 = 0x4440;
+
+const DIAG_ARROW_WIDTH: u32 = 8;
+const DIAG_ARROW_HEIGHT: u32 = 8;
+const DIAG_ARROW_FLAGS: u32 = BLIT_1BPP;
+const DIAG_ARROW: [u8; 8] = [0x1f, 0x03, 0x05, 0x09, 0x11, 0x20, 0x40, 0x80];
+const DIAG_ARROW_DRAW: u16 = 0x4440;
+
 pub struct Sprite {
     pub width: u32,
     pub height: u32,
@@ -83,3 +95,5 @@ make_sprite!(SPITWORM_SPRITE, SPITWORM);
 make_sprite!(FLY_SPRITE, FLY);
 make_sprite!(ROBOT_SPRITE, ROBOT);
 make_sprite!(TOMBSTONE_SPRITE, TOMBSTONE);
+make_sprite!(ARROW_SPRITE, ARROW);
+make_sprite!(DIAG_ARROW_SPRITE, DIAG_ARROW);
