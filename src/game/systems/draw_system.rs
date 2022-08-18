@@ -1,5 +1,5 @@
 use crate::*;
-use crate::assets::{DANGO_EYE_SPRITE, DANGO_SPRITE, GRASS_SPRITE};
+use crate::assets::{ARROW_SPRITE, DANGO_EYE_SPRITE, DANGO_SPRITE, DIAG_ARROW_SPRITE, GRASS_SPRITE};
 use crate::ecs::Entity;
 use crate::game::components::{CameraComponent, GameManagerComponent, PositionComponent, SpriteComponent};
 use crate::game::systems::System;
@@ -19,10 +19,15 @@ impl System for DrawSystem {
 
             for (sprite_component, pos) in z_buffer.iter() {
                 if sprite_component.is_visible {
-                    let draw_pos = camera_conversion(pos.pos, cam_pos.pos);
-                    let sprite = sprite_component.sprite;
-                    unsafe { *DRAW_COLORS = sprite.draw; }
-                    blit(sprite.data, draw_pos.x as i32, draw_pos.y as i32, sprite.width, sprite.height, sprite.flags);
+                    if is_sprite_in_bound(cam_pos.pos, pos.pos, sprite_component.sprite.width as f32, sprite_component.sprite.height as f32) {
+                        let draw_pos = camera_conversion(pos.pos, cam_pos.pos);
+                        let sprite = sprite_component.sprite;
+                        unsafe { *DRAW_COLORS = sprite.draw; }
+                        blit(sprite.data, draw_pos.x as i32, draw_pos.y as i32, sprite.width, sprite.height, sprite.flags);
+                    } else {
+                        let draw_pos = camera_conversion(pos.pos, cam_pos.pos);
+                        draw_arrow(draw_pos);
+                    }
                 }
             }
         }
@@ -85,6 +90,36 @@ fn draw_grass(cam_pos: &PositionComponent) {
     }
 }
 
+fn draw_arrow(pos: Vec2) {
+    unsafe { *DRAW_COLORS = ARROW_SPRITE.draw; }
+
+    if pos.x >= 0.0 && pos.x <= 160.0 {
+        if pos.y < SCREEN_CENTER.1 {
+            blit(ARROW_SPRITE.data, pos.x as i32, 8 as i32, ARROW_SPRITE.width, ARROW_SPRITE.height, ARROW_SPRITE.flags | BLIT_FLIP_X | BLIT_ROTATE);
+        } else {
+            blit(ARROW_SPRITE.data, pos.x as i32, 146, ARROW_SPRITE.width, ARROW_SPRITE.height, ARROW_SPRITE.flags | BLIT_ROTATE);
+        }
+    } else if pos.y >= 0.0 && pos.y <= 160.0 {
+        if pos.x < SCREEN_CENTER.0 {
+            blit(ARROW_SPRITE.data, 0, pos.y as i32, ARROW_SPRITE.width, ARROW_SPRITE.height, ARROW_SPRITE.flags);
+        } else {
+            blit(ARROW_SPRITE.data, 152, pos.y as i32, ARROW_SPRITE.width, ARROW_SPRITE.height, ARROW_SPRITE.flags | BLIT_FLIP_X);
+        }
+    } else if pos.x < SCREEN_CENTER.0 {
+        if pos.y < SCREEN_CENTER.1 {
+            blit(DIAG_ARROW_SPRITE.data, 0, 8, DIAG_ARROW_SPRITE.width, DIAG_ARROW_SPRITE.height, DIAG_ARROW_SPRITE.flags | BLIT_FLIP_X);
+        } else {
+            blit(DIAG_ARROW_SPRITE.data, 0, 146, DIAG_ARROW_SPRITE.width, DIAG_ARROW_SPRITE.height, DIAG_ARROW_SPRITE.flags | BLIT_FLIP_X | BLIT_FLIP_Y);
+        }
+    } else {
+        if pos.y < SCREEN_CENTER.1 {
+            blit(DIAG_ARROW_SPRITE.data, 152, 8, DIAG_ARROW_SPRITE.width, DIAG_ARROW_SPRITE.height, DIAG_ARROW_SPRITE.flags);
+        } else {
+            blit(DIAG_ARROW_SPRITE.data, 152, 146, DIAG_ARROW_SPRITE.width, DIAG_ARROW_SPRITE.height, DIAG_ARROW_SPRITE.flags | BLIT_FLIP_Y);
+        }
+    }
+}
+
 fn is_sprite_in_bound(cam_pos: Vec2, pos: Vec2, width: f32, height: f32) -> bool {
     is_point_in_bound(cam_pos, pos) || is_point_in_bound(cam_pos, pos + Vec2 { x: width, y: height })
 }
@@ -92,7 +127,7 @@ fn is_sprite_in_bound(cam_pos: Vec2, pos: Vec2, width: f32, height: f32) -> bool
 fn is_point_in_bound(cam_pos: Vec2, pos: Vec2) -> bool {
     let new_pos = camera_conversion(pos, cam_pos);
 
-    if new_pos.x >= -0.0 && new_pos.x <= 160.0 && new_pos.y >= -0.0 && new_pos.y <= 160.0 {
+    if new_pos.x >= 0.0 && new_pos.x <= 160.0 && new_pos.y >= 0.0 && new_pos.y <= 160.0 {
         return true;
     }
 
