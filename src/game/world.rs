@@ -43,7 +43,7 @@ impl World {
         self.registry.add_component(player, PositionComponent { pos: Vec2::new(0.0, 0.0) }).abort();
         self.registry.add_component(player, GamepadComponent { gamepad }).abort();
         self.registry.add_component(player, MoveComponent { speed: PLAYER_BASE_SPEED }).abort();
-        self.registry.add_component(player, DashComponent { length: PLAYER_BASE_DASH, timeout: 10, duration: 0, direction: Vec2 { x: 0.0, y: 0.0 }, hit: HashSet::new() }).abort();
+        self.registry.add_component(player, DashComponent { length: PLAYER_BASE_DASH, timeout: 10, duration: 0, direction: Vec2 { x: 0.0, y: 0.0 }, hit: HashSet::new(), grace_period: 0 }).abort();
         self.registry.add_component(player, SizeComponent { width: 8, height: 8 }).abort();
         self.registry.add_component(player, SpriteComponent { sprite: &DANGO_SPRITE, zindex: 2, is_visible: true }).abort();
         self.registry.add_component(player, HealthComponent { hp: PLAYER_BASE_HEALTH, timeout: 0, hit_delay: PLAYER_HIT_TIMEOUT }).abort();
@@ -86,11 +86,11 @@ impl World {
         sound_event.follow(&mut health_system_sound_topic);
         sound_event.follow(&mut self.sound_topic);
 
+        self.systems.push_back(Box::new(HealthSystem { event_queue: health_event, score_topic: health_system_score_topic, sound_topic: health_system_sound_topic }));
         self.systems.push_back(Box::new(MoveSystem { health_queue: move_system_health_topic, sound_queue: move_system_sound_topic }));
         self.systems.push_back(Box::new(ChildSystem));
         self.systems.push_back(Box::new(EnemyMovementSystem { damage_topic: enemy_movement_system_health_topic }));
         self.systems.push_back(Box::new(EnemyAttackSystem));
-        self.systems.push_back(Box::new(HealthSystem { event_queue: health_event, score_topic: health_system_score_topic, sound_topic: health_system_sound_topic }));
         self.systems.push_back(Box::new(HealthFlashSystem));
         self.systems.push_back(Box::new(TTLSystem));
         self.systems.push_back(Box::new(DangoEyesSystem));

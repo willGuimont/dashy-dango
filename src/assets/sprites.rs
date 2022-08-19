@@ -36,7 +36,7 @@ const SPITWORM_WIDTH: u32 = 8;
 const SPITWORM_HEIGHT: u32 = 8;
 const SPITWORM_FLAGS: u32 = BLIT_2BPP;
 const SPITWORM: [u8; 16] = [0x14, 0x14, 0x69, 0x69, 0x15, 0x54, 0x07, 0xd0, 0x07, 0xd0, 0x05, 0x50, 0x01, 0x00, 0x01, 0x55];
-const SPITWORM_DRAW: u16 = 0x1320;
+const SPITWORM_DRAW: u16 = 0x4320;
 
 const FLY_WIDTH: u32 = 8;
 const FLY_HEIGHT: u32 = 8;
