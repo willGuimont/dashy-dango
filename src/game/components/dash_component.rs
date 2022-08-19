@@ -13,5 +13,6 @@ pub struct DashComponent {
     pub duration: i16,
     pub direction: Vec2,
     pub hit: HashSet<Entity>,
+    pub grace_period: i16,
 }
  

@@ -84,7 +84,7 @@ impl HealthSystem {
 
     fn deal_damage_player(&mut self, registry: &mut Registry, e: Entity, mut health: HealthComponent) {
         let dash = registry.get_component::<DashComponent>(e).abort();
-        if health.timeout <= 0 && dash.duration <= 0 {
+        if health.timeout <= 0 && dash.grace_period <= 0 {
             health.hp -= 1;
             health.timeout += health.hit_delay;
             self.update_game_manager(registry, &health);

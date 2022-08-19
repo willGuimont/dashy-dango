@@ -37,6 +37,9 @@ impl MoveSystem {
                 sprite.sprite = &DANGO_DASH_SPRITE;
             }
         }
+        if dash.grace_period > 0 {
+            dash.grace_period -= 1;
+        }
         let movement = direction * move_c.speed as f32;
         pos.pos = pos.pos + movement;
         add_components!(registry, e, pos, dash, sprite);
@@ -52,6 +55,7 @@ impl MoveSystem {
         dash.timeout += 25;
         dash.duration = segment_size as i16;
         dash.direction = direction;
+        dash.grace_period = 2;
         sprite.sprite = &DANGO_SPRITE;
 
         self.sound_queue.send_message(SoundEvent::Dash);
