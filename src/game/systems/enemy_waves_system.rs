@@ -9,7 +9,7 @@ use crate::utils::{cos, sin};
 
 pub const NB_WAVES: u8 = 9;
 const WAVES: [Wave; NB_WAVES as usize] = [
-    Wave { nb_sprinter: 0, nb_fly: 0, nb_spitworm: 0, nb_boss: 1, nb_orbiter: 0, nb_shooting_orbiter: 0, radius: 60.0 },
+    Wave { nb_sprinter: 0, nb_fly: 0, nb_spitworm: 0, nb_boss: 1, nb_orbiter: 0, nb_shooting_orbiter: 0, radius: 100.0 },
     Wave { nb_sprinter: 5, nb_fly: 0, nb_spitworm: 0, nb_boss: 0, nb_orbiter: 0, nb_shooting_orbiter: 0, radius: 60.0 },
     Wave { nb_sprinter: 10, nb_fly: 0, nb_spitworm: 0, nb_boss: 0, nb_orbiter: 0, nb_shooting_orbiter: 0, radius: 60.0 },
     Wave { nb_sprinter: 0, nb_fly: 5, nb_spitworm: 0, nb_boss: 0, nb_orbiter: 0, nb_shooting_orbiter: 0, radius: 50.0 },
@@ -104,7 +104,7 @@ impl EnemyWavesSystem {
             nb_boss: 0,
             nb_orbiter: 15,
             nb_shooting_orbiter: 4,
-            radius: 40.0,
+            radius: 50.0,
         }
     }
 }
