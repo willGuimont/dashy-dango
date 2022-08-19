@@ -95,7 +95,7 @@ impl World {
         self.systems.push_back(Box::new(TTLSystem));
         self.systems.push_back(Box::new(DangoEyesSystem));
         self.systems.push_back(Box::new(DrawSystem));
-        self.systems.push_back(Box::new(EnemyWavesSystem { next_wave: 0, score_topic: enemy_wave_system_score_topic }));
+        self.systems.push_back(Box::new(EnemyWavesSystem { next_wave: 0, score_topic: enemy_wave_system_score_topic, wave_timeout: 0 }));
         self.systems.push_back(Box::new(ScoreSystem { score: BASE_SCORE, decrease_timer: 0, score_decrease_speed: 10, event_queue: score_event }));
         self.systems.push_back(Box::new(SoundSystem { sound_queue: sound_event }));
     }

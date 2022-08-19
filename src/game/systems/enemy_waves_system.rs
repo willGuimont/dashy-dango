@@ -30,6 +30,7 @@ const WAVES: [Wave; NB_WAVES as usize] = [
 pub struct EnemyWavesSystem {
     pub next_wave: u8,
     pub score_topic: Topic<i32>,
+    pub wave_timeout: u8,
 }
 
 #[derive(Clone, Copy)]
@@ -121,22 +122,25 @@ impl System for EnemyWavesSystem {
     fn execute_system(&mut self, registry: &mut Registry) {
         let num_enemies = entities_with!(registry, EnemyComponent).iter().count() - entities_with!(registry, BulletMoveComponent).iter().count();
         if num_enemies == 0 {
-            self.score_topic.send_message(100);
-            if self.next_wave == 0 || self.next_wave - 1 <= NB_WAVES {
+            if (self.next_wave == 0 || self.next_wave - 1 <= NB_WAVES) && self.wave_timeout <= 0 {
                 self.next_wave += 1;
-            }
-            for game_manager_entity in entities_with!(registry, GameManagerComponent) {
-                let (mut game_manager, ) = get_components_clone_unwrap!(registry, game_manager_entity, GameManagerComponent);
-                game_manager.current_wave = self.next_wave;
-                registry.add_component(game_manager_entity, game_manager);
-
-                if self.next_wave - 1 < NB_WAVES {
-                    for player_entity in entities_with!(registry, PlayerComponent, PositionComponent) {
-                        self.spawn_wave(registry, WAVES[(self.next_wave - 1) as usize], player_entity, player_entity);
-                    }
+                self.score_topic.send_message(100);
+                for game_manager_entity in entities_with!(registry, GameManagerComponent) {
+                    let (mut game_manager, ) = get_components_clone_unwrap!(registry, game_manager_entity, GameManagerComponent);
+                    game_manager.current_wave = self.next_wave;
+                    registry.add_component(game_manager_entity, game_manager);
                 }
             }
+            self.wave_timeout += 1;
         }
+
+        if self.next_wave - 1 < NB_WAVES && self.wave_timeout >= 10 {
+            self.wave_timeout = 0;
+            for player_entity in entities_with!(registry, PlayerComponent, PositionComponent) {
+                self.spawn_wave(registry, WAVES[(self.next_wave - 1) as usize], player_entity, player_entity);
+            }
+        }
+
         let bottom_screen = SCREEN_SIZE as i32 - 8;
         unsafe { *DRAW_COLORS = 0x0002; }
         rect(0, bottom_screen, 160, 8);
