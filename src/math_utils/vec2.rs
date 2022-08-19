@@ -69,6 +69,12 @@ impl ops::Add<f32> for Vec2 {
     }
 }
 
+impl ops::AddAssign<Vec2> for Vec2 {
+    fn add_assign(&mut self, rhs: Vec2) {
+        *self = *self + rhs;
+    }
+}
+
 impl ops::Neg for Vec2 {
     type Output = Self;
 

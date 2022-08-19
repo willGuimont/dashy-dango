@@ -1,6 +1,6 @@
 use crate::{Abort, create_box, entities_with, get_components_clone_unwrap, get_components_unwrap, has_all_components, Registry, Topic, Vec2};
 use crate::ecs::Entity;
-use crate::game::components::{EnemyComponent, PlayerComponent, PositionComponent, SizeComponent, TombstoneComponent};
+use crate::game::components::{EnemyComponent, OrbitingMoveComponent, PlayerComponent, PositionComponent, SizeComponent, TombstoneComponent};
 use crate::game::components::bullet_move_component::BulletMoveComponent;
 use crate::game::components::sentinel_move_component::SentinelMoveComponent;
 use crate::game::components::spiral_move_component::SpiralMoveComponent;
@@ -15,26 +15,39 @@ impl System for EnemyMovementSystem {
     fn execute_system(&mut self, registry: &mut Registry) {
         for e in entities_with!(registry, EnemyComponent) {
             let (enemy_pos, enemy_size) = get_components_clone_unwrap!(registry, e, PositionComponent, SizeComponent);
-            let mut enemy_pos: Vec2 = enemy_pos.pos;
+            let enemy_pos: Vec2 = enemy_pos.pos;
+            let mut new_pos = Vec2 { x: 0.0, y: 0.0 };
+            if registry.has_component::<OrbitingMoveComponent>(e) {
+                let (mut movement, ) = get_components_clone_unwrap!(registry, e, OrbitingMoveComponent);
+                let pos_and_is_alive = get_target_lifelihood_and_position(registry, movement.target);
+                new_pos += orbiting_move(enemy_pos, pos_and_is_alive.0, &movement, pos_and_is_alive.1);
+                if pos_and_is_alive.1 {
+                    movement.last_pos = pos_and_is_alive.0;
+                    registry.add_component(e, movement);
+                }
+            }
             if registry.has_component::<StraightMoveComponent>(e) {
                 let (movement, ) = get_components_unwrap!(registry, e, StraightMoveComponent);
                 let pos_and_is_alive = get_target_lifelihood_and_position(registry, movement.target);
-                enemy_pos = straight_move(enemy_pos, pos_and_is_alive.0, movement, pos_and_is_alive.1);
-            } else if registry.has_component::<SpiralMoveComponent>(e) {
+                new_pos += straight_move(enemy_pos, pos_and_is_alive.0, movement, pos_and_is_alive.1);
+            }
+            if registry.has_component::<SpiralMoveComponent>(e) {
                 let (movement, ) = get_components_unwrap!(registry, e, SpiralMoveComponent);
                 let pos_and_is_alive = get_target_lifelihood_and_position(registry, movement.target);
-                enemy_pos = spiral_move(enemy_pos, pos_and_is_alive.0, movement, pos_and_is_alive.1);
-            } else if registry.has_component::<SentinelMoveComponent>(e) {
+                new_pos += spiral_move(enemy_pos, pos_and_is_alive.0, movement, pos_and_is_alive.1);
+            }
+            if registry.has_component::<SentinelMoveComponent>(e) {
                 let (movement, ) = get_components_unwrap!(registry, e, SentinelMoveComponent);
                 let pos_and_is_alive = get_target_lifelihood_and_position(registry, movement.target);
-                enemy_pos = sentinel_move(enemy_pos, pos_and_is_alive.0, movement, pos_and_is_alive.1);
-            } else if registry.has_component::<BulletMoveComponent>(e) {
+                new_pos += sentinel_move(enemy_pos, pos_and_is_alive.0, movement, pos_and_is_alive.1);
+            }
+            if registry.has_component::<BulletMoveComponent>(e) {
                 let (movement, ) = get_components_unwrap!(registry, e, BulletMoveComponent);
-                enemy_pos = bullet_move(enemy_pos, movement);
+                new_pos += bullet_move(enemy_pos, movement);
             }
 
-            self.collide_player(enemy_pos, &enemy_size, registry);
-            registry.add_component(e, PositionComponent { pos: enemy_pos });
+            self.collide_player(new_pos, &enemy_size, registry);
+            registry.add_component(e, PositionComponent { pos: new_pos });
         }
     }
 }
@@ -53,8 +66,15 @@ impl EnemyMovementSystem {
     }
 }
 
+fn orbiting_move(enemy_pos: Vec2, target_pos: Vec2, movement: &OrbitingMoveComponent, is_alive: bool) -> Vec2 {
+    let difference = target_pos - movement.last_pos;
+    let enemy_pos = enemy_pos + difference;
+    let direction_to_player = (target_pos - enemy_pos).normalized();
+
+    enemy_pos + direction_to_player.perp() * movement.perp_speed
+}
+
 fn straight_move(enemy_pos: Vec2, target_pos: Vec2, movement: &StraightMoveComponent, is_alive: bool) -> Vec2 {
-    let enemy_pos = enemy_pos;
     let mut direction_to_player = (target_pos - enemy_pos).normalized();
 
     if !is_alive { direction_to_player = direction_to_player * -1.0; };

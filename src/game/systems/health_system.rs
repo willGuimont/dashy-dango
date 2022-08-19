@@ -1,7 +1,7 @@
-use crate::{Abort, entities_with, get_components_clone_unwrap, has_all_components, Registry, Subscriber, Topic};
+use crate::{Abort, entities_with, entities_with_components, get_components_clone_unwrap, has_all_components, Registry, Subscriber, Topic, trace};
 use crate::assets::TOMBSTONE_SPRITE;
 use crate::ecs::Entity;
-use crate::game::components::{CameraComponent, DashComponent, GameManagerComponent, HealthComponent, PlayerComponent, PositionComponent, ScoreComponent, SpriteComponent, TombstoneComponent};
+use crate::game::components::{BossComponent, CameraComponent, DashComponent, EnemyComponent, GameManagerComponent, HealthComponent, PlayerComponent, PositionComponent, ScoreComponent, SpriteComponent, TombstoneComponent};
 use crate::game::systems::{SoundEvent, System};
 
 pub struct HealthSystem {
@@ -34,6 +34,8 @@ impl HealthSystem {
                 let (health, ) = get_components_clone_unwrap!(registry,e, HealthComponent);
                 if registry.has_component::<PlayerComponent>(e) {
                     self.deal_damage_player(registry, e, health);
+                } else if registry.has_component::<BossComponent>(e) {
+                    self.deal_damage_boss(registry, e, health, score_multiplier);
                 } else {
                     self.deal_damage_enemy(registry, e, health, score_multiplier);
                 }
@@ -50,6 +52,30 @@ impl HealthSystem {
                 let score = registry.get_component::<ScoreComponent>(e).abort();
                 self.score_topic.send_message(score.score * score_multiplier);
                 registry.destroy_entity(e);
+            } else {
+                registry.add_component(e, health);
+            }
+        }
+    }
+
+    fn deal_damage_boss(&mut self, registry: &mut Registry, e: Entity, mut health: HealthComponent, score_multiplier: i32) {
+        if health.timeout == 0 {
+            health.hp -= 1;
+            health.timeout += health.hit_delay;
+
+            if health.hp == 0 {
+                let score = registry.get_component::<ScoreComponent>(e).abort();
+                self.score_topic.send_message(score.score * score_multiplier);
+                registry.destroy_entity(e);
+
+                let score_multiplier = entities_with!(registry, EnemyComponent).iter().len();
+                for enemy in entities_with!(registry, EnemyComponent) {
+                    if registry.has_component::<ScoreComponent>(e) {
+                        let score = registry.get_component::<ScoreComponent>(e).abort();
+                        self.score_topic.send_message(score.score * (score_multiplier as i32));
+                    }
+                    registry.destroy_entity(enemy);
+                }
             } else {
                 registry.add_component(e, health);
             }

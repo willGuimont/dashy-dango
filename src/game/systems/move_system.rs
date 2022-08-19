@@ -89,8 +89,9 @@ impl MoveSystem {
 
     fn kill_entity(&mut self, dash: &DashComponent) {
         self.sound_queue.send_message(SoundEvent::Kill(dash.hit.len() as u32));
+        let num_hit = dash.hit.len();
         for (i, &e) in dash.hit.iter().enumerate() {
-            self.health_queue.send_message((e, 1, (i + 1) as i32));
+            self.health_queue.send_message((e, 1, num_hit as i32));
         }
     }
 
