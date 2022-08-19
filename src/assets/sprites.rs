@@ -1,6 +1,6 @@
 use std::concat_idents;
 
-use crate::{BLIT_1BPP, BLIT_2BPP};
+use crate::{BLIT_1BPP, BLIT_2BPP, BLIT_FLIP_X, BLIT_FLIP_Y, BLIT_ROTATE};
 
 const DANGO_WIDTH: u32 = 8;
 const DANGO_HEIGHT: u32 = 8;
@@ -23,17 +23,13 @@ const GRASS_DRAW: u16 = 0x0030;
 const DANGO_EYE_WIDTH: u32 = 3;
 const DANGO_EYE_HEIGHT: u32 = 2;
 const DANGO_EYE_FLAGS: u32 = BLIT_1BPP;
-const DANGO_EYE: [u8; 1] = [
-    0b10110100,
-];
+const DANGO_EYE: [u8; 1] = [0b10110100];
 const DANGO_EYE_DRAW: u16 = 0x0020;
 
 const BULLET_WIDTH: u32 = 2;
 const BULLET_HEIGHT: u32 = 2;
 const BULLET_FLAGS: u32 = BLIT_1BPP;
-const BULLET: [u8; 1] = [
-    0b11110000,
-];
+const BULLET: [u8; 1] = [0b11110000];
 const BULLET_DRAW: u16 = 0x0040;
 
 const SPITWORM_WIDTH: u32 = 8;
@@ -72,6 +68,18 @@ const DIAG_ARROW_FLAGS: u32 = BLIT_1BPP;
 const DIAG_ARROW: [u8; 8] = [0x1f, 0x03, 0x05, 0x09, 0x11, 0x20, 0x40, 0x80];
 const DIAG_ARROW_DRAW: u16 = 0x4440;
 
+const BOSS_WIDTH: u32 = 8;
+const BOSS_HEIGHT: u32 = 16;
+const BOSS_FLAGS: u32 = BLIT_2BPP;
+const BOSS: [u8; 32] = [0x14, 0x14, 0x04, 0x10, 0x00, 0x00, 0x2f, 0xf8, 0x3b, 0xec, 0x3f, 0xfc, 0x3b, 0xec, 0x2f, 0xf8, 0x00, 0x00, 0x40, 0x01, 0x50, 0x05, 0x50, 0x05, 0x54, 0x15, 0x50, 0x05, 0x41, 0x41, 0x05, 0x50];
+const BOSS_DRAW: u16 = 0x3402;
+
+const ORBITING_SHOOTER_WIDTH: u32 = 8;
+const ORBITING_SHOOTER_HEIGHT: u32 = 8;
+const ORBITING_SHOOTER_FLAGS: u32 = BLIT_2BPP;
+const ORBITING_SHOOTER: [u8; 16] = [0x05, 0x50, 0x1a, 0xa4, 0x6a, 0xa9, 0x6b, 0xe9, 0x6b, 0xe9, 0x6a, 0xa9, 0x1a, 0xa4, 0x05, 0x50];
+const ORBITING_SHOOTER_DRAW: u16 = 0x4320;
+
 pub struct Sprite {
     pub width: u32,
     pub height: u32,
@@ -97,3 +105,5 @@ make_sprite!(ROBOT_SPRITE, ROBOT);
 make_sprite!(TOMBSTONE_SPRITE, TOMBSTONE);
 make_sprite!(ARROW_SPRITE, ARROW);
 make_sprite!(DIAG_ARROW_SPRITE, DIAG_ARROW);
+make_sprite!(BOSS_SPRITE, BOSS);
+make_sprite!(ORBITING_SHOOTER_SPRITE, ORBITING_SHOOTER);

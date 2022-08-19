@@ -1,3 +1,4 @@
+pub use boss_component::*;
 pub use camera_component::*;
 pub use child_component::*;
 pub use dango_eyes_component::*;
@@ -18,6 +19,7 @@ pub use sprite_component::*;
 pub use tombstone_component::*;
 pub use ttl_component::*;
 
+pub mod boss_component;
 pub mod camera_component;
 pub mod child_component;
 pub mod dango_eyes_component;

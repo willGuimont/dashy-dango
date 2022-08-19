@@ -8,7 +8,7 @@ pub struct HealthFlashSystem;
 
 impl System for HealthFlashSystem {
     fn execute_system(&mut self, registry: &mut Registry) {
-        for e in entities_with!(registry, PlayerComponent, HealthComponent, SpriteComponent) {
+        for e in entities_with!(registry, HealthComponent, SpriteComponent) {
             let (health, mut sprite) = get_components_clone_unwrap!(registry, e, HealthComponent, SpriteComponent);
             if health.timeout > 0 && health.timeout % 3 == 0 {
                 sprite.is_visible = !sprite.is_visible;
