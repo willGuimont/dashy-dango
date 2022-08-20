@@ -10,7 +10,7 @@ use crate::game::systems::ttl_system::TTLSystem;
 
 const PLAYER_BASE_SPEED: i16 = 2;
 const PLAYER_BASE_DASH: i16 = 60;
-const PLAYER_BASE_HEALTH: i16 = 5;
+const PLAYER_BASE_HEALTH: i16 = 7;
 const PLAYER_HIT_TIMEOUT: i16 = 100;
 const BASE_SCORE: i32 = 0;
 const GAME_END_TIMEOUT: u8 = 100;
