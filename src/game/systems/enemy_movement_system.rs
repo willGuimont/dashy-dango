@@ -56,7 +56,7 @@ impl EnemyMovementSystem {
     fn collide_player(&mut self, e_pos: Vec2, e_size: &SizeComponent, registry: &mut Registry) {
         for e in entities_with!(registry, PlayerComponent) {
             let (p_pos, p_size) = get_components_unwrap!(registry,e,PositionComponent,SizeComponent);
-            let player_hit = create_box(p_pos.pos, p_size.width as f32, p_size.height as f32);
+            let player_hit = create_box(p_pos.pos + Vec2 { x: 2.0, y: 2.0 }, (p_size.width / 2) as f32, (p_size.height / 2) as f32);
             let enemy_hit = create_box(e_pos, e_size.width as f32, e_size.height as f32);
 
             if enemy_hit.rect_inter(&player_hit) {

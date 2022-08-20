@@ -31,10 +31,15 @@ pub enum GameState {
     Loose(i32, u8),
 }
 
-const PALETTES: [[u32; 4]; 2] = [
-    [0xf99dec, 0xfc49e1, 0x88fce7, 0x34bca3],
-    [0xFF73C3, 0xDB073D, 0x8EC7D2, 0x0D6986]
+const PALETTES: [[u32; 4]; 6] = [
+    [0xF99DEC, 0xFC49E1, 0x88FCE7, 0x34BCA3],
+    [0xFF73C3, 0xDB073D, 0x8EC7D2, 0x0D6986],
+    [0xFFFFFF, 0x595959, 0xBFBFBF, 0x252525],
+    [0x88FCE7, 0x306359, 0x5FFF1F, 0x33611D],
+    [0xA7DEFF, 0x346ABC, 0xF8FF65, 0xFFCA38],
+    [0xFFA8E5, 0xB5469A, 0xFEFE62, 0xD4C83E]
 ];
+
 const NB_HIGHSCORE_SAVED: usize = 5;
 
 static mut WORLD: OnceCell<World> = OnceCell::new();
@@ -69,22 +74,28 @@ fn update() {
 }
 
 fn begin_game() {
-    unsafe { *DRAW_COLORS = 0x4323 }
+    unsafe { *DRAW_COLORS = 0x0042 }
+    rect(30, 3, 99, 19);
+    rect(2, 28, 155, 43);
+    rect(2, 76, 155, 35);
+    rect(8, 138, 142, 11);
 
+    unsafe { *DRAW_COLORS = 0x4323 }
     text_centered("Welcome to", 5);
     text_centered("Dashy Dango!", 13);
+
     text_centered("Help the Dango", 30);
     text_centered("survive by fighting", 38);
     text_centered("waves of enemies.", 46);
     text_centered("Dash into enemies", 54);
-    text_centered("to eliminate them", 62);
+    text_centered("to eliminate them.", 62);
 
     text("Controls:", 5, 78);
     text("-X to dash", 5, 86);
     text("-Z to switch", 5, 94);
     text(" colour palette", 5, 102);
 
-    text_centered(" Press x to start!", 140);
+    text_centered("Press x to start!", 140);
 
     unsafe {
         if is_dashing(*GAMEPAD1) {
@@ -101,6 +112,11 @@ fn execute_game() {
 
 fn win_game(score: i32) {
     let highscore = read_saved_highscore();
+
+    unsafe { *DRAW_COLORS = 0x0042 }
+    rect(14, 8, 132, 44);
+    rect(37, 58, 85, 52);
+    rect(20, 128, 118, 20);
 
     unsafe { *DRAW_COLORS = 0x4323 }
     text_centered("Congratulation!", 10);
@@ -127,6 +143,12 @@ fn win_game(score: i32) {
 
 fn loose_game(score: i32, wave: u8) {
     let highscore = read_saved_highscore();
+
+    unsafe { *DRAW_COLORS = 0x0042 }
+    rect(10, 8, 140, 52);
+    rect(37, 68, 85, 52);
+    rect(20, 127, 118, 21);
+
 
     unsafe { *DRAW_COLORS = 0x4323 }
     text_centered("You lost the game", 10);
