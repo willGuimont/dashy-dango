@@ -7,7 +7,7 @@ use crate::game::components::{BulletMoveComponent, EnemyComponent, GameManagerCo
 use crate::game::systems::System;
 use crate::utils::{cos, sin};
 
-pub const NB_WAVES: u8 = 16;
+pub const NB_WAVES: u8 = 14;
 const WAVES: [Wave; NB_WAVES as usize] = [
     Wave { nb_sprinter: 1, nb_fly: 0, nb_spitworm: 0, nb_boss: 0, nb_orbiter: 0, nb_shooting_orbiter: 0, radius: 100.0 },
     Wave { nb_sprinter: 3, nb_fly: 0, nb_spitworm: 0, nb_boss: 0, nb_orbiter: 0, nb_shooting_orbiter: 0, radius: 60.0 },
@@ -15,15 +15,13 @@ const WAVES: [Wave; NB_WAVES as usize] = [
     Wave { nb_sprinter: 0, nb_fly: 1, nb_spitworm: 0, nb_boss: 0, nb_orbiter: 0, nb_shooting_orbiter: 0, radius: 50.0 },
     Wave { nb_sprinter: 0, nb_fly: 5, nb_spitworm: 0, nb_boss: 0, nb_orbiter: 0, nb_shooting_orbiter: 0, radius: 50.0 },
     Wave { nb_sprinter: 10, nb_fly: 0, nb_spitworm: 0, nb_boss: 0, nb_orbiter: 0, nb_shooting_orbiter: 0, radius: 60.0 },
-    Wave { nb_sprinter: 0, nb_fly: 10, nb_spitworm: 0, nb_boss: 0, nb_orbiter: 0, nb_shooting_orbiter: 0, radius: 50.0 },
     Wave { nb_sprinter: 3, nb_fly: 3, nb_spitworm: 0, nb_boss: 0, nb_orbiter: 0, nb_shooting_orbiter: 0, radius: 60.0 },
     Wave { nb_sprinter: 6, nb_fly: 3, nb_spitworm: 0, nb_boss: 0, nb_orbiter: 0, nb_shooting_orbiter: 0, radius: 60.0 },
     Wave { nb_sprinter: 0, nb_fly: 0, nb_spitworm: 3, nb_boss: 0, nb_orbiter: 0, nb_shooting_orbiter: 0, radius: 60.0 },
     Wave { nb_sprinter: 0, nb_fly: 0, nb_spitworm: 5, nb_boss: 0, nb_orbiter: 0, nb_shooting_orbiter: 0, radius: 60.0 },
-    Wave { nb_sprinter: 5, nb_fly: 0, nb_spitworm: 3, nb_boss: 0, nb_orbiter: 0, nb_shooting_orbiter: 0, radius: 80.0 },
-    Wave { nb_sprinter: 0, nb_fly: 5, nb_spitworm: 3, nb_boss: 0, nb_orbiter: 0, nb_shooting_orbiter: 0, radius: 60.0 },
-    Wave { nb_sprinter: 3, nb_fly: 3, nb_spitworm: 3, nb_boss: 0, nb_orbiter: 0, nb_shooting_orbiter: 0, radius: 80.0 },
-    Wave { nb_sprinter: 5, nb_fly: 5, nb_spitworm: 5, nb_boss: 0, nb_orbiter: 0, nb_shooting_orbiter: 0, radius: 80.0 },
+    Wave { nb_sprinter: 5, nb_fly: 0, nb_spitworm: 3, nb_boss: 0, nb_orbiter: 0, nb_shooting_orbiter: 0, radius: 60.0 },
+    Wave { nb_sprinter: 3, nb_fly: 3, nb_spitworm: 3, nb_boss: 0, nb_orbiter: 0, nb_shooting_orbiter: 0, radius: 60.0 },
+    Wave { nb_sprinter: 5, nb_fly: 5, nb_spitworm: 5, nb_boss: 0, nb_orbiter: 0, nb_shooting_orbiter: 0, radius: 60.0 },
     Wave { nb_sprinter: 0, nb_fly: 0, nb_spitworm: 0, nb_boss: 1, nb_orbiter: 0, nb_shooting_orbiter: 0, radius: 100.0 },
 ];
 

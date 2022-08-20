@@ -1,7 +1,7 @@
 use crate::*;
 use crate::assets::{ARROW_SPRITE, DANGO_EYE_SPRITE, DANGO_SPRITE, DIAG_ARROW_SPRITE, GRASS_SPRITE};
 use crate::ecs::Entity;
-use crate::game::components::{CameraComponent, GameManagerComponent, PositionComponent, SpriteComponent};
+use crate::game::components::{BulletMoveComponent, CameraComponent, GameManagerComponent, PositionComponent, SpriteComponent};
 use crate::game::systems::System;
 use crate::game::world::WORLD_BOUNDARIES;
 
@@ -31,14 +31,14 @@ impl System for DrawSystem {
         for (_, (_, cam_pos)) in entities_with_components!(registry, CameraComponent, PositionComponent) {
             draw_grass(cam_pos);
 
-            for (sprite_component, pos) in z_buffer.iter() {
+            for (e, sprite_component, pos) in z_buffer.iter() {
                 if sprite_component.is_visible {
                     if is_sprite_in_bound(cam_pos.pos, pos.pos, sprite_component.sprite.width as f32, sprite_component.sprite.height as f32) {
                         let draw_pos = camera_conversion(pos.pos, cam_pos.pos);
                         let sprite = sprite_component.sprite;
                         unsafe { *DRAW_COLORS = sprite.draw; }
                         blit(sprite.data, draw_pos.x as i32, draw_pos.y as i32, sprite.width, sprite.height, sprite.flags);
-                    } else {
+                    } else if !registry.has_component::<BulletMoveComponent>(*e) {
                         let draw_pos = camera_conversion(pos.pos, cam_pos.pos);
                         draw_arrow(draw_pos);
                     }
@@ -51,19 +51,19 @@ impl System for DrawSystem {
     }
 }
 
-fn create_z_buffer(registry: &Registry) -> Vec<(&SpriteComponent, &PositionComponent)> {
-    let mut sprites: Vec<(&SpriteComponent, &PositionComponent)> = vec![];
-    for (_, (sprite_component, pos, )) in entities_with_components!(registry, SpriteComponent, PositionComponent) {
-        sprites.push((sprite_component, pos));
+fn create_z_buffer(registry: &Registry) -> Vec<(Entity, &SpriteComponent, &PositionComponent)> {
+    let mut sprites: Vec<(Entity, &SpriteComponent, &PositionComponent)> = vec![];
+    for (&e, (sprite_component, pos, )) in entities_with_components!(registry, SpriteComponent, PositionComponent) {
+        sprites.push((e, sprite_component, pos));
     }
     sprites
 }
 
-fn bubble_sort(vec: &mut Vec<(&SpriteComponent, &PositionComponent)>) {
+fn bubble_sort(vec: &mut Vec<(Entity, &SpriteComponent, &PositionComponent)>) {
     for i in 0..vec.len() {
         let mut has_swap = false;
         for j in 1..vec.len() - i {
-            if vec.get(j - 1).abort().0.zindex > vec.get(j).abort().0.zindex {
+            if vec.get(j - 1).abort().1.zindex > vec.get(j).abort().1.zindex {
                 has_swap = true;
                 vec.swap(j - 1, j);
             }
@@ -111,7 +111,7 @@ fn draw_arrow(pos: Vec2) {
         if pos.y < SCREEN_CENTER.1 {
             blit(ARROW_SPRITE.data, pos.x as i32, 8 as i32, ARROW_SPRITE.width, ARROW_SPRITE.height, ARROW_SPRITE.flags | BLIT_FLIP_X | BLIT_ROTATE);
         } else {
-            blit(ARROW_SPRITE.data, pos.x as i32, 146, ARROW_SPRITE.width, ARROW_SPRITE.height, ARROW_SPRITE.flags | BLIT_ROTATE);
+            blit(ARROW_SPRITE.data, pos.x as i32, 144, ARROW_SPRITE.width, ARROW_SPRITE.height, ARROW_SPRITE.flags | BLIT_ROTATE);
         }
     } else if pos.y >= 0.0 && pos.y <= 160.0 {
         if pos.x < SCREEN_CENTER.0 {
@@ -123,13 +123,13 @@ fn draw_arrow(pos: Vec2) {
         if pos.y < SCREEN_CENTER.1 {
             blit(DIAG_ARROW_SPRITE.data, 0, 8, DIAG_ARROW_SPRITE.width, DIAG_ARROW_SPRITE.height, DIAG_ARROW_SPRITE.flags | BLIT_FLIP_X);
         } else {
-            blit(DIAG_ARROW_SPRITE.data, 0, 146, DIAG_ARROW_SPRITE.width, DIAG_ARROW_SPRITE.height, DIAG_ARROW_SPRITE.flags | BLIT_FLIP_X | BLIT_FLIP_Y);
+            blit(DIAG_ARROW_SPRITE.data, 0, 144, DIAG_ARROW_SPRITE.width, DIAG_ARROW_SPRITE.height, DIAG_ARROW_SPRITE.flags | BLIT_FLIP_X | BLIT_FLIP_Y);
         }
     } else {
         if pos.y < SCREEN_CENTER.1 {
             blit(DIAG_ARROW_SPRITE.data, 152, 8, DIAG_ARROW_SPRITE.width, DIAG_ARROW_SPRITE.height, DIAG_ARROW_SPRITE.flags);
         } else {
-            blit(DIAG_ARROW_SPRITE.data, 152, 146, DIAG_ARROW_SPRITE.width, DIAG_ARROW_SPRITE.height, DIAG_ARROW_SPRITE.flags | BLIT_FLIP_Y);
+            blit(DIAG_ARROW_SPRITE.data, 152, 144, DIAG_ARROW_SPRITE.width, DIAG_ARROW_SPRITE.height, DIAG_ARROW_SPRITE.flags | BLIT_FLIP_Y);
         }
     }
 }

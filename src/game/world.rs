@@ -10,9 +10,9 @@ use crate::game::systems::ttl_system::TTLSystem;
 
 const PLAYER_BASE_SPEED: i16 = 2;
 const PLAYER_BASE_DASH: i16 = 60;
-const PLAYER_BASE_HEALTH: i16 = 5;
+const PLAYER_BASE_HEALTH: i16 = 7;
 const PLAYER_HIT_TIMEOUT: i16 = 100;
-const BASE_SCORE: i32 = 100;
+const BASE_SCORE: i32 = 0;
 const GAME_END_TIMEOUT: u8 = 100;
 pub const WORLD_BOUNDARIES: f32 = 160.0;
 
@@ -114,7 +114,7 @@ impl World {
     fn update_game_state(&mut self) -> GameState {
         for e in entities_with!(self.registry, GameManagerComponent) {
             let (mut game_manager, ) = get_components_clone_unwrap!(self.registry,e,GameManagerComponent);
-            if game_manager.current_wave != 0 && game_manager.current_wave - 1 > NB_WAVES {
+            if game_manager.current_wave != 0 && game_manager.current_wave - 1 >= NB_WAVES {
                 if self.game_end_timeout == GAME_END_TIMEOUT {
                     self.sound_topic.send_message(SoundEvent::Win);
                     self.game_end_timeout -= 1;
