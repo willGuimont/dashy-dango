@@ -1,5 +1,7 @@
 # dashy-dango
 
+Dashy Dango a wave fighting game made with [WASM-4](https://wasm4.org/) by [@samX500](https://github.com/samX500) and [@willGuimont](https://github.com/willGuimont).
+
 ## Build the cartridge
 
 ```bash
