@@ -6,10 +6,6 @@ pub struct Point(Vec2);
 impl Point {
     pub fn new(x: f32, y: f32) -> Point { Point { 0: Vec2 { x, y } } }
 
-    pub fn from_vector(vec: Vec2) -> Point {
-        Point { 0: vec }
-    }
-
     pub fn to_vector(self, other: Self) -> Vec2 { other.0 - self.0 }
 }
 

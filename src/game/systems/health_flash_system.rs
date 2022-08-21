@@ -1,7 +1,7 @@
 use crate::{entities_with, get_components_clone_unwrap, has_all_components, Registry};
 use crate::abort::Abort;
 use crate::ecs::Entity;
-use crate::game::components::{HealthComponent, PlayerComponent, SpriteComponent};
+use crate::game::components::{HealthComponent, SpriteComponent};
 use crate::game::systems::System;
 
 pub struct HealthFlashSystem;

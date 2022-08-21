@@ -1,6 +1,6 @@
 use std::concat_idents;
 
-use crate::{BLIT_1BPP, BLIT_2BPP, BLIT_FLIP_X, BLIT_FLIP_Y, BLIT_ROTATE};
+use crate::{BLIT_1BPP, BLIT_2BPP};
 
 const DANGO_WIDTH: u32 = 8;
 const DANGO_HEIGHT: u32 = 8;

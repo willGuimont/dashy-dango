@@ -1,4 +1,4 @@
-use crate::{Abort, entities_with, entities_with_components, get_components_clone_unwrap, has_all_components, Registry, Subscriber, Topic, trace};
+use crate::{Abort, entities_with, get_components_clone_unwrap, has_all_components, Registry, Subscriber, Topic};
 use crate::assets::TOMBSTONE_SPRITE;
 use crate::ecs::Entity;
 use crate::game::components::{BossComponent, CameraComponent, DashComponent, EnemyComponent, GameManagerComponent, HealthComponent, PlayerComponent, PositionComponent, ScoreComponent, SpriteComponent, TombstoneComponent};

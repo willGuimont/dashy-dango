@@ -66,7 +66,7 @@ impl EnemyMovementSystem {
     }
 }
 
-fn orbiting_move(enemy_pos: Vec2, target_pos: Vec2, movement: &OrbitingMoveComponent, is_alive: bool) -> Vec2 {
+fn orbiting_move(enemy_pos: Vec2, target_pos: Vec2, movement: &OrbitingMoveComponent, _is_alive: bool) -> Vec2 {
     let difference = target_pos - movement.last_pos;
     let enemy_pos = enemy_pos + difference;
     let direction_to_player = (target_pos - enemy_pos).normalized();

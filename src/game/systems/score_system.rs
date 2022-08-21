@@ -1,4 +1,4 @@
-use crate::{Abort, DRAW_COLORS, entities_with, entities_with_components, get_components_clone_unwrap, has_all_components, Registry, Subscriber, text};
+use crate::{Abort, DRAW_COLORS, entities_with, get_components_clone_unwrap, has_all_components, Registry, Subscriber, text};
 use crate::ecs::Entity;
 use crate::game::components::GameManagerComponent;
 use crate::game::systems::System;

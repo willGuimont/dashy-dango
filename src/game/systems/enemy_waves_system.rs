@@ -1,6 +1,6 @@
 use std::f32::consts::TAU;
 
-use crate::{Abort, DRAW_COLORS, entities_with, get_components_clone_unwrap, get_components_unwrap, has_all_components, int_to_string, rect, Registry, SCREEN_SIZE, text, Topic, trace, Vec2};
+use crate::{Abort, DRAW_COLORS, entities_with, get_components_clone_unwrap, get_components_unwrap, has_all_components, int_to_string, rect, Registry, SCREEN_SIZE, text, Topic, Vec2};
 use crate::assets::{init_boss, init_fly, init_orbiter, init_shooting_orbiter, init_spitworm, init_sprinter};
 use crate::ecs::Entity;
 use crate::game::components::{BulletMoveComponent, EnemyComponent, GameManagerComponent, PlayerComponent, PositionComponent};
