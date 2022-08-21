@@ -2,6 +2,10 @@
 
 Dashy Dango a wave fighting game made with [WASM-4](https://wasm4.org/) by [@samX500](https://github.com/samX500) and [@willGuimont](https://github.com/willGuimont).
 
+<img src="assets/art/DashyDangolong.png" alt="title screen">
+
+<img src="assets/art/dashy_1.png" alt="screenshot 1" width="250"/> <img src="assets/art/dashy_3.png" alt="screenshot 2" width="250"/> <img src="assets/art/dashy_2.png" alt="screenshot 3" width="250"/>
+
 ## Build the cartridge
 
 ```bash
