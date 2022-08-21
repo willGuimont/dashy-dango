@@ -1,0 +1,17 @@
+[package]
+name = "willGuimont/dashy-dango"
+version = "1.0"
+description = "Help the Dango survive by fighting waves of enemies. Dash into enemies to eliminate them."
+readme = "README.md"
+repository = "https://github.com/willGuimont/dashy-dango"
+
+[[module]]
+name = "game"
+source = "game.wasm"
+abi = "wasm4"
+interfaces = { wasm4 = "0.0.1" }
+
+[[command]]
+runner = "wasm4@0.0.1"
+name = "play"
+module = "game"
